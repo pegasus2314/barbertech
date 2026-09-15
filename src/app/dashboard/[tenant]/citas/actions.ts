@@ -22,6 +22,23 @@ export async function updateAppointmentStatus(
   return { ok: true as const };
 }
 
+export async function deleteAppointment(tenant: string, appointmentId: string) {
+  const { supabase, canManage } = await getTenantContext(tenant);
+  if (!canManage) return { ok: false as const, error: "No tienes permiso para hacer esto." };
+
+  // Payments keep their own record even if the appointment they were tied to
+  // is removed (appointments.appointment_id -> payments is ON DELETE SET NULL),
+  // consistent with financial records never being deleted outright elsewhere
+  // in the app — only the appointment itself goes away.
+  const { error } = await supabase.from("appointments").delete().eq("id", appointmentId);
+
+  if (error) return { ok: false as const, error: error.message };
+
+  revalidatePath(`/dashboard/${tenant}/citas`);
+  revalidatePath(`/dashboard/${tenant}`);
+  return { ok: true as const };
+}
+
 export async function getSlotsForManualBooking(
   tenant: string,
   barberId: string,

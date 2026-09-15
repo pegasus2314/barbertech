@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { nextStatuses } from "@/lib/appointments/status";
-import { updateAppointmentStatus } from "./actions";
+import { updateAppointmentStatus, deleteAppointment } from "./actions";
 import { recordPayment } from "../finanzas/actions";
 import { waLink } from "@/lib/whatsapp";
 
@@ -59,6 +59,9 @@ export function AppointmentRow({
   const [payOpen, setPayOpen] = useState(false);
   const [payPending, startPayTransition] = useTransition();
   const [payError, setPayError] = useState<string | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deletePending, startDeleteTransition] = useTransition();
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const options = nextStatuses(appointment.status);
 
   const clientWaLink = waLink(
@@ -86,6 +89,18 @@ export function AppointmentRow({
         return;
       }
       setPayOpen(false);
+      router.refresh();
+    });
+  }
+
+  function handleDelete() {
+    setDeleteError(null);
+    startDeleteTransition(async () => {
+      const result = await deleteAppointment(tenant, appointment.id);
+      if (!result.ok) {
+        setDeleteError(result.error);
+        return;
+      }
       router.refresh();
     });
   }
@@ -186,6 +201,37 @@ export function AppointmentRow({
             Cancelar
           </button>
           {payError && <p className="w-full text-xs text-red-600">{payError}</p>}
+        </div>
+      )}
+
+      {canManage && !deleteOpen && (
+        <div className="mt-2 flex justify-end">
+          <button
+            onClick={() => setDeleteOpen(true)}
+            className="text-xs font-medium text-neutral-400 hover:text-red-600"
+          >
+            Eliminar cita
+          </button>
+        </div>
+      )}
+
+      {deleteOpen && (
+        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-3">
+          <span className="text-xs text-red-700">¿Eliminar esta cita? No se puede deshacer.</span>
+          <button
+            onClick={handleDelete}
+            disabled={deletePending}
+            className="rounded-lg bg-red-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-red-700 disabled:opacity-50"
+          >
+            {deletePending ? "Eliminando..." : "Sí, eliminar"}
+          </button>
+          <button
+            onClick={() => setDeleteOpen(false)}
+            className="text-xs font-medium text-neutral-500 hover:text-neutral-900"
+          >
+            Cancelar
+          </button>
+          {deleteError && <p className="w-full text-xs text-red-600">{deleteError}</p>}
         </div>
       )}
     </div>
