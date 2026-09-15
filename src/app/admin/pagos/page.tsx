@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requirePlatformAdmin } from "@/lib/auth/require-platform-admin";
 import { PaymentActions } from "../[tenant]/payment-actions";
+import { CARD, EYEBROW } from "@/lib/ui";
 
 function formatMoney(cents: number) {
   return (cents / 100).toLocaleString("es-DO", { style: "currency", currency: "DOP" });
@@ -18,7 +19,8 @@ export default async function AdminPaymentsPage() {
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-neutral-900">Pagos pendientes</h1>
+        <p className={EYEBROW}>Suscripciones</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Pagos pendientes</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Pagos de suscripción registrados por dueños, esperando confirmación.
         </p>
@@ -26,15 +28,15 @@ export default async function AdminPaymentsPage() {
 
       <div className="space-y-3">
         {(payments ?? []).map((p) => (
-          <div key={p.id} className="rounded-xl border border-neutral-200 bg-white p-4">
+          <div key={p.id} className={`${CARD} p-4`}>
             <div className="flex items-center justify-between">
               <Link
                 href={`/admin/${p.barbershops?.id}`}
-                className="text-sm font-medium text-neutral-900 hover:underline"
+                className="text-sm font-semibold text-neutral-900 hover:text-[#9d7837]"
               >
                 {p.barbershops?.name}
               </Link>
-              <span className="text-sm font-semibold text-neutral-900">
+              <span className="text-sm font-bold text-neutral-900">
                 {formatMoney(p.amount_cents)}
               </span>
             </div>
@@ -51,7 +53,7 @@ export default async function AdminPaymentsPage() {
           </div>
         ))}
         {(payments ?? []).length === 0 && (
-          <p className="rounded-xl border border-neutral-200 bg-white px-4 py-6 text-sm text-neutral-500">
+          <p className={`${CARD} px-4 py-8 text-center text-sm text-neutral-500`}>
             No hay pagos pendientes.
           </p>
         )}

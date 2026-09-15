@@ -6,12 +6,15 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   await requirePlatformAdmin();
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      <header className="flex items-center justify-between border-b border-neutral-200 bg-white px-4 py-3 sm:px-8">
-        <Link href="/admin" className="text-sm font-semibold text-neutral-900">
-          BarberTech · Super Admin
+    <div className="min-h-screen bg-[#f7f6f2]">
+      <header className="flex items-center justify-between border-b border-[#e7e3da] bg-[#171717] px-4 py-3.5 text-white sm:px-8">
+        <Link href="/admin" className="flex items-center gap-2 text-sm font-semibold">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#c7a15a] text-xs font-black text-[#171717]">
+            B
+          </span>
+          BarberTech <span className="text-white/40">· Super Admin</span>
         </Link>
-        <SignOutButton />
+        <SignOutButton variant="dark" />
       </header>
       <main className="px-4 py-6 sm:px-8 sm:py-8">{children}</main>
     </div>

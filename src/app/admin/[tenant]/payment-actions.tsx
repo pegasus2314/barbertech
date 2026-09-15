@@ -35,14 +35,14 @@ export function PaymentActions({
       <button
         onClick={confirm}
         disabled={pending}
-        className="rounded-lg bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700 disabled:opacity-50"
+        className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
       >
         Confirmar
       </button>
       <button
         onClick={reject}
         disabled={pending}
-        className="rounded-lg border border-red-300 px-3 py-1 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
+        className="rounded-lg border border-red-300 px-3 py-1 text-xs font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50"
       >
         Rechazar
       </button>

@@ -32,8 +32,8 @@ export function StatusControls({
           disabled={pending || status === currentStatus}
           className={`rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-40 ${
             status === currentStatus
-              ? "border-neutral-900 bg-neutral-900 text-white"
-              : "border-neutral-300 text-neutral-700 hover:bg-neutral-50"
+              ? "border-[#171717] bg-[#171717] text-white"
+              : "border-[#e7e3da] text-neutral-700 hover:bg-neutral-50"
           }`}
         >
           {status}
