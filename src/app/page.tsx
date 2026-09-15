@@ -4,130 +4,104 @@ import { createClient } from "@/lib/supabase/server";
 
 export default async function Home() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  if (user) {
-    redirect("/dashboard");
-  }
+  if (user) redirect("/dashboard");
 
   return (
-    <div className="flex flex-1 flex-col">
-      <header className="border-b border-neutral-200">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-          <span className="text-base font-semibold tracking-tight text-neutral-900">
-            BarberTech
-          </span>
-          <nav className="flex items-center gap-6">
-            <Link
-              href="/login"
-              className="hidden text-sm font-medium text-neutral-600 hover:text-neutral-900 sm:block"
-            >
-              Iniciar sesión
-            </Link>
-            <Link
-              href="/signup"
-              className="rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-neutral-700"
-            >
-              Crear mi barbería
-            </Link>
+    <div className="min-h-screen bg-[#f7f6f2] text-[#171717]">
+      <header className="sticky top-0 z-30 border-b border-black/10 bg-[#f7f6f2]/90 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
+          <Link href="/" className="group flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#171717] text-sm font-black text-[#f5d89a] shadow-lg shadow-black/10">B</span>
+            <span className="text-lg font-bold tracking-tight">BarberTech</span>
+          </Link>
+          <nav className="flex items-center gap-3 sm:gap-7">
+            <a href="#funciones" className="hidden text-sm font-medium text-black/60 hover:text-black sm:block">Funciones</a>
+            <a href="#como-funciona" className="hidden text-sm font-medium text-black/60 hover:text-black md:block">Cómo funciona</a>
+            <Link href="/login" className="text-sm font-semibold text-black/70 hover:text-black">Entrar</Link>
+            <Link href="/signup" className="rounded-xl bg-[#171717] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-black/15 hover:-translate-y-0.5 hover:bg-black">Empezar</Link>
           </nav>
         </div>
       </header>
 
-      <main className="flex-1">
-        <section className="mx-auto max-w-6xl px-6 pb-20 pt-20 sm:pb-28 sm:pt-28">
-          <div className="mx-auto max-w-2xl text-center">
-            <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-neutral-200 px-3 py-1 text-xs font-medium text-neutral-500">
-              <span className="h-1.5 w-1.5 rounded-full bg-neutral-900" />
-              Reservas en línea para barberías
+      <main>
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_20%_10%,rgba(199,161,90,0.18),transparent_30%),radial-gradient(circle_at_85%_35%,rgba(23,23,23,0.08),transparent_28%)]" />
+          <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 pb-20 pt-16 sm:px-8 sm:pb-28 sm:pt-24 lg:grid-cols-[1.05fr_.95fr] lg:gap-20">
+            <div>
+              <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-[#c7a15a]/40 bg-[#fffaf0] px-3.5 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[#8b6729]">
+                <span className="h-2 w-2 rounded-full bg-[#c7a15a]" />
+                El sistema para tu barbería
+              </div>
+              <h1 className="max-w-3xl text-balance text-5xl font-black leading-[0.98] tracking-[-0.055em] sm:text-7xl lg:text-[5.7rem]">
+                Menos mensajes. <span className="text-[#a47d36]">Más citas.</span>
+              </h1>
+              <p className="mt-7 max-w-xl text-lg leading-8 text-black/60 sm:text-xl">
+                BarberTech convierte tu barbería en un negocio más organizado: página propia, reservas online, agenda, clientes y finanzas en un solo lugar.
+              </p>
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                <Link href="/signup" className="inline-flex items-center justify-center rounded-2xl bg-[#171717] px-6 py-4 text-sm font-bold text-white shadow-xl shadow-black/15 hover:-translate-y-0.5 hover:bg-black">
+                  Crear mi barbería <span className="ml-2">→</span>
+                </Link>
+                <Link href="/login" className="inline-flex items-center justify-center rounded-2xl border border-black/15 bg-white/60 px-6 py-4 text-sm font-bold text-black/75 hover:bg-white">
+                  Ya tengo una cuenta
+                </Link>
+              </div>
+              <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium text-black/45">
+                <span>✓ Configuración rápida</span><span>✓ Reservas 24/7</span><span>✓ Panel completo</span>
+              </div>
             </div>
-            <h1 className="text-balance text-4xl font-semibold tracking-tight text-neutral-900 sm:text-6xl">
-              Tu barbería, con página propia y citas que se llenan solas.
-            </h1>
-            <p className="mx-auto mt-6 max-w-lg text-balance text-lg leading-relaxed text-neutral-500">
-              Un enlace para tus clientes. Un panel para ti. Sin código, sin diseñador, sin
-              complicaciones.
-            </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link
-                href="/signup"
-                className="w-full rounded-full bg-neutral-900 px-6 py-3 text-sm font-medium text-white transition hover:bg-neutral-700 sm:w-auto"
-              >
-                Crear mi barbería — gratis
-              </Link>
-              <Link
-                href="/login"
-                className="w-full rounded-full border border-neutral-300 px-6 py-3 text-sm font-medium text-neutral-700 transition hover:border-neutral-400 hover:bg-neutral-50 sm:w-auto"
-              >
-                Ya tengo cuenta
-              </Link>
+            <ProductPreview />
+          </div>
+        </section>
+
+        <section id="como-funciona" className="border-y border-[#e4dfd5] bg-white/60">
+          <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
+            <div className="max-w-2xl">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#a47d36]">Así de simple</p>
+              <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Tu operación, bajo control.</h2>
+            </div>
+            <div className="mt-12 grid gap-5 md:grid-cols-3">
+              <Step number="01" title="Configura" body="Añade tu barbería, servicios, barberos y horarios. Sin complicarte." />
+              <Step number="02" title="Comparte" body="Publica tu enlace de reservas en WhatsApp, Instagram o donde quieras." />
+              <Step number="03" title="Administra" body="Controla citas, clientes, pagos y el día a día desde tu panel." />
             </div>
           </div>
+        </section>
 
-          <div className="relative mx-auto mt-20 max-w-3xl">
-            <div className="absolute inset-0 -z-10 bg-[radial-gradient(closest-side,rgba(0,0,0,0.04),transparent)]" />
-            <PreviewCard />
+        <section id="funciones" className="mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-28">
+          <div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#a47d36]">Todo en un solo sitio</p>
+              <h2 className="mt-3 text-4xl font-black tracking-[-0.03em] sm:text-5xl">Hecho para el ritmo real de una barbería.</h2>
+            </div>
+            <p className="max-w-xl text-lg leading-8 text-black/55 lg:justify-self-end">Deja atrás las agendas improvisadas y los mensajes perdidos. BarberTech reúne las herramientas que necesitas para atender mejor y trabajar con más orden.</p>
+          </div>
+          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <Feature icon="01" title="Reservas online" body="Tus clientes pueden reservar desde tu página pública." />
+            <Feature icon="02" title="Agenda" body="Visualiza las citas y sus estados de forma clara." />
+            <Feature icon="03" title="Clientes" body="Consulta historial, notas y relación con cada cliente." />
+            <Feature icon="04" title="Finanzas" body="Registra pagos y conoce mejor el movimiento de tu negocio." />
           </div>
         </section>
 
-        <section className="border-y border-neutral-200 bg-neutral-50">
-          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 py-16 sm:grid-cols-3 sm:py-20">
-            <Step
-              number="01"
-              title="Configura tu negocio"
-              body="Nombre, servicios, barberos y horarios. Listo en minutos, sin formularios eternos."
-            />
-            <Step
-              number="02"
-              title="Comparte tu enlace"
-              body="tudominio.com/tu-barbería. Ponlo en Instagram, WhatsApp o tu perfil de Google."
-            />
-            <Step
-              number="03"
-              title="Recibe citas"
-              body="Tus clientes eligen servicio, barbero y hora. Tú solo confirmas desde el panel."
-            />
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
-          <div className="mx-auto max-w-xl text-center">
-            <h2 className="text-3xl font-semibold tracking-tight text-neutral-900">
-              Todo lo que tu barbería necesita
-            </h2>
-            <p className="mt-4 text-neutral-500">
-              Un solo lugar para administrar la operación diaria y la presencia en línea.
-            </p>
-          </div>
-          <div className="mx-auto mt-12 grid max-w-4xl grid-cols-1 gap-px overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-200 sm:grid-cols-2">
-            <Feature title="Página pública" body="Servicios, barberos, galería y horario, lista para compartir." />
-            <Feature title="Calendario de citas" body="Estados claros: pendiente, confirmada, completada." />
-            <Feature title="Clientes" body="Historial, notas y gasto total, sin hojas de cálculo." />
-            <Feature title="Finanzas simples" body="Registra pagos en efectivo o transferencia al momento." />
-          </div>
-        </section>
-
-        <section className="border-t border-neutral-200">
-          <div className="mx-auto max-w-6xl px-6 py-20 text-center sm:py-24">
-            <h2 className="text-3xl font-semibold tracking-tight text-neutral-900">
-              Tu página está a un minuto de existir.
-            </h2>
-            <Link
-              href="/signup"
-              className="mt-8 inline-block rounded-full bg-neutral-900 px-6 py-3 text-sm font-medium text-white transition hover:bg-neutral-700"
-            >
-              Crear mi barbería
-            </Link>
+        <section className="px-5 pb-20 sm:px-8 sm:pb-28">
+          <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#171717] px-7 py-12 text-white shadow-2xl shadow-black/20 sm:px-12 sm:py-16 lg:flex lg:items-center lg:justify-between lg:gap-12">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#e2c17f]">Tu siguiente paso</p>
+              <h2 className="mt-3 max-w-2xl text-3xl font-black tracking-tight sm:text-5xl">Haz que reservar en tu barbería sea tan fácil como reservar un taxi.</h2>
+              <p className="mt-4 max-w-xl text-base leading-7 text-white/55">Empieza a construir una experiencia más profesional para tus clientes desde hoy.</p>
+            </div>
+            <Link href="/signup" className="mt-8 inline-flex shrink-0 items-center justify-center rounded-2xl bg-[#c7a15a] px-6 py-4 text-sm font-black text-[#171717] hover:-translate-y-0.5 hover:bg-[#d5b36c] lg:mt-0">Crear mi barbería →</Link>
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-neutral-200 px-6 py-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 text-sm text-neutral-400 sm:flex-row">
-          <span>© {new Date().getFullYear()} BarberTech</span>
-          <span>Hecho para barberías reales.</span>
+      <footer className="border-t border-[#e4dfd5] bg-white/50">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-sm text-black/45 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          <div className="flex items-center gap-2 font-bold text-black/70"><span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#171717] text-[10px] text-[#f5d89a]">B</span> BarberTech</div>
+          <span>© {new Date().getFullYear()} BarberTech. Hecho para barberías.</span>
         </div>
       </footer>
     </div>
@@ -136,43 +110,58 @@ export default async function Home() {
 
 function Step({ number, title, body }: { number: string; title: string; body: string }) {
   return (
-    <div>
-      <span className="text-xs font-medium text-neutral-400">{number}</span>
-      <h3 className="mt-2 text-base font-semibold text-neutral-900">{title}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-neutral-500">{body}</p>
+    <div className="rounded-3xl border border-[#e4dfd5] bg-[#f7f6f2] p-7">
+      <span className="text-sm font-black text-[#b28a43]">{number}</span>
+      <h3 className="mt-8 text-xl font-black">{title}</h3>
+      <p className="mt-3 text-sm leading-7 text-black/55">{body}</p>
     </div>
   );
 }
 
-function Feature({ title, body }: { title: string; body: string }) {
+function Feature({ icon, title, body }: { icon: string; title: string; body: string }) {
   return (
-    <div className="bg-white p-6">
-      <h3 className="text-sm font-semibold text-neutral-900">{title}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-neutral-500">{body}</p>
+    <div className="group rounded-3xl border border-[#e4dfd5] bg-white p-6 shadow-sm hover:-translate-y-1 hover:shadow-xl hover:shadow-black/5">
+      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#fff8e9] text-xs font-black text-[#9d7837]">{icon}</span>
+      <h3 className="mt-7 text-lg font-black">{title}</h3>
+      <p className="mt-2 text-sm leading-6 text-black/50">{body}</p>
     </div>
   );
 }
 
-function PreviewCard() {
+function ProductPreview() {
   return (
-    <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04),0_16px_40px_-16px_rgba(0,0,0,0.15)]">
-      <div className="h-28 bg-neutral-900 sm:h-36" />
-      <div className="px-6 pb-6 pt-10 sm:px-8">
-        <div className="-mt-16 mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border-4 border-white bg-neutral-100 text-lg font-semibold text-neutral-700 sm:h-16 sm:w-16">
-          B
+    <div className="relative mx-auto w-full max-w-xl lg:mx-0">
+      <div className="absolute -inset-5 rounded-[2.5rem] bg-[#c7a15a]/15 blur-3xl" />
+      <div className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-white shadow-[0_30px_80px_-30px_rgba(0,0,0,.35)]">
+        <div className="flex items-center justify-between border-b border-black/10 bg-[#171717] px-5 py-4 text-white">
+          <div className="flex items-center gap-2"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#c7a15a] text-xs font-black text-[#171717]">B</span><span className="text-sm font-bold">BarberTech</span></div>
+          <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white/60">Panel</span>
         </div>
-        <p className="text-lg font-semibold text-neutral-900">Barber King</p>
-        <p className="mt-1 text-sm text-neutral-500">Cortes clásicos y fade. Santo Domingo.</p>
-        <div className="mt-5 flex flex-wrap gap-2">
-          <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs text-neutral-600">
-            Corte — RD$500
-          </span>
-          <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs text-neutral-600">
-            Corte + barba — RD$700
-          </span>
+        <div className="grid gap-5 bg-[#f7f6f2] p-5 sm:p-7">
+          <div className="flex items-end justify-between">
+            <div><p className="text-xs font-bold uppercase tracking-wider text-black/40">Hoy</p><h3 className="mt-1 text-2xl font-black">Buenos días 👋</h3></div>
+            <span className="rounded-xl bg-[#171717] px-3 py-2 text-xs font-bold text-white">+ Nueva cita</span>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <MiniStat label="Citas" value="12" /><MiniStat label="Pendientes" value="4" /><MiniStat label="Completadas" value="7" /><MiniStat label="Ingresos" value="RD$5.8k" />
+          </div>
+          <div className="grid gap-4 lg:grid-cols-[1.3fr_.7fr]">
+            <div className="rounded-2xl border border-black/10 bg-white p-5">
+              <div className="flex items-center justify-between"><h4 className="font-black">Agenda de hoy</h4><span className="text-xs font-semibold text-black/35">09:00 — 18:00</span></div>
+              <div className="mt-4 space-y-3"><Appointment time="09:30" name="Carlos Martínez" service="Corte + barba" status="Confirmada" /><Appointment time="11:00" name="Luis Peña" service="Fade" status="Pendiente" /><Appointment time="13:30" name="Miguel Reyes" service="Corte clásico" status="Confirmada" /></div>
+            </div>
+            <div className="rounded-2xl bg-[#171717] p-5 text-white"><p className="text-xs font-bold uppercase tracking-wider text-white/40">Tu barbería</p><p className="mt-2 text-xl font-black">Barber King</p><p className="mt-1 text-xs text-white/45">Santo Domingo · Abierta hoy</p><div className="mt-7 h-px bg-white/10" /><p className="mt-5 text-xs text-white/45">Reservas esta semana</p><p className="mt-1 text-3xl font-black text-[#e2c17f]">+28%</p></div>
+          </div>
         </div>
-        <div className="mt-6 h-9 w-32 rounded-full bg-neutral-900" />
       </div>
     </div>
   );
+}
+
+function MiniStat({ label, value }: { label: string; value: string }) {
+  return <div className="rounded-2xl border border-black/10 bg-white p-3"><p className="text-[10px] font-bold uppercase tracking-wider text-black/35">{label}</p><p className="mt-2 text-lg font-black">{value}</p></div>;
+}
+
+function Appointment({ time, name, service, status }: { time: string; name: string; service: string; status: string }) {
+  return <div className="flex items-center gap-3 rounded-xl border border-black/5 bg-[#f7f6f2] p-3"><span className="w-11 shrink-0 text-xs font-black text-black/45">{time}</span><div className="min-w-0 flex-1"><p className="truncate text-sm font-bold">{name}</p><p className="truncate text-xs text-black/40">{service}</p></div><span className={`hidden rounded-full px-2 py-1 text-[9px] font-black sm:block ${status === "Confirmada" ? "bg-[#edf7ed] text-[#3e7c48]" : "bg-[#fff5df] text-[#9d7837]"}`}>{status}</span></div>;
 }
