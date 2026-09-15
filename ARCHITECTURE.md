@@ -223,10 +223,17 @@ Bugs encontrados y corregidos durante esta extensión:
 
 Verificado en navegador (Chrome vía MCP, escritorio y móvil 375px) con las cuentas QA (`owner.qa@barbertech.test`, `admin.qa@barbertech.test`, contraseña `SuperClave123!`): landing, login, dashboard completo (las 8 subpáginas), storefront público `/[slug]`, flujo de reserva, y Super Admin (`/admin`, `/admin/[tenant]`, `/admin/pagos`).
 
+### Funciones agregadas después del rediseño visual
+
+- **Logo/portada/galería personalizables**: ya existían (`src/app/dashboard/[tenant]/configuracion/media-uploader.tsx`), subida real a Supabase Storage bucket `barbershop-media`. Se agregaron botones "Quitar" para logo y portada (antes solo se podían reemplazar). Verificado en navegador con subida real (persiste tras recargar, se refleja en el storefront público).
+- **WhatsApp por cita + cobro rápido** (dashboard "Citas"): link directo a WhatsApp del cliente por cada cita; una cita "Completada" sin pago muestra "Sin cobrar" con un botón "+ Registrar pago" que registra el cobro sin salir de la página. El campo `whatsapp` de la barbería, que se traía de la base de datos pero nunca se usaba, ahora también genera un botón "Avisar por WhatsApp" al terminar de reservar (`src/lib/whatsapp.ts`).
+- **Horario individual por barbero**: UI en `/dashboard/[tenant]/horarios` con selector de barbero y 3 estados por día (horario general / personalizado / libre). El motor de disponibilidad (`get_available_slots`) ya priorizaba `barber_hours` sobre `business_hours` cuando existe una fila — solo faltaba la interfaz para gestionarla.
+- **Bloqueos de horario** (`time_blocks`): UI en la misma página de Horarios para crear bloqueos (almuerzo, reunión, vacaciones, día libre, evento, otro) para toda la barbería o un barbero específico, y eliminarlos. Nuevo RPC `create_time_block` (migración [0004_create_time_block_rpc.sql](supabase/migrations/0004_create_time_block_rpc.sql)) convierte la hora local ingresada por el dueño a UTC usando la zona horaria de la barbería en Postgres — mismo patrón que `get_available_slots`, evitando repetir el tipo de bug de zona horaria ya encontrado antes en el frontend.
+
+Todo lo anterior verificado en navegador con datos reales, incluyendo el efecto en el motor de disponibilidad público (no solo que el formulario guarda, sino que `/[slug]/reservar` refleja los cambios).
+
 ### Pendiente / mejoras futuras razonables (no bloqueantes)
 - Habilitar "Leaked Password Protection" de Supabase Auth (HaveIBeenPwned) — requiere el dashboard de Supabase, no hay API vía MCP para esto.
 - El límite "hoy" del filtro de citas en el dashboard usa la hora del servidor, no la zona horaria del negocio (a diferencia de todo el *display* de horas, que sí es correcto) — edge case solo relevante cerca de la medianoche.
 - `sitemap.xml` dinámico listando tenants publicados (se agregó `robots.txt` pero no el sitemap, por tiempo).
-- Horario individual por barbero (`barber_hours`, ya existe en el esquema) no tiene UI todavía — el motor de disponibilidad ya lo respeta si se llenara la tabla.
-- Bloqueos de horario (`time_blocks`) no tienen UI todavía, aunque el esquema y el motor de disponibilidad ya los soportan.
 - Tests automatizados (unit/integration) no se escribieron — todo se verificó manualmente en navegador con datos reales por falta de infraestructura de testing en el scaffold inicial. Recomendado antes de producción real.
