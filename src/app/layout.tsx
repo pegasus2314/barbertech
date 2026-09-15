@@ -13,8 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BarberTech",
-  description: "Gestión y reservas en línea para barberías.",
+  title: {
+    default: "BarberTech",
+    template: "%s | BarberTech",
+  },
+  description: "Gestión y reservas en línea para barberías modernas.",
   manifest: "/manifest.json",
   icons: {
     icon: "/icon.svg",
@@ -28,10 +31,7 @@ export const viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
