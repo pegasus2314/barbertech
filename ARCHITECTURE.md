@@ -155,8 +155,14 @@ NO reutilizable: el modelo de disponibilidad de Rent Car es `recurso (vehículo)
 
 Cada fase sigue: auditar → planificar → implementar → testear → probar en navegador → documentar → commit → push. No se declara una fase terminada sin pruebas demostradas.
 
-## 9. Abierto / pendiente de decisión
+## 9. Estado de la Fase 1 (fundación)
 
-- Credenciales de Supabase: necesito que crees o me des acceso a un proyecto Supabase (tengo herramientas MCP para crear uno si lo autorizas).
-- Dominio real para producción (por ahora se puede maquetar con rutas `/[slug]` en un solo dominio, como pediste).
+Completado:
+- Proyecto Supabase conectado: `aqdcvzyenkskfhtgkhyx` (us-east-2). Esquema completo aplicado ([supabase/migrations/0001_init.sql](supabase/migrations/0001_init.sql)): todas las tablas de la sección 4, RLS en cada una, constraint `EXCLUDE` anti-solapamiento, trigger de transiciones de estado válidas, RPCs públicas `get_available_slots` y `create_public_appointment`, seed de planes.
+- Advisories de seguridad de Supabase revisados: sin hallazgos pendientes (las únicas advertencias restantes son intencionales — RPCs públicas de reserva/disponibilidad y helpers de RLS ejecutables solo por `authenticated`).
+- Scaffold Next.js 15 + TS + Tailwind + App Router en este repo, con clientes Supabase (`src/lib/supabase/client.ts`, `server.ts`) y middleware de refresco de sesión (`src/middleware.ts`).
+
+Pendiente / abierto:
+- Repositorio remoto en GitHub: no hay `gh` CLI ni token disponible en este entorno para crear el repo por API. Necesito que me des la URL de un repo vacío (o que lo crees tú) para hacer el primer push.
+- Dominio real para producción (por ahora rutas `/[slug]` en un solo dominio, como pediste).
 - Proveedor de hosting (Vercel es el objetivo natural para Next.js).
