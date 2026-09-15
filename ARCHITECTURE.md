@@ -213,6 +213,16 @@ Todas mis pruebas anteriores de `/[slug]`, `/[slug]/reservar` y `/[slug]/mi-cita
 
 **Lección para el resto del proyecto:** cualquier tabla con una política "solo miembros" + una política "público" necesita que las funciones usadas en AMBAS tengan `EXECUTE` otorgado a `anon`, aunque la ruta pública nunca vaya a beneficiarse de la política de miembros. Antes de dar una función pública por probada, probarla con una petición realmente sin sesión (`curl` sin cookies), no solo en el navegador logueado.
 
+### Rediseño visual (dorado/crema) — sincronizado y extendido a toda la app
+
+Otra sesión de trabajo actualizó `src/app/page.tsx`, `globals.css`, `layout.tsx`, `middleware.ts` y el shell del dashboard directamente en `main` con un nuevo sistema visual (fondo `#f7f6f2`, acento dorado `#c7a15a`/`#9d7837`, superficies oscuras `#171717`). Tras sincronizar (`git pull --ff-only`), se extendió ese mismo sistema a el resto de la aplicación que seguía con el diseño monocromático anterior: auth, onboarding, flujo de reserva público, todas las subpáginas del dashboard (citas, clientes, servicios, barberos, horarios, finanzas, configuración) y el panel de Super Admin completo. Tokens compartidos en [src/lib/ui.ts](src/lib/ui.ts).
+
+Bugs encontrados y corregidos durante esta extensión:
+- **Nav del dashboard invisible/ausente**: el nav reutilizaba clases de texto oscuras que se veían bien en el sidebar claro original pero eran invisibles sobre el nuevo sidebar `#171717`; además el header móvil no incluía el nav en absoluto (usuarios en móvil no tenían forma de navegar). Corregido con clases responsivas `sm:` y añadiendo el nav también al header móvil.
+- **Tarjeta "Ingresos de hoy" invisible en Finanzas**: combinaba la clase compartida `CARD` (que fija `bg-white`) con un `bg-[#171717]` inline; el orden de generación de Tailwind v4 dejó ganando `bg-white`, resultando en texto blanco sobre fondo blanco. Corregido quitando `CARD` de esa tarjeta y escribiendo sus clases explícitamente.
+
+Verificado en navegador (Chrome vía MCP, escritorio y móvil 375px) con las cuentas QA (`owner.qa@barbertech.test`, `admin.qa@barbertech.test`, contraseña `SuperClave123!`): landing, login, dashboard completo (las 8 subpáginas), storefront público `/[slug]`, flujo de reserva, y Super Admin (`/admin`, `/admin/[tenant]`, `/admin/pagos`).
+
 ### Pendiente / mejoras futuras razonables (no bloqueantes)
 - Habilitar "Leaked Password Protection" de Supabase Auth (HaveIBeenPwned) — requiere el dashboard de Supabase, no hay API vía MCP para esto.
 - El límite "hoy" del filtro de citas en el dashboard usa la hora del servidor, no la zona horaria del negocio (a diferencia de todo el *display* de horas, que sí es correcto) — edge case solo relevante cerca de la medianoche.
