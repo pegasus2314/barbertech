@@ -913,6 +913,7 @@ export type Database = {
         Returns: string
       }
       current_barber_id: { Args: { p_tenant_id: string }; Returns: string }
+      is_barbershop_active: { Args: { p_tenant_id: string }; Returns: boolean }
       get_available_slots: {
         Args: {
           p_barber_id: string

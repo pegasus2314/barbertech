@@ -1,6 +1,8 @@
 import { getTenantContext } from "@/lib/tenant/get-tenant-context";
+import { getAccessState, graceDaysLeft } from "@/lib/subscription/access";
 import { SignOutButton } from "../sign-out-button";
 import { DashboardNav } from "./nav";
+import { SubscriptionPaymentForm } from "./configuracion/subscription-payment-form";
 
 export default async function TenantDashboardLayout({
   children,
@@ -10,7 +12,46 @@ export default async function TenantDashboardLayout({
   params: Promise<{ tenant: string }>;
 }) {
   const { tenant } = await params;
-  const { barbershop, role } = await getTenantContext(tenant);
+  const { supabase, barbershop, role, canManage } = await getTenantContext(tenant);
+
+  const { data: subscription } = await supabase
+    .from("subscriptions")
+    .select("status, trial_ends_at, current_period_end")
+    .eq("tenant_id", barbershop.id)
+    .maybeSingle();
+
+  const access = getAccessState({
+    barbershopStatus: barbershop.status,
+    subscriptionStatus: subscription?.status ?? null,
+    trialEndsAt: subscription?.trial_ends_at ?? null,
+    currentPeriodEnd: subscription?.current_period_end ?? null,
+  });
+
+  if (access === "blocked") {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#f7f6f2] px-4">
+        <div className="w-full max-w-md rounded-2xl border border-[#e7e3da] bg-white p-8 text-center shadow-[0_8px_30px_rgba(23,23,23,0.04)]">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff3d9] text-xl">⏸</div>
+          <h1 className="mt-4 text-xl font-bold tracking-tight text-neutral-950">Suscripción vencida</h1>
+          <p className="mt-2 text-sm text-neutral-500">
+            El acceso de <span className="font-semibold text-neutral-800">{barbershop.name}</span> está en
+            pausa porque no hay un pago de suscripción activo. Tu página pública también está desactivada
+            mientras tanto.
+          </p>
+          {canManage ? (
+            <div className="mt-6 rounded-xl border border-[#e7e3da] bg-[#f7f6f2] p-4 text-left">
+              <SubscriptionPaymentForm tenant={tenant} />
+            </div>
+          ) : (
+            <p className="mt-6 text-sm text-neutral-500">Pídele al dueño de la barbería que renueve la suscripción.</p>
+          )}
+          <div className="mt-4">
+            <SignOutButton />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#f7f6f2] text-neutral-950 sm:flex">
@@ -50,7 +91,19 @@ export default async function TenantDashboardLayout({
         </header>
 
         <main className="px-4 py-6 sm:px-8 sm:py-8 lg:px-12">
-          <div className="mx-auto max-w-6xl">{children}</div>
+          <div className="mx-auto max-w-6xl">
+            {access === "grace" && (
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e7cf94] bg-[#fffaf0] px-5 py-4">
+                <p className="text-sm text-[#7f602d]">
+                  <span className="font-semibold">Tu suscripción venció.</span> Tienes{" "}
+                  {graceDaysLeft(subscription!.current_period_end ?? subscription!.trial_ends_at!)} días para
+                  registrar tu pago antes de que se pause el acceso.
+                </p>
+                {canManage && <SubscriptionPaymentForm tenant={tenant} />}
+              </div>
+            )}
+            {children}
+          </div>
         </main>
       </div>
     </div>

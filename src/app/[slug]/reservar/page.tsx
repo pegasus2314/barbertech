@@ -20,6 +20,21 @@ export default async function ReservarPage({
 
   if (!barbershop) notFound();
 
+  const { data: isActive } = await supabase.rpc("is_barbershop_active", { p_tenant_id: barbershop.id });
+  if (!isActive) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#f7f6f2] px-5 text-center">
+        <div>
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm ring-1 ring-[#e7e3da]">💈</div>
+          <h1 className="mt-5 text-2xl font-bold tracking-tight text-neutral-950">{barbershop.name}</h1>
+          <p className="mt-2 max-w-sm text-sm text-neutral-500">
+            Las reservas no están disponibles en este momento. Vuelve a intentarlo más tarde.
+          </p>
+        </div>
+      </main>
+    );
+  }
+
   const [{ data: services }, { data: barbers }, { data: barberServices }] = await Promise.all([
     supabase
       .from("services")
