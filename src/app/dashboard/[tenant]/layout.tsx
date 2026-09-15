@@ -46,6 +46,7 @@ export default async function TenantDashboardLayout({
             </div>
             <SignOutButton />
           </div>
+          <DashboardNav tenant={tenant} />
         </header>
 
         <main className="px-4 py-6 sm:px-8 sm:py-8 lg:px-12">
