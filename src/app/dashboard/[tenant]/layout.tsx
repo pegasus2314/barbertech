@@ -13,25 +13,45 @@ export default async function TenantDashboardLayout({
   const { barbershop, role } = await getTenantContext(tenant);
 
   return (
-    <div className="flex min-h-screen flex-col bg-neutral-50 sm:flex-row">
-      <div className="flex flex-col border-neutral-200 bg-white sm:w-60 sm:shrink-0 sm:border-r">
-        <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-4">
-          <div>
-            <p className="text-sm font-semibold text-neutral-900">{barbershop.name}</p>
-            <p className="text-xs capitalize text-neutral-400">{role}</p>
-          </div>
-          <div className="sm:hidden">
-            <SignOutButton />
+    <div className="min-h-screen bg-[#f7f6f2] text-neutral-950 sm:flex">
+      <aside className="hidden w-72 shrink-0 flex-col border-r border-[#e7e3da] bg-[#171717] text-white sm:flex">
+        <div className="border-b border-white/10 px-6 py-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#c7a15a] text-lg font-bold text-[#171717]">
+              {barbershop.name.slice(0, 1).toUpperCase()}
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold">{barbershop.name}</p>
+              <p className="mt-0.5 text-xs capitalize text-white/50">{role}</p>
+            </div>
           </div>
         </div>
         <DashboardNav tenant={tenant} />
-        <div className="hidden px-4 py-4 sm:mt-auto sm:block">
+        <div className="mt-auto border-t border-white/10 px-5 py-5">
           <SignOutButton />
         </div>
+      </aside>
+
+      <div className="min-w-0 flex-1">
+        <header className="sticky top-0 z-20 border-b border-[#e7e3da] bg-[#f7f6f2]/95 backdrop-blur sm:hidden">
+          <div className="flex items-center justify-between px-4 py-4">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#171717] text-sm font-bold text-[#f5d89a]">
+                {barbershop.name.slice(0, 1).toUpperCase()}
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold">{barbershop.name}</p>
+                <p className="text-[11px] capitalize text-neutral-500">{role}</p>
+              </div>
+            </div>
+            <SignOutButton />
+          </div>
+        </header>
+
+        <main className="px-4 py-6 sm:px-8 sm:py-8 lg:px-12">
+          <div className="mx-auto max-w-6xl">{children}</div>
+        </main>
       </div>
-      <main className="flex-1 px-4 py-6 sm:px-10 sm:py-10">
-        <div className="mx-auto max-w-4xl">{children}</div>
-      </main>
     </div>
   );
 }
