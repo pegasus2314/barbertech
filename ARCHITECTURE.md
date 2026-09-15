@@ -232,6 +232,21 @@ Verificado en navegador (Chrome vía MCP, escritorio y móvil 375px) con las cue
 
 Todo lo anterior verificado en navegador con datos reales, incluyendo el efecto en el motor de disponibilidad público (no solo que el formulario guarda, sino que `/[slug]/reservar` refleja los cambios).
 
+### Auditoría del Security Advisor de Supabase (migración [0005_security_hardening.sql](supabase/migrations/0005_security_hardening.sql))
+
+El advisor reportó 3 categorías de hallazgo. Se revisó cada una contra el código real antes de tocar nada, porque dos de las tres son parte del diseño intencional de este proyecto y "arreglarlas" a ciegas habría reintroducido bugs ya resueltos esta sesión.
+
+**Corregidos:**
+- `public_bucket_allows_listing`: la política `storage_barbershop_media_read` permitía a cualquiera (incluido `anon`) listar/enumerar TODOS los archivos del bucket `barbershop-media` vía `.list()`, cruzando todos los tenants. Un bucket público ya sirve objetos individuales sin pasar por RLS (endpoint `/storage/v1/object/public/...`), así que esta política solo habilitaba el listado, no el acceso normal. **Casi se rompe algo real aquí**: mi primer intento fue eliminar la política por completo, lo cual rompió la subida de logo/portada (`upload({upsert:true})` sí necesita SELECT para su chequeo de existencia) — lo detecté de inmediato probando en el navegador, y lo corregí con una política más angosta (solo el owner/manager del propio tenant puede hacer SELECT, igual que ya aplicaba a INSERT/UPDATE/DELETE) en vez de revertir al original. Verificado: la subida sigue funcionando, y `list()` anónimo ahora devuelve `[]`.
+- `create_barbershop_with_owner` ejecutable por `anon`: la función ya rechaza con "Authentication required" si `auth.uid()` es null, así que no había riesgo real, pero no necesitaba el grant. Revocado sin cambio de comportamiento.
+
+**Deliberadamente NO corregidos** (el advisor los marca WARN sin conocer el diseño):
+- `create_public_appointment`, `cancel_public_appointment`, `get_available_slots`, `get_client_appointments` ejecutables por `anon`: ES el propósito de estas funciones — la reserva pública no requiere cuenta. Cada una valida su propia autorización internamente (coincidencia de teléfono para cancelar/consultar, validación de tenant/servicio/barbero para reservar) en vez de depender de `auth.uid()`.
+- `has_role`, `is_member_of`, `is_platform_admin`, `current_barber_id` ejecutables por `anon`: **necesario**, no un descuido. Estas funciones se usan dentro de políticas RLS de `SELECT` en `barbershops`/`services`/`barbers`/etc. Cuando una tabla tiene varias políticas permisivas de `SELECT`, Postgres debe evaluar todas para calcular el OR — no hay short-circuit — así que si `anon` no tiene `EXECUTE` sobre una función usada en CUALQUIER política aplicable, toda la consulta falla con "permission denied", aunque otra política de la misma tabla sí diera acceso. Es exactamente el bug corregido en la migración `0003_fix_anon_rls_helpers.sql` (el storefront público devolvía 404 a visitantes anónimos reales). Revocar esto lo reintroduciría.
+
+**No corregible desde aquí:**
+- `auth_leaked_password_protection`: toggle en Authentication → Policies del dashboard de Supabase (HaveIBeenPwned). No hay API para esto vía las herramientas MCP disponibles.
+
 ### SEO y pruebas automatizadas
 
 - **`sitemap.xml` dinámico** ([src/app/sitemap.ts](src/app/sitemap.ts)): lista la landing más cada barbería publicada (storefront + página de reserva), usando `updated_at` como `lastmod`. `robots.txt` ahora apunta a él. La URL base se resuelve en [src/lib/site-url.ts](src/lib/site-url.ts): `NEXT_PUBLIC_SITE_URL` si está definida, si no `VERCEL_PROJECT_PRODUCTION_URL` (inyectada automáticamente por Vercel, estable entre deployments a diferencia de `VERCEL_URL`), si no `localhost:3000`.
