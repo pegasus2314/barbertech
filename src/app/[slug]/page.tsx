@@ -73,12 +73,12 @@ export default async function StorefrontPage({ params }: { params: Promise<{ slu
       {/* Hero */}
       <section className="relative isolate overflow-hidden bg-[#111111] text-white">
         <div className="absolute inset-0">
-          {barbershop.cover_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={barbershop.cover_url} alt="" className="h-full w-full object-cover opacity-55" />
-          ) : (
-            <div className="h-full w-full bg-[radial-gradient(circle_at_75%_15%,rgba(199,161,90,0.32),transparent_34%),linear-gradient(135deg,#181818,#050505)]" />
-          )}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={barbershop.cover_url ?? "/barbershop-default-cover.jpg"}
+            alt=""
+            className="h-full w-full object-cover opacity-55"
+          />
           <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/35 to-black/90" />
         </div>
 

@@ -20,8 +20,8 @@ export const metadata: Metadata = {
   description: "Gestión y reservas en línea para barberías modernas.",
   manifest: "/manifest.json",
   icons: {
-    icon: "/icon.svg",
-    apple: "/icon.svg",
+    icon: "/icon.png",
+    apple: "/icon.png",
   },
 };
 
