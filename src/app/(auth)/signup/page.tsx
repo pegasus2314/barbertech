@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { isPasswordPwned } from "@/lib/security/pwned-password";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -18,6 +19,14 @@ export default function SignupPage() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
+    if (await isPasswordPwned(password)) {
+      setError(
+        "Esta contraseña apareció en filtraciones de datos conocidas. Por tu seguridad, elige otra.",
+      );
+      setLoading(false);
+      return;
+    }
 
     const supabase = createClient();
     const { data, error: signUpError } = await supabase.auth.signUp({
