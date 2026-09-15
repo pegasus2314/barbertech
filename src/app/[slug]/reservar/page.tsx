@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { BookingWizard } from "./wizard";
@@ -39,20 +40,26 @@ export default async function ReservarPage({
   ]);
 
   return (
-    <div className="min-h-screen bg-neutral-50 px-4 py-10">
-      <div className="mx-auto max-w-lg">
-        <div className="mb-6">
-          <p className="text-sm text-neutral-500">{barbershop.name}</p>
-          <h1 className="text-xl font-semibold text-neutral-900">Reservar cita</h1>
+    <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4 py-10">
+      <div className="w-full max-w-lg">
+        <Link
+          href={`/${slug}`}
+          className="text-sm text-neutral-400 hover:text-neutral-600"
+        >
+          ← {barbershop.name}
+        </Link>
+        <h1 className="mt-1 text-xl font-semibold text-neutral-900">Reservar cita</h1>
+
+        <div className="mt-6">
+          <BookingWizard
+            tenantId={barbershop.id}
+            tenantSlug={barbershop.slug}
+            timezone={barbershop.timezone}
+            services={services ?? []}
+            barbers={barbers ?? []}
+            barberServices={barberServices ?? []}
+          />
         </div>
-        <BookingWizard
-          tenantId={barbershop.id}
-          tenantSlug={barbershop.slug}
-          timezone={barbershop.timezone}
-          services={services ?? []}
-          barbers={barbers ?? []}
-          barberServices={barberServices ?? []}
-        />
       </div>
     </div>
   );

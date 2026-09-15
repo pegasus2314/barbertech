@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { LookupForm } from "./lookup-form";
@@ -20,13 +21,19 @@ export default async function MiCitaPage({
   if (!barbershop) notFound();
 
   return (
-    <div className="min-h-screen bg-neutral-50 px-4 py-10">
-      <div className="mx-auto max-w-lg">
-        <div className="mb-6">
-          <p className="text-sm text-neutral-500">{barbershop.name}</p>
-          <h1 className="text-xl font-semibold text-neutral-900">Consultar mi cita</h1>
+    <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4 py-10">
+      <div className="w-full max-w-lg">
+        <Link
+          href={`/${slug}`}
+          className="text-sm text-neutral-400 hover:text-neutral-600"
+        >
+          ← {barbershop.name}
+        </Link>
+        <h1 className="mt-1 text-xl font-semibold text-neutral-900">Consultar mi cita</h1>
+
+        <div className="mt-6">
+          <LookupForm tenantId={barbershop.id} timezone={barbershop.timezone} />
         </div>
-        <LookupForm tenantId={barbershop.id} timezone={barbershop.timezone} />
       </div>
     </div>
   );
