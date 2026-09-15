@@ -71,6 +71,26 @@ export function LogoCoverUploader({
     router.refresh();
   }
 
+  async function handleRemove(kind: "logo" | "cover") {
+    setError(null);
+    setUploading(kind);
+
+    const supabase = createClient();
+    const { error: updateError } = await supabase
+      .from("barbershops")
+      .update(kind === "logo" ? { logo_url: null } : { cover_url: null })
+      .eq("id", tenantId);
+
+    setUploading(null);
+
+    if (updateError) {
+      setError(updateError.message);
+      return;
+    }
+
+    router.refresh();
+  }
+
   return (
     <div className={`${CARD} p-5`}>
       <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Logo y portada</p>
@@ -91,13 +111,24 @@ export function LogoCoverUploader({
             className="hidden"
             onChange={(e) => handleUpload("logo", e.target.files?.[0])}
           />
-          <button
-            onClick={() => logoInput.current?.click()}
-            disabled={uploading !== null}
-            className="mt-2 text-xs font-semibold text-[#9d7837] hover:text-[#7f602d] disabled:opacity-50"
-          >
-            {uploading === "logo" ? "Subiendo..." : "Cambiar logo"}
-          </button>
+          <div className="mt-2 flex items-center gap-2">
+            <button
+              onClick={() => logoInput.current?.click()}
+              disabled={uploading !== null}
+              className="text-xs font-semibold text-[#9d7837] hover:text-[#7f602d] disabled:opacity-50"
+            >
+              {uploading === "logo" ? "Subiendo..." : "Cambiar logo"}
+            </button>
+            {logoUrl && (
+              <button
+                onClick={() => handleRemove("logo")}
+                disabled={uploading !== null}
+                className="text-xs font-medium text-neutral-400 hover:text-red-600 disabled:opacity-50"
+              >
+                Quitar
+              </button>
+            )}
+          </div>
         </div>
 
         <div>
@@ -116,13 +147,24 @@ export function LogoCoverUploader({
             className="hidden"
             onChange={(e) => handleUpload("cover", e.target.files?.[0])}
           />
-          <button
-            onClick={() => coverInput.current?.click()}
-            disabled={uploading !== null}
-            className="mt-2 text-xs font-semibold text-[#9d7837] hover:text-[#7f602d] disabled:opacity-50"
-          >
-            {uploading === "cover" ? "Subiendo..." : "Cambiar portada"}
-          </button>
+          <div className="mt-2 flex items-center gap-2">
+            <button
+              onClick={() => coverInput.current?.click()}
+              disabled={uploading !== null}
+              className="text-xs font-semibold text-[#9d7837] hover:text-[#7f602d] disabled:opacity-50"
+            >
+              {uploading === "cover" ? "Subiendo..." : "Cambiar portada"}
+            </button>
+            {coverUrl && (
+              <button
+                onClick={() => handleRemove("cover")}
+                disabled={uploading !== null}
+                className="text-xs font-medium text-neutral-400 hover:text-red-600 disabled:opacity-50"
+              >
+                Quitar
+              </button>
+            )}
+          </div>
         </div>
       </div>
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
