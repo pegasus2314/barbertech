@@ -3,7 +3,9 @@ import { ProfileForm } from "./profile-form";
 import { PublishToggle } from "./publish-toggle";
 import { GalleryUploader, LogoCoverUploader } from "./media-uploader";
 import { SubscriptionPaymentForm } from "./subscription-payment-form";
+import { BookingLinkCard } from "./booking-link-card";
 import { CARD } from "@/lib/ui";
+import { siteUrl } from "@/lib/site-url";
 
 const STATUS_LABELS: Record<string, string> = {
   trial: "Prueba",
@@ -47,17 +49,21 @@ export default async function SettingsPage({
     url: supabase.storage.from("barbershop-media").getPublicUrl(img.storage_path).data.publicUrl,
   }));
 
+  const base = siteUrl();
+
   return (
     <div className="space-y-6">
       <div>
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Negocio</p>
         <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Configuración</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Enlace público: <span className="font-mono text-neutral-700">barbertech.app/{barbershop.slug}</span>
-        </p>
       </div>
 
       <PublishToggle tenant={tenant} isPublished={barbershop.is_published} />
+
+      <BookingLinkCard
+        storefrontUrl={`${base}/${barbershop.slug}`}
+        bookingUrl={`${base}/${barbershop.slug}/reservar`}
+      />
 
       <ProfileForm
         tenant={tenant}
