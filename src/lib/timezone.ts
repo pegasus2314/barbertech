@@ -53,3 +53,15 @@ export function zonedDayBounds(timeZone: string, reference: Date = new Date()) {
     end: zonedTime(`${dateStr}T23:59:59.999`, timeZone),
   };
 }
+
+/** "Buenos días" / "Buenas tardes" / "Buenas noches", based on the current
+ * hour in `timeZone` — not the visiting browser's or server's own clock. */
+export function timeOfDayGreeting(timeZone: string, reference: Date = new Date()): string {
+  const hour = Number(
+    new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", hourCycle: "h23" }).format(reference),
+  );
+
+  if (hour < 12) return "Buenos días";
+  if (hour < 19) return "Buenas tardes";
+  return "Buenas noches";
+}

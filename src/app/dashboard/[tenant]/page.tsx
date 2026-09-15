@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getTenantContext } from "@/lib/tenant/get-tenant-context";
-import { zonedDayBounds } from "@/lib/timezone";
+import { zonedDayBounds, timeOfDayGreeting } from "@/lib/timezone";
 
 function formatMoney(cents: number) {
   return (cents / 100).toLocaleString("es-DO", { style: "currency", currency: "DOP" });
@@ -25,6 +25,7 @@ export default async function TenantDashboardHome({
   const { supabase, barbershop } = await getTenantContext(tenant);
 
   const { start: todayStart, end: todayEnd } = zonedDayBounds(barbershop.timezone);
+  const greeting = timeOfDayGreeting(barbershop.timezone);
 
   const [{ data: todaysAppointments }, { data: todaysPayments }] = await Promise.all([
     supabase
@@ -51,7 +52,7 @@ export default async function TenantDashboardHome({
       <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9d7837]">Panel de control</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-neutral-950">Buenos días 👋</h1>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-neutral-950">{greeting} 👋</h1>
           <p className="mt-2 text-sm text-neutral-500">
             Aquí tienes una vista rápida de lo que ocurre hoy en {barbershop.name}.
           </p>
