@@ -2,17 +2,20 @@ import Link from "next/link";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-[#f7f6f2] px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <Link
             href="/"
-            className="text-lg font-semibold tracking-tight text-neutral-900 hover:opacity-70"
+            className="inline-flex items-center gap-2 text-lg font-bold tracking-tight text-[#171717] hover:opacity-70"
           >
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#171717] text-xs font-black text-[#f5d89a]">
+              B
+            </span>
             BarberTech
           </Link>
         </div>
-        <div className="rounded-2xl border border-neutral-200 bg-white p-7 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_12px_32px_-16px_rgba(0,0,0,0.12)]">
+        <div className="rounded-2xl border border-[#e7e3da] bg-white p-7 shadow-[0_8px_30px_rgba(23,23,23,0.04)]">
           {children}
         </div>
       </div>

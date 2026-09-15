@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { requireUser } from "@/lib/auth/require-user";
 import { OnboardingWizard } from "./wizard";
 
@@ -21,12 +22,18 @@ export default async function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 px-4 py-10">
+    <div className="min-h-screen bg-[#f7f6f2] px-4 py-10">
       <div className="mx-auto max-w-lg">
         <div className="mb-8 text-center">
-          <span className="text-lg font-semibold tracking-tight text-neutral-900">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-lg font-bold tracking-tight text-[#171717] hover:opacity-70"
+          >
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#171717] text-xs font-black text-[#f5d89a]">
+              B
+            </span>
             BarberTech
-          </span>
+          </Link>
         </div>
         <OnboardingWizard />
       </div>

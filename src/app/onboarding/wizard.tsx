@@ -6,6 +6,11 @@ import { addBarber, addService, createBarbershop, publishBarbershop } from "./ac
 
 type Step = 1 | 2 | 3 | 4;
 
+const INPUT_CLASS =
+  "w-full rounded-xl border border-[#e7e3da] px-3.5 py-2.5 text-sm focus:border-[#c7a15a] focus:outline-none focus:ring-1 focus:ring-[#c7a15a]";
+const BUTTON_CLASS =
+  "w-full rounded-xl bg-[#171717] px-3 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:opacity-50";
+
 export function OnboardingWizard() {
   const router = useRouter();
   const [step, setStep] = useState<Step>(1);
@@ -105,20 +110,20 @@ export function OnboardingWizard() {
   }
 
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
+    <div className="rounded-2xl border border-[#e7e3da] bg-white p-6 shadow-[0_8px_30px_rgba(23,23,23,0.04)]">
       <ol className="mb-6 flex items-center gap-2 text-xs font-medium text-neutral-400">
         {(["Barbería", "Servicio", "Barbero", "Publicar"] as const).map((label, i) => {
           const n = (i + 1) as Step;
           return (
             <li key={label} className="flex items-center gap-2">
               <span
-                className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] ${
-                  n <= step ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-400"
+                className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-bold ${
+                  n <= step ? "bg-[#c7a15a] text-[#171717]" : "bg-neutral-100 text-neutral-400"
                 }`}
               >
                 {n}
               </span>
-              <span className={n <= step ? "text-neutral-900" : ""}>{label}</span>
+              <span className={n <= step ? "font-medium text-neutral-900" : ""}>{label}</span>
               {i < 3 && <span className="mx-1 text-neutral-300">—</span>}
             </li>
           );
@@ -128,7 +133,7 @@ export function OnboardingWizard() {
       {step === 1 && (
         <form onSubmit={handleCreateShop} className="space-y-4">
           <div>
-            <h2 className="text-base font-semibold text-neutral-900">
+            <h2 className="text-lg font-bold tracking-tight text-[#171717]">
               ¿Cómo se llama tu barbería?
             </h2>
             <p className="mt-1 text-sm text-neutral-500">
@@ -141,14 +146,10 @@ export function OnboardingWizard() {
             value={shopName}
             onChange={(e) => setShopName(e.target.value)}
             placeholder="Ej. Barber King"
-            className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+            className={INPUT_CLASS}
           />
           {error && <p className="text-sm text-red-600">{error}</p>}
-          <button
-            type="submit"
-            disabled={pending}
-            className="w-full rounded-lg bg-neutral-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-neutral-800 disabled:opacity-50"
-          >
+          <button type="submit" disabled={pending} className={BUTTON_CLASS}>
             {pending ? "Creando..." : "Continuar"}
           </button>
         </form>
@@ -157,7 +158,7 @@ export function OnboardingWizard() {
       {step === 2 && (
         <form onSubmit={handleAddService} className="space-y-4">
           <div>
-            <h2 className="text-base font-semibold text-neutral-900">Tu primer servicio</h2>
+            <h2 className="text-lg font-bold tracking-tight text-[#171717]">Tu primer servicio</h2>
             <p className="mt-1 text-sm text-neutral-500">
               Podrás agregar más servicios luego desde el panel.
             </p>
@@ -168,7 +169,7 @@ export function OnboardingWizard() {
             value={serviceName}
             onChange={(e) => setServiceName(e.target.value)}
             placeholder="Ej. Corte clásico"
-            className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+            className={INPUT_CLASS}
           />
           <div className="flex gap-3">
             <div className="flex-1">
@@ -180,7 +181,7 @@ export function OnboardingWizard() {
                 step="0.01"
                 value={servicePrice}
                 onChange={(e) => setServicePrice(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                className={`mt-1 ${INPUT_CLASS}`}
               />
             </div>
             <div className="flex-1">
@@ -192,16 +193,12 @@ export function OnboardingWizard() {
                 step="5"
                 value={serviceDuration}
                 onChange={(e) => setServiceDuration(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                className={`mt-1 ${INPUT_CLASS}`}
               />
             </div>
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
-          <button
-            type="submit"
-            disabled={pending}
-            className="w-full rounded-lg bg-neutral-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-neutral-800 disabled:opacity-50"
-          >
+          <button type="submit" disabled={pending} className={BUTTON_CLASS}>
             {pending ? "Guardando..." : "Continuar"}
           </button>
         </form>
@@ -210,7 +207,7 @@ export function OnboardingWizard() {
       {step === 3 && (
         <form onSubmit={handleAddBarber} className="space-y-4">
           <div>
-            <h2 className="text-base font-semibold text-neutral-900">Tu primer barbero</h2>
+            <h2 className="text-lg font-bold tracking-tight text-[#171717]">Tu primer barbero</h2>
             <p className="mt-1 text-sm text-neutral-500">
               Se le asignará el servicio que acabas de crear; puedes ajustar esto luego.
             </p>
@@ -221,14 +218,10 @@ export function OnboardingWizard() {
             value={barberName}
             onChange={(e) => setBarberName(e.target.value)}
             placeholder="Ej. Carlos"
-            className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+            className={INPUT_CLASS}
           />
           {error && <p className="text-sm text-red-600">{error}</p>}
-          <button
-            type="submit"
-            disabled={pending}
-            className="w-full rounded-lg bg-neutral-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-neutral-800 disabled:opacity-50"
-          >
+          <button type="submit" disabled={pending} className={BUTTON_CLASS}>
             {pending ? "Guardando..." : "Continuar"}
           </button>
         </form>
@@ -237,22 +230,17 @@ export function OnboardingWizard() {
       {step === 4 && slug && (
         <div className="space-y-4">
           <div>
-            <h2 className="text-base font-semibold text-neutral-900">Todo listo</h2>
+            <h2 className="text-lg font-bold tracking-tight text-[#171717]">Todo listo</h2>
             <p className="mt-1 text-sm text-neutral-500">
               Configuramos un horario general de lunes a sábado, 9:00 AM–7:00 PM (lo puedes
               cambiar desde el panel). Tu enlace público será:
             </p>
           </div>
-          <div className="rounded-lg bg-neutral-50 px-3 py-2 text-sm font-mono text-neutral-700">
+          <div className="rounded-xl bg-[#fffaf0] px-3.5 py-2.5 text-sm font-mono text-[#9d7837]">
             barbertech.app/{slug}
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
-          <button
-            type="button"
-            onClick={handlePublish}
-            disabled={pending}
-            className="w-full rounded-lg bg-neutral-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-neutral-800 disabled:opacity-50"
-          >
+          <button type="button" onClick={handlePublish} disabled={pending} className={BUTTON_CLASS}>
             {pending ? "Publicando..." : "Publicar barbería"}
           </button>
         </div>

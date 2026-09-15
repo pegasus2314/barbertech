@@ -20,6 +20,11 @@ function todayISO() {
   return d.toISOString().slice(0, 10);
 }
 
+const INPUT_CLASS =
+  "w-full rounded-xl border border-[#e7e3da] px-3.5 py-2.5 text-sm focus:border-[#c7a15a] focus:outline-none focus:ring-1 focus:ring-[#c7a15a]";
+const PRIMARY_BUTTON =
+  "w-full rounded-xl bg-[#171717] px-3 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:opacity-50";
+
 export function BookingWizard({
   tenantId,
   tenantSlug,
@@ -130,21 +135,21 @@ export function BookingWizard({
   }
 
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
+    <div className="rounded-2xl border border-[#e7e3da] bg-white p-6 shadow-[0_8px_30px_rgba(23,23,23,0.04)]">
       {step === 1 && (
         <div className="space-y-3">
-          <h2 className="text-base font-semibold text-neutral-900">Elige un servicio</h2>
+          <h2 className="text-lg font-bold tracking-tight text-[#171717]">Elige un servicio</h2>
           {services.map((s) => (
             <button
               key={s.id}
               onClick={() => pickService(s.id)}
-              className="flex w-full items-center justify-between rounded-lg border border-neutral-200 px-4 py-3 text-left hover:border-neutral-400"
+              className="flex w-full items-center justify-between rounded-xl border border-[#e7e3da] px-4 py-3.5 text-left transition hover:border-[#c7a15a] hover:bg-[#fffaf0]"
             >
               <span>
-                <span className="block text-sm font-medium text-neutral-900">{s.name}</span>
+                <span className="block text-sm font-semibold text-neutral-900">{s.name}</span>
                 <span className="block text-xs text-neutral-500">{s.duration_minutes} min</span>
               </span>
-              <span className="text-sm font-semibold text-neutral-900">
+              <span className="text-sm font-bold text-neutral-900">
                 {formatMoney(s.price_cents)}
               </span>
             </button>
@@ -159,21 +164,21 @@ export function BookingWizard({
         <div className="space-y-3">
           <button
             onClick={() => setStep(1)}
-            className="text-xs text-neutral-500 hover:text-neutral-900"
+            className="text-xs font-medium text-neutral-500 hover:text-neutral-900"
           >
             ← Cambiar servicio
           </button>
-          <h2 className="text-base font-semibold text-neutral-900">Elige un barbero</h2>
+          <h2 className="text-lg font-bold tracking-tight text-[#171717]">Elige un barbero</h2>
           {eligibleBarbers.map((b) => (
             <button
               key={b.id}
               onClick={() => pickBarber(b.id)}
-              className="flex w-full items-center gap-3 rounded-lg border border-neutral-200 px-4 py-3 text-left hover:border-neutral-400"
+              className="flex w-full items-center gap-3 rounded-xl border border-[#e7e3da] px-4 py-3.5 text-left transition hover:border-[#c7a15a] hover:bg-[#fffaf0]"
             >
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-neutral-100 text-sm font-semibold text-neutral-600">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f7f6f2] text-sm font-bold text-neutral-600">
                 {b.display_name.slice(0, 1).toUpperCase()}
               </span>
-              <span className="text-sm font-medium text-neutral-900">{b.display_name}</span>
+              <span className="text-sm font-semibold text-neutral-900">{b.display_name}</span>
             </button>
           ))}
           {eligibleBarbers.length === 0 && (
@@ -188,18 +193,18 @@ export function BookingWizard({
         <div className="space-y-4">
           <button
             onClick={() => setStep(2)}
-            className="text-xs text-neutral-500 hover:text-neutral-900"
+            className="text-xs font-medium text-neutral-500 hover:text-neutral-900"
           >
             ← Cambiar barbero
           </button>
-          <h2 className="text-base font-semibold text-neutral-900">Elige fecha y hora</h2>
+          <h2 className="text-lg font-bold tracking-tight text-[#171717]">Elige fecha y hora</h2>
 
           <input
             type="date"
             value={day}
             min={todayISO()}
             onChange={(e) => handleDayChange(e.target.value)}
-            className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+            className="rounded-xl border border-[#e7e3da] px-3.5 py-2.5 text-sm"
           />
 
           {pending && <p className="text-sm text-neutral-500">Buscando horarios...</p>}
@@ -221,10 +226,10 @@ export function BookingWizard({
                 <button
                   key={s}
                   onClick={() => setSlotStart(s)}
-                  className={`rounded-lg border px-2 py-2 text-sm transition ${
+                  className={`rounded-xl border px-2 py-2.5 text-sm font-medium transition ${
                     active
-                      ? "border-neutral-900 bg-neutral-900 text-white"
-                      : "border-neutral-300 text-neutral-700 hover:border-neutral-400"
+                      ? "border-[#171717] bg-[#171717] text-white"
+                      : "border-[#e7e3da] text-neutral-700 hover:border-[#c7a15a]"
                   }`}
                 >
                   {label}
@@ -233,11 +238,7 @@ export function BookingWizard({
             })}
           </div>
 
-          <button
-            onClick={confirmSlot}
-            disabled={!slotStart}
-            className="w-full rounded-lg bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
-          >
+          <button onClick={confirmSlot} disabled={!slotStart} className={PRIMARY_BUTTON}>
             Continuar
           </button>
         </div>
@@ -248,14 +249,16 @@ export function BookingWizard({
           <button
             type="button"
             onClick={() => setStep(3)}
-            className="text-xs text-neutral-500 hover:text-neutral-900"
+            className="text-xs font-medium text-neutral-500 hover:text-neutral-900"
           >
             ← Cambiar horario
           </button>
-          <h2 className="text-base font-semibold text-neutral-900">Tus datos</h2>
+          <h2 className="text-lg font-bold tracking-tight text-[#171717]">Tus datos</h2>
 
-          <div className="rounded-lg bg-neutral-50 p-3 text-sm text-neutral-600">
-            {selectedService?.name} con {selectedBarber?.display_name}
+          <div className="rounded-xl bg-[#fffaf0] p-3.5 text-sm text-[#7f602d]">
+            <span className="font-semibold">
+              {selectedService?.name} con {selectedBarber?.display_name}
+            </span>
             <br />
             {slotStart &&
               new Date(slotStart).toLocaleString("es-DO", {
@@ -273,7 +276,7 @@ export function BookingWizard({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Nombre completo"
-            className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+            className={INPUT_CLASS}
           />
           <input
             required
@@ -281,30 +284,26 @@ export function BookingWizard({
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="Teléfono"
-            className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+            className={INPUT_CLASS}
           />
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Correo (opcional)"
-            className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+            className={INPUT_CLASS}
           />
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Notas (opcional)"
             rows={2}
-            className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+            className={INPUT_CLASS}
           />
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 
-          <button
-            type="submit"
-            disabled={pending}
-            className="w-full rounded-lg bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
-          >
+          <button type="submit" disabled={pending} className={PRIMARY_BUTTON}>
             {pending ? "Confirmando..." : "Confirmar cita"}
           </button>
         </form>
@@ -312,13 +311,16 @@ export function BookingWizard({
 
       {step === 5 && (
         <div className="space-y-4 text-center">
-          <h2 className="text-base font-semibold text-neutral-900">¡Cita solicitada!</h2>
-          <p className="text-sm text-neutral-600">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff8e9] text-xl">
+            ✓
+          </div>
+          <h2 className="text-lg font-bold tracking-tight text-[#171717]">¡Cita solicitada!</h2>
+          <p className="text-sm text-neutral-500">
             Te esperamos. La barbería confirmará tu cita pronto.
           </p>
           <Link
             href={`/${tenantSlug}/mi-cita`}
-            className="inline-block rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+            className="inline-block rounded-xl bg-[#171717] px-5 py-2.5 text-sm font-semibold text-white hover:bg-neutral-800"
           >
             Consultar mi cita
           </Link>

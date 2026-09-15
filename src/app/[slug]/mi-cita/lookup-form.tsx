@@ -15,7 +15,7 @@ const STATUS_LABELS: Record<string, string> = {
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-amber-50 text-amber-700",
-  confirmed: "bg-green-50 text-green-700",
+  confirmed: "bg-emerald-50 text-emerald-700",
   in_progress: "bg-blue-50 text-blue-700",
   completed: "bg-neutral-100 text-neutral-600",
   cancelled: "bg-red-50 text-red-700",
@@ -58,12 +58,12 @@ export function LookupForm({ tenantId, timezone }: { tenantId: string; timezone:
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="Tu número de teléfono"
-          className="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+          className="flex-1 rounded-xl border border-[#e7e3da] px-3.5 py-2.5 text-sm focus:border-[#c7a15a] focus:outline-none focus:ring-1 focus:ring-[#c7a15a]"
         />
         <button
           type="submit"
           disabled={pending}
-          className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+          className="rounded-xl bg-[#171717] px-5 py-2.5 text-sm font-semibold text-white hover:bg-neutral-800 disabled:opacity-50"
         >
           Buscar
         </button>
@@ -78,14 +78,17 @@ export function LookupForm({ tenantId, timezone }: { tenantId: string; timezone:
       {result && result.ok && result.appointments.length > 0 && (
         <div className="space-y-3">
           {result.appointments.map((a) => (
-            <div key={a.id} className="rounded-xl border border-neutral-200 bg-white p-4">
+            <div
+              key={a.id}
+              className="rounded-2xl border border-[#e7e3da] bg-white p-4 shadow-[0_8px_30px_rgba(23,23,23,0.04)]"
+            >
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <p className="text-sm font-medium text-neutral-900">{a.service_name}</p>
+                  <p className="text-sm font-semibold text-neutral-900">{a.service_name}</p>
                   <p className="text-xs text-neutral-500">con {a.barber_name}</p>
                 </div>
                 <span
-                  className={`rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_COLORS[a.status] ?? "bg-neutral-100 text-neutral-600"}`}
+                  className={`rounded-full px-2.5 py-1 text-xs font-semibold ${STATUS_COLORS[a.status] ?? "bg-neutral-100 text-neutral-600"}`}
                 >
                   {STATUS_LABELS[a.status] ?? a.status}
                 </span>
@@ -106,7 +109,7 @@ export function LookupForm({ tenantId, timezone }: { tenantId: string; timezone:
                 <button
                   onClick={() => handleCancel(a.id)}
                   disabled={pending}
-                  className="mt-3 text-xs font-medium text-red-600 hover:underline disabled:opacity-50"
+                  className="mt-3 text-xs font-semibold text-red-600 hover:underline disabled:opacity-50"
                 >
                   Cancelar cita
                 </button>

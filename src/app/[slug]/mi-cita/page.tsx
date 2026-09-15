@@ -21,15 +21,14 @@ export default async function MiCitaPage({
   if (!barbershop) notFound();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4 py-10">
+    <div className="flex min-h-screen items-center justify-center bg-[#f7f6f2] px-4 py-10">
       <div className="w-full max-w-lg">
-        <Link
-          href={`/${slug}`}
-          className="text-sm text-neutral-400 hover:text-neutral-600"
-        >
+        <Link href={`/${slug}`} className="text-sm text-neutral-400 hover:text-neutral-600">
           ← {barbershop.name}
         </Link>
-        <h1 className="mt-1 text-xl font-semibold text-neutral-900">Consultar mi cita</h1>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight text-[#171717]">
+          Consultar mi cita
+        </h1>
 
         <div className="mt-6">
           <LookupForm tenantId={barbershop.id} timezone={barbershop.timezone} />

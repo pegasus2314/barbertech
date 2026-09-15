@@ -44,10 +44,13 @@ export default function SignupPage() {
   if (checkEmail) {
     return (
       <div className="text-center">
-        <h1 className="text-lg font-semibold text-neutral-900">Revisa tu correo</h1>
-        <p className="mt-2 text-sm text-neutral-600">
-          Te enviamos un enlace de confirmación a <strong>{email}</strong>. Ábrelo
-          para activar tu cuenta.
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff8e9] text-xl">
+          ✉️
+        </div>
+        <h1 className="mt-4 text-xl font-bold tracking-tight text-[#171717]">Revisa tu correo</h1>
+        <p className="mt-2 text-sm leading-relaxed text-neutral-500">
+          Te enviamos un enlace de confirmación a <strong className="text-neutral-800">{email}</strong>.
+          Ábrelo para activar tu cuenta.
         </p>
       </div>
     );
@@ -55,7 +58,7 @@ export default function SignupPage() {
 
   return (
     <>
-      <h1 className="text-lg font-semibold text-neutral-900">Crea tu cuenta</h1>
+      <h1 className="text-xl font-bold tracking-tight text-[#171717]">Crea tu cuenta</h1>
       <p className="mt-1 text-sm text-neutral-500">
         Empieza a gestionar tu barbería en minutos.
       </p>
@@ -71,7 +74,7 @@ export default function SignupPage() {
             required
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+            className="mt-1 w-full rounded-xl border border-[#e7e3da] px-3.5 py-2.5 text-sm focus:border-[#c7a15a] focus:outline-none focus:ring-1 focus:ring-[#c7a15a]"
           />
         </div>
         <div>
@@ -84,7 +87,7 @@ export default function SignupPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+            className="mt-1 w-full rounded-xl border border-[#e7e3da] px-3.5 py-2.5 text-sm focus:border-[#c7a15a] focus:outline-none focus:ring-1 focus:ring-[#c7a15a]"
           />
         </div>
         <div>
@@ -98,7 +101,7 @@ export default function SignupPage() {
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+            className="mt-1 w-full rounded-xl border border-[#e7e3da] px-3.5 py-2.5 text-sm focus:border-[#c7a15a] focus:outline-none focus:ring-1 focus:ring-[#c7a15a]"
           />
         </div>
 
@@ -107,7 +110,7 @@ export default function SignupPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-neutral-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-neutral-800 disabled:opacity-50"
+          className="w-full rounded-xl bg-[#171717] px-3 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:opacity-50"
         >
           {loading ? "Creando cuenta..." : "Crear cuenta"}
         </button>
@@ -115,7 +118,7 @@ export default function SignupPage() {
 
       <p className="mt-6 text-center text-sm text-neutral-500">
         ¿Ya tienes cuenta?{" "}
-        <Link href="/login" className="font-medium text-neutral-900 hover:underline">
+        <Link href="/login" className="font-semibold text-[#9d7837] hover:text-[#7f602d]">
           Inicia sesión
         </Link>
       </p>

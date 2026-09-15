@@ -36,7 +36,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <h1 className="text-lg font-semibold text-neutral-900">Inicia sesión</h1>
+      <h1 className="text-xl font-bold tracking-tight text-[#171717]">Inicia sesión</h1>
       <p className="mt-1 text-sm text-neutral-500">Accede al panel de tu barbería.</p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
@@ -50,7 +50,7 @@ export default function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+            className="mt-1 w-full rounded-xl border border-[#e7e3da] px-3.5 py-2.5 text-sm focus:border-[#c7a15a] focus:outline-none focus:ring-1 focus:ring-[#c7a15a]"
           />
         </div>
         <div>
@@ -63,7 +63,7 @@ export default function LoginPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+            className="mt-1 w-full rounded-xl border border-[#e7e3da] px-3.5 py-2.5 text-sm focus:border-[#c7a15a] focus:outline-none focus:ring-1 focus:ring-[#c7a15a]"
           />
         </div>
 
@@ -72,7 +72,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-neutral-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-neutral-800 disabled:opacity-50"
+          className="w-full rounded-xl bg-[#171717] px-3 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:opacity-50"
         >
           {loading ? "Entrando..." : "Entrar"}
         </button>
@@ -80,7 +80,7 @@ export default function LoginPage() {
 
       <p className="mt-6 text-center text-sm text-neutral-500">
         ¿No tienes cuenta?{" "}
-        <Link href="/signup" className="font-medium text-neutral-900 hover:underline">
+        <Link href="/signup" className="font-semibold text-[#9d7837] hover:text-[#7f602d]">
           Regístrate
         </Link>
       </p>
