@@ -32,7 +32,8 @@ export default async function HoursPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-neutral-900">Horarios</h1>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Disponibilidad</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Horarios</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Este es el horario general de la barbería. Cada barbero podrá tener su propio
           horario individual más adelante.

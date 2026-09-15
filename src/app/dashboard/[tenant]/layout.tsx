@@ -28,7 +28,7 @@ export default async function TenantDashboardLayout({
         </div>
         <DashboardNav tenant={tenant} />
         <div className="mt-auto border-t border-white/10 px-5 py-5">
-          <SignOutButton />
+          <SignOutButton variant="dark" />
         </div>
       </aside>
 

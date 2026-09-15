@@ -1,6 +1,7 @@
 import { getTenantContext } from "@/lib/tenant/get-tenant-context";
 import { PaymentForm } from "./payment-form";
 import { PaymentRow } from "./payment-row";
+import { CARD } from "@/lib/ui";
 
 function formatMoney(cents: number) {
   return (cents / 100).toLocaleString("es-DO", { style: "currency", currency: "DOP" });
@@ -16,7 +17,7 @@ export default async function FinancesPage({
 
   if (!canManage) {
     return (
-      <div className="rounded-xl border border-neutral-200 bg-white px-4 py-6 text-sm text-neutral-500">
+      <div className={`${CARD} px-4 py-6 text-sm text-neutral-500`}>
         No tienes acceso a esta sección.
       </div>
     );
@@ -48,16 +49,17 @@ export default async function FinancesPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-neutral-900">Finanzas</h1>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Dinero</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Finanzas</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Registro manual de pagos (efectivo o transferencia). El historial no se borra: anular
           crea un nuevo estado, no elimina el registro.
         </p>
       </div>
 
-      <div className="rounded-xl border border-neutral-200 bg-white p-4">
-        <p className="text-2xl font-semibold text-neutral-900">{formatMoney(todayTotal)}</p>
-        <p className="text-xs text-neutral-500">Ingresos de hoy</p>
+      <div className={`${CARD} border-[#171717] bg-[#171717] p-5 text-white`}>
+        <p className="text-2xl font-bold tracking-tight">{formatMoney(todayTotal)}</p>
+        <p className="text-xs text-white/55">Ingresos de hoy</p>
       </div>
 
       <PaymentForm tenant={tenant} appointments={recentAppointments ?? []} />
@@ -66,7 +68,7 @@ export default async function FinancesPage({
         {payments && payments.length > 0 ? (
           payments.map((p) => <PaymentRow key={p.id} tenant={tenant} payment={p} />)
         ) : (
-          <p className="rounded-xl border border-neutral-200 bg-white px-4 py-6 text-sm text-neutral-500">
+          <p className="rounded-2xl border border-dashed border-[#d8d1c3] bg-white px-4 py-8 text-center text-sm text-neutral-500">
             Aún no hay pagos registrados.
           </p>
         )}

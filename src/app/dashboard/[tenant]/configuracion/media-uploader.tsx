@@ -4,6 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { deleteGalleryImage } from "./actions";
+import { CARD } from "@/lib/ui";
 
 const MAX_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
@@ -71,11 +72,11 @@ export function LogoCoverUploader({
   }
 
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-4">
-      <p className="text-sm font-semibold text-neutral-900">Logo y portada</p>
-      <div className="mt-3 flex flex-wrap gap-6">
+    <div className={`${CARD} p-5`}>
+      <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Logo y portada</p>
+      <div className="mt-4 flex flex-wrap gap-6">
         <div>
-          <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl bg-neutral-100">
+          <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl bg-[#f7f6f2]">
             {logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={logoUrl} alt="Logo" className="h-full w-full object-cover" />
@@ -93,14 +94,14 @@ export function LogoCoverUploader({
           <button
             onClick={() => logoInput.current?.click()}
             disabled={uploading !== null}
-            className="mt-2 text-xs font-medium text-neutral-600 hover:text-neutral-900 disabled:opacity-50"
+            className="mt-2 text-xs font-semibold text-[#9d7837] hover:text-[#7f602d] disabled:opacity-50"
           >
             {uploading === "logo" ? "Subiendo..." : "Cambiar logo"}
           </button>
         </div>
 
         <div>
-          <div className="flex h-16 w-28 items-center justify-center overflow-hidden rounded-xl bg-neutral-100">
+          <div className="flex h-16 w-28 items-center justify-center overflow-hidden rounded-xl bg-[#f7f6f2]">
             {coverUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={coverUrl} alt="Portada" className="h-full w-full object-cover" />
@@ -118,7 +119,7 @@ export function LogoCoverUploader({
           <button
             onClick={() => coverInput.current?.click()}
             disabled={uploading !== null}
-            className="mt-2 text-xs font-medium text-neutral-600 hover:text-neutral-900 disabled:opacity-50"
+            className="mt-2 text-xs font-semibold text-[#9d7837] hover:text-[#7f602d] disabled:opacity-50"
           >
             {uploading === "cover" ? "Subiendo..." : "Cambiar portada"}
           </button>
@@ -192,9 +193,9 @@ export function GalleryUploader({
   }
 
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-4">
+    <div className={`${CARD} p-5`}>
       <div className="flex items-center justify-between">
-        <p className="text-sm font-semibold text-neutral-900">Galería</p>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Galería</p>
         <input
           ref={fileInput}
           type="file"
@@ -205,7 +206,7 @@ export function GalleryUploader({
         <button
           onClick={() => fileInput.current?.click()}
           disabled={uploading}
-          className="text-xs font-medium text-neutral-600 hover:text-neutral-900 disabled:opacity-50"
+          className="text-xs font-semibold text-[#9d7837] hover:text-[#7f602d] disabled:opacity-50"
         >
           {uploading ? "Subiendo..." : "+ Agregar imagen"}
         </button>
@@ -213,9 +214,9 @@ export function GalleryUploader({
 
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
 
-      <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4">
+      <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4">
         {images.map((img) => (
-          <div key={img.id} className="group relative aspect-square overflow-hidden rounded-lg bg-neutral-100">
+          <div key={img.id} className="group relative aspect-square overflow-hidden rounded-xl bg-[#f7f6f2]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={img.url} alt="" className="h-full w-full object-cover" />
             <button

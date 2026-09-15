@@ -3,6 +3,7 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { voidPayment } from "./actions";
+import { CARD } from "@/lib/ui";
 
 type Payment = {
   id: string;
@@ -30,9 +31,9 @@ export function PaymentRow({ tenant, payment }: { tenant: string; payment: Payme
   }
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border border-neutral-200 bg-white p-4">
+    <div className={`flex items-center justify-between gap-3 ${CARD} p-4`}>
       <div>
-        <p className="text-sm font-medium text-neutral-900">
+        <p className="text-sm font-semibold text-neutral-900">
           {formatMoney(payment.amount_cents)}{" "}
           <span className="font-normal text-neutral-500">
             · {payment.method === "cash" ? "Efectivo" : "Transferencia"}
@@ -52,7 +53,7 @@ export function PaymentRow({ tenant, payment }: { tenant: string; payment: Payme
         <button
           onClick={handleVoid}
           disabled={pending}
-          className="text-xs font-medium text-red-600 hover:underline disabled:opacity-50"
+          className="text-xs font-semibold text-red-600 hover:underline disabled:opacity-50"
         >
           Anular
         </button>

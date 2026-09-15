@@ -3,6 +3,7 @@ import { ProfileForm } from "./profile-form";
 import { PublishToggle } from "./publish-toggle";
 import { GalleryUploader, LogoCoverUploader } from "./media-uploader";
 import { SubscriptionPaymentForm } from "./subscription-payment-form";
+import { CARD } from "@/lib/ui";
 
 const STATUS_LABELS: Record<string, string> = {
   trial: "Prueba",
@@ -22,7 +23,7 @@ export default async function SettingsPage({
 
   if (!canManage) {
     return (
-      <div className="rounded-xl border border-neutral-200 bg-white px-4 py-6 text-sm text-neutral-500">
+      <div className={`${CARD} px-4 py-6 text-sm text-neutral-500`}>
         No tienes acceso a esta sección.
       </div>
     );
@@ -49,9 +50,10 @@ export default async function SettingsPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-neutral-900">Configuración</h1>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Negocio</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Configuración</h1>
         <p className="mt-1 text-sm text-neutral-500">
-          Enlace público: <span className="font-mono">barbertech.app/{barbershop.slug}</span>
+          Enlace público: <span className="font-mono text-neutral-700">barbertech.app/{barbershop.slug}</span>
         </p>
       </div>
 
@@ -76,16 +78,16 @@ export default async function SettingsPage({
 
       <GalleryUploader tenant={tenant} tenantId={barbershop.id} images={images} />
 
-      <div className="rounded-xl border border-neutral-200 bg-white p-4">
-        <p className="text-sm font-semibold text-neutral-900">Suscripción</p>
+      <div className={`${CARD} p-5`}>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Suscripción</p>
         {subscription ? (
-          <div className="mt-2 text-sm text-neutral-600">
+          <div className="mt-3 text-sm text-neutral-600">
             <p>
-              Plan: <span className="font-medium text-neutral-900">{subscription.plans?.name}</span>
+              Plan: <span className="font-semibold text-neutral-900">{subscription.plans?.name}</span>
             </p>
             <p>
               Estado:{" "}
-              <span className="font-medium text-neutral-900">
+              <span className="font-semibold text-neutral-900">
                 {STATUS_LABELS[subscription.status] ?? subscription.status}
               </span>
             </p>
@@ -97,9 +99,9 @@ export default async function SettingsPage({
             )}
           </div>
         ) : (
-          <p className="mt-2 text-sm text-neutral-500">Sin suscripción registrada.</p>
+          <p className="mt-3 text-sm text-neutral-500">Sin suscripción registrada.</p>
         )}
-        <div className="mt-3 border-t border-neutral-100 pt-3">
+        <div className="mt-4 border-t border-[#eeeae2] pt-4">
           <SubscriptionPaymentForm tenant={tenant} />
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { updateBusinessHours } from "./actions";
+import { BUTTON_PRIMARY, CARD } from "@/lib/ui";
 
 type Row = {
   weekday: number;
@@ -52,11 +53,11 @@ export function HoursForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-xl border border-neutral-200 bg-white p-4">
-      <div className="divide-y divide-neutral-100">
+    <form onSubmit={handleSubmit} className={`${CARD} p-5`}>
+      <div className="divide-y divide-[#eeeae2]">
         {rows.map((row) => (
           <div key={row.weekday} className="flex flex-wrap items-center gap-3 py-3">
-            <span className="w-24 text-sm font-medium text-neutral-900">{row.label}</span>
+            <span className="w-24 text-sm font-semibold text-neutral-900">{row.label}</span>
 
             <label className="flex items-center gap-2 text-xs text-neutral-500">
               <input
@@ -64,6 +65,7 @@ export function HoursForm({
                 checked={!row.isClosed}
                 disabled={readOnly}
                 onChange={(e) => updateRow(row.weekday, { isClosed: !e.target.checked })}
+                className="accent-[#c7a15a]"
               />
               Abierto
             </label>
@@ -75,7 +77,7 @@ export function HoursForm({
                   value={row.openTime}
                   disabled={readOnly}
                   onChange={(e) => updateRow(row.weekday, { openTime: e.target.value })}
-                  className="rounded-lg border border-neutral-300 px-2 py-1 text-sm"
+                  className="rounded-lg border border-[#e7e3da] px-2 py-1 text-sm"
                 />
                 <span className="text-neutral-400">—</span>
                 <input
@@ -83,7 +85,7 @@ export function HoursForm({
                   value={row.closeTime}
                   disabled={readOnly}
                   onChange={(e) => updateRow(row.weekday, { closeTime: e.target.value })}
-                  className="rounded-lg border border-neutral-300 px-2 py-1 text-sm"
+                  className="rounded-lg border border-[#e7e3da] px-2 py-1 text-sm"
                 />
               </>
             )}
@@ -93,14 +95,10 @@ export function HoursForm({
 
       {!readOnly && (
         <div className="mt-4 flex items-center gap-3">
-          <button
-            type="submit"
-            disabled={pending}
-            className="rounded-lg bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
-          >
+          <button type="submit" disabled={pending} className={BUTTON_PRIMARY}>
             {pending ? "Guardando..." : "Guardar horarios"}
           </button>
-          {saved && <span className="text-sm text-green-700">Guardado</span>}
+          {saved && <span className="text-sm font-medium text-emerald-700">Guardado</span>}
           {error && <span className="text-sm text-red-600">{error}</span>}
         </div>
       )}
