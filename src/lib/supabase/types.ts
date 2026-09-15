@@ -884,6 +884,10 @@ export type Database = {
         Args: { p_appointment_id: string; p_phone: string }
         Returns: boolean
       }
+      cleanup_test_barbershop: {
+        Args: { p_tenant_id: string }
+        Returns: undefined
+      }
       create_barbershop_with_owner: {
         Args: { p_base_slug: string; p_name: string }
         Returns: Json
