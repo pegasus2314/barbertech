@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "./actions";
+import { BUTTON_GHOST, BUTTON_PRIMARY, BUTTON_SECONDARY, CARD, INPUT } from "@/lib/ui";
 
 export function ClientForm({ tenant }: { tenant: string }) {
   const router = useRouter();
@@ -15,10 +16,7 @@ export function ClientForm({ tenant }: { tenant: string }) {
 
   if (!open) {
     return (
-      <button
-        onClick={() => setOpen(true)}
-        className="rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
-      >
+      <button onClick={() => setOpen(true)} className={BUTTON_SECONDARY}>
         + Nuevo cliente
       </button>
     );
@@ -48,47 +46,36 @@ export function ClientForm({ tenant }: { tenant: string }) {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-3 rounded-xl border border-neutral-200 bg-white p-4"
-    >
+    <form onSubmit={handleSubmit} className={`space-y-3 ${CARD} p-4`}>
       <div className="flex flex-wrap gap-3">
         <input
           autoFocus
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
           placeholder="Nombre completo"
-          className="min-w-[10rem] flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+          className={`min-w-[10rem] flex-1 ${INPUT}`}
         />
         <input
           type="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="Teléfono"
-          className="w-40 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+          className={`w-40 ${INPUT}`}
         />
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Correo (opcional)"
-          className="w-48 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+          className={`w-48 ${INPUT}`}
         />
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="flex gap-2">
-        <button
-          type="submit"
-          disabled={pending}
-          className="rounded-lg bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
-        >
+        <button type="submit" disabled={pending} className={BUTTON_PRIMARY}>
           {pending ? "Guardando..." : "Guardar"}
         </button>
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          className="rounded-lg px-3 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-900"
-        >
+        <button type="button" onClick={() => setOpen(false)} className={BUTTON_GHOST}>
           Cancelar
         </button>
       </div>

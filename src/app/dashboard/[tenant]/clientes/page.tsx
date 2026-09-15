@@ -19,7 +19,8 @@ export default async function ClientsPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-neutral-900">Clientes</h1>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">CRM</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Clientes</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Se crean automáticamente cuando reservan una cita, o puedes agregarlos aquí.
         </p>
@@ -31,7 +32,7 @@ export default async function ClientsPage({
         {clients && clients.length > 0 ? (
           clients.map((c) => <ClientRow key={c.id} tenant={tenant} client={c} canManage={canManage} />)
         ) : (
-          <p className="rounded-xl border border-neutral-200 bg-white px-4 py-6 text-sm text-neutral-500">
+          <p className="rounded-2xl border border-dashed border-[#d8d1c3] bg-white px-4 py-8 text-center text-sm text-neutral-500">
             Aún no hay clientes.
           </p>
         )}

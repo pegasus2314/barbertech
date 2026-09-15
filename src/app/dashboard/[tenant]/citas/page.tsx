@@ -61,7 +61,8 @@ export default async function AppointmentsPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-neutral-900">Citas</h1>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Agenda</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Citas</h1>
         <p className="mt-1 text-sm text-neutral-500">
           {role === "barber" ? "Tus citas asignadas." : "Todas las citas de la barbería."}
         </p>
@@ -76,14 +77,14 @@ export default async function AppointmentsPage({
         />
       )}
 
-      <div className="flex gap-1">
+      <div className="flex gap-1 rounded-xl border border-[#e7e3da] bg-white p-1 sm:inline-flex">
         {tabs.map((t) => (
           <a
             key={t.key}
             href={`?view=${t.key}`}
-            className={`rounded-lg px-3 py-1.5 text-sm font-medium ${
+            className={`rounded-lg px-3.5 py-1.5 text-sm font-medium transition ${
               view === t.key
-                ? "bg-neutral-900 text-white"
+                ? "bg-[#171717] text-white"
                 : "text-neutral-600 hover:bg-neutral-100"
             }`}
           >
@@ -103,7 +104,7 @@ export default async function AppointmentsPage({
             />
           ))
         ) : (
-          <p className="rounded-xl border border-neutral-200 bg-white px-4 py-6 text-sm text-neutral-500">
+          <p className="rounded-2xl border border-dashed border-[#d8d1c3] bg-white px-4 py-8 text-center text-sm text-neutral-500">
             No hay citas en este rango.
           </p>
         )}

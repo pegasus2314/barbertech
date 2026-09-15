@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { Tables } from "@/lib/supabase/types";
 import { setBarberServices, toggleBarberActive } from "./actions";
+import { CARD, PILL_ACTIVE, PILL_INACTIVE } from "@/lib/ui";
 
 export function BarberRow({
   tenant,
@@ -38,17 +39,20 @@ export function BarberRow({
   }
 
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-4">
+    <div className={`${CARD} p-4`}>
       <div className="flex items-center justify-between gap-4">
-        <p className="text-sm font-medium text-neutral-900">{barber.display_name}</p>
+        <div className="flex items-center gap-3">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f7f6f2] text-sm font-bold text-neutral-600">
+            {barber.display_name.slice(0, 1).toUpperCase()}
+          </span>
+          <p className="text-sm font-semibold text-neutral-900">{barber.display_name}</p>
+        </div>
         {canManage && (
           <button
             onClick={handleToggleActive}
             disabled={pending}
-            className={`rounded-full px-3 py-1 text-xs font-medium transition disabled:opacity-50 ${
-              barber.is_active
-                ? "bg-green-50 text-green-700 hover:bg-green-100"
-                : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200"
+            className={`rounded-full px-3 py-1 text-xs font-semibold transition disabled:opacity-50 ${
+              barber.is_active ? `${PILL_ACTIVE} hover:bg-emerald-100` : `${PILL_INACTIVE} hover:bg-neutral-200`
             }`}
           >
             {barber.is_active ? "Activo" : "Inactivo"}
@@ -65,8 +69,8 @@ export function BarberRow({
               disabled={pending}
               className={`rounded-full border px-3 py-1 text-xs font-medium transition disabled:opacity-50 ${
                 selected.includes(service.id)
-                  ? "border-neutral-900 bg-neutral-900 text-white"
-                  : "border-neutral-300 text-neutral-600 hover:border-neutral-400"
+                  ? "border-[#171717] bg-[#171717] text-white"
+                  : "border-[#e7e3da] text-neutral-600 hover:border-[#c7a15a]"
               }`}
             >
               {service.name}

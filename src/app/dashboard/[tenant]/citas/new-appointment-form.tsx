@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createManualAppointment, getSlotsForManualBooking } from "./actions";
+import { BUTTON_GHOST, BUTTON_PRIMARY, BUTTON_SECONDARY, CARD, INPUT } from "@/lib/ui";
 
 type Service = { id: string; name: string; duration_minutes: number };
 type Barber = { id: string; display_name: string };
@@ -38,10 +39,7 @@ export function NewAppointmentForm({
 
   if (!open) {
     return (
-      <button
-        onClick={() => setOpen(true)}
-        className="rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
-      >
+      <button onClick={() => setOpen(true)} className={BUTTON_SECONDARY}>
         + Nueva cita
       </button>
     );
@@ -104,15 +102,12 @@ export function NewAppointmentForm({
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-3 rounded-xl border border-neutral-200 bg-white p-4"
-    >
+    <form onSubmit={handleSubmit} className={`space-y-3 ${CARD} p-4`}>
       <div className="flex flex-wrap gap-3">
         <select
           value={serviceId}
           onChange={(e) => handleServiceChange(e.target.value)}
-          className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+          className={INPUT}
         >
           <option value="">Servicio</option>
           {services.map((s) => (
@@ -124,7 +119,7 @@ export function NewAppointmentForm({
         <select
           value={barberId}
           onChange={(e) => handleBarberChange(e.target.value)}
-          className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+          className={INPUT}
         >
           <option value="">Barbero</option>
           {barbers.map((b) => (
@@ -138,7 +133,7 @@ export function NewAppointmentForm({
           value={day}
           min={todayISO()}
           onChange={(e) => handleDayChange(e.target.value)}
-          className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+          className={INPUT}
         />
       </div>
 
@@ -155,10 +150,10 @@ export function NewAppointmentForm({
                 type="button"
                 key={s}
                 onClick={() => setSlotStart(s)}
-                className={`rounded-lg border px-3 py-1.5 text-sm ${
+                className={`rounded-xl border px-3 py-1.5 text-sm font-medium transition ${
                   slotStart === s
-                    ? "border-neutral-900 bg-neutral-900 text-white"
-                    : "border-neutral-300 text-neutral-700 hover:border-neutral-400"
+                    ? "border-[#171717] bg-[#171717] text-white"
+                    : "border-[#e7e3da] text-neutral-700 hover:border-[#c7a15a]"
                 }`}
               >
                 {label}
@@ -173,32 +168,24 @@ export function NewAppointmentForm({
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Nombre del cliente"
-          className="min-w-[10rem] flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+          className={`min-w-[10rem] flex-1 ${INPUT}`}
         />
         <input
           type="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="Teléfono"
-          className="w-40 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+          className={`w-40 ${INPUT}`}
         />
       </div>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 
       <div className="flex gap-2">
-        <button
-          type="submit"
-          disabled={pending}
-          className="rounded-lg bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
-        >
+        <button type="submit" disabled={pending} className={BUTTON_PRIMARY}>
           {pending ? "Guardando..." : "Crear cita"}
         </button>
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          className="rounded-lg px-3 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-900"
-        >
+        <button type="button" onClick={() => setOpen(false)} className={BUTTON_GHOST}>
           Cancelar
         </button>
       </div>

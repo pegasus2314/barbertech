@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createBarber } from "./actions";
+import { BUTTON_GHOST, BUTTON_PRIMARY, BUTTON_SECONDARY, CARD, INPUT } from "@/lib/ui";
 
 export function BarberForm({
   tenant,
@@ -20,10 +21,7 @@ export function BarberForm({
 
   if (!open) {
     return (
-      <button
-        onClick={() => setOpen(true)}
-        className="rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
-      >
+      <button onClick={() => setOpen(true)} className={BUTTON_SECONDARY}>
         + Nuevo barbero
       </button>
     );
@@ -56,17 +54,14 @@ export function BarberForm({
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-3 rounded-xl border border-neutral-200 bg-white p-4"
-    >
+    <form onSubmit={handleSubmit} className={`space-y-3 ${CARD} p-4`}>
       <input
         autoFocus
         required
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Nombre del barbero"
-        className="w-full max-w-sm rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+        className={`w-full max-w-sm ${INPUT}`}
       />
 
       {services.length > 0 && (
@@ -80,8 +75,8 @@ export function BarberForm({
                 onClick={() => toggleService(service.id)}
                 className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
                   selected.includes(service.id)
-                    ? "border-neutral-900 bg-neutral-900 text-white"
-                    : "border-neutral-300 text-neutral-600 hover:border-neutral-400"
+                    ? "border-[#171717] bg-[#171717] text-white"
+                    : "border-[#e7e3da] text-neutral-600 hover:border-[#c7a15a]"
                 }`}
               >
                 {service.name}
@@ -93,18 +88,10 @@ export function BarberForm({
 
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="flex gap-2">
-        <button
-          type="submit"
-          disabled={pending}
-          className="rounded-lg bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
-        >
+        <button type="submit" disabled={pending} className={BUTTON_PRIMARY}>
           {pending ? "Guardando..." : "Guardar"}
         </button>
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          className="rounded-lg px-3 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-900"
-        >
+        <button type="button" onClick={() => setOpen(false)} className={BUTTON_GHOST}>
           Cancelar
         </button>
       </div>

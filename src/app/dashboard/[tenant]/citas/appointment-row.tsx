@@ -17,7 +17,7 @@ const STATUS_LABELS: Record<string, string> = {
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-amber-50 text-amber-700",
-  confirmed: "bg-green-50 text-green-700",
+  confirmed: "bg-emerald-50 text-emerald-700",
   in_progress: "bg-blue-50 text-blue-700",
   completed: "bg-neutral-100 text-neutral-600",
   cancelled: "bg-red-50 text-red-700",
@@ -60,16 +60,16 @@ export function AppointmentRow({
   }
 
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-4">
+    <div className="rounded-2xl border border-[#e7e3da] bg-white p-4 shadow-[0_8px_30px_rgba(23,23,23,0.04)]">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-neutral-900">
+          <p className="text-sm font-semibold text-neutral-900">
             {appointment.clients?.full_name ?? "Cliente"}
           </p>
           <p className="text-xs text-neutral-500">{appointment.clients?.phone}</p>
         </div>
         <span
-          className={`rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_COLORS[appointment.status] ?? "bg-neutral-100 text-neutral-600"}`}
+          className={`rounded-full px-2.5 py-1 text-xs font-semibold ${STATUS_COLORS[appointment.status] ?? "bg-neutral-100 text-neutral-600"}`}
         >
           {STATUS_LABELS[appointment.status] ?? appointment.status}
         </span>
@@ -89,7 +89,7 @@ export function AppointmentRow({
             timeZone: timezone,
           })}
         </span>
-        <span>{formatMoney(appointment.price_cents)}</span>
+        <span className="font-semibold text-neutral-900">{formatMoney(appointment.price_cents)}</span>
       </div>
 
       {options.length > 0 && (
@@ -99,7 +99,7 @@ export function AppointmentRow({
               key={status}
               onClick={() => handleChange(status)}
               disabled={pending}
-              className="rounded-lg border border-neutral-300 px-3 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-50"
+              className="rounded-lg border border-[#e7e3da] px-3 py-1 text-xs font-medium text-neutral-700 transition hover:border-[#c7a15a] hover:bg-[#fffaf0] disabled:opacity-50"
             >
               {STATUS_LABELS[status]}
             </button>

@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { Tables } from "@/lib/supabase/types";
 import { updateClientNotes } from "./actions";
+import { BUTTON_GHOST, BUTTON_PRIMARY, CARD, INPUT } from "@/lib/ui";
 
 function formatMoney(cents: number) {
   return (cents / 100).toLocaleString("es-DO", { style: "currency", currency: "DOP" });
@@ -32,17 +33,19 @@ export function ClientRow({
   }
 
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-4">
+    <div className={`${CARD} p-4`}>
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <p className="text-sm font-medium text-neutral-900">{client.full_name}</p>
+          <p className="text-sm font-semibold text-neutral-900">{client.full_name}</p>
           <p className="text-xs text-neutral-500">
             {client.phone}
             {client.email ? ` · ${client.email}` : ""}
           </p>
         </div>
         <div className="text-right text-xs text-neutral-500">
-          <p>{formatMoney(client.total_spent_cents)} gastado</p>
+          <p className="font-semibold text-neutral-900">
+            {formatMoney(client.total_spent_cents)} <span className="font-normal text-neutral-400">gastado</span>
+          </p>
           {client.last_visit_at && (
             <p>
               Última visita:{" "}
@@ -60,21 +63,14 @@ export function ClientRow({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
-                className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+                className={`w-full ${INPUT}`}
                 placeholder="Notas sobre el cliente..."
               />
               <div className="flex gap-2">
-                <button
-                  onClick={save}
-                  disabled={pending}
-                  className="rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
-                >
+                <button onClick={save} disabled={pending} className={`${BUTTON_PRIMARY} py-1.5 text-xs`}>
                   Guardar
                 </button>
-                <button
-                  onClick={() => setEditing(false)}
-                  className="rounded-lg px-3 py-1.5 text-xs font-medium text-neutral-500 hover:text-neutral-900"
-                >
+                <button onClick={() => setEditing(false)} className={`${BUTTON_GHOST} py-1.5 text-xs`}>
                   Cancelar
                 </button>
               </div>
@@ -82,7 +78,7 @@ export function ClientRow({
           ) : (
             <button
               onClick={() => setEditing(true)}
-              className="text-xs text-neutral-500 hover:text-neutral-900"
+              className="text-xs text-neutral-500 hover:text-[#9d7837]"
             >
               {client.notes ? client.notes : "+ Agregar nota"}
             </button>

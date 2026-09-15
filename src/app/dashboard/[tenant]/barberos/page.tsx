@@ -36,7 +36,8 @@ export default async function BarbersPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-neutral-900">Barberos</h1>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Equipo</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Barberos</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Cada barbero solo aparece disponible para los servicios que le asignes.
         </p>
@@ -57,7 +58,7 @@ export default async function BarbersPage({
             />
           ))
         ) : (
-          <p className="rounded-xl border border-neutral-200 bg-white px-4 py-6 text-sm text-neutral-500">
+          <p className="rounded-2xl border border-dashed border-[#d8d1c3] bg-white px-4 py-8 text-center text-sm text-neutral-500">
             Aún no hay barberos.
           </p>
         )}
