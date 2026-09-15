@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { bookAppointment, getAvailableSlots } from "../actions";
+import { waLink } from "@/lib/whatsapp";
 
 type Service = { id: string; name: string; price_cents: number; duration_minutes: number };
 type Barber = { id: string; display_name: string; photo_url: string | null };
@@ -28,6 +29,7 @@ const PRIMARY_BUTTON =
 export function BookingWizard({
   tenantId,
   tenantSlug,
+  tenantWhatsapp,
   timezone,
   services,
   barbers,
@@ -35,6 +37,7 @@ export function BookingWizard({
 }: {
   tenantId: string;
   tenantSlug: string;
+  tenantWhatsapp: string | null;
   timezone: string;
   services: Service[];
   barbers: Barber[];
@@ -57,6 +60,22 @@ export function BookingWizard({
 
   const selectedService = services.find((s) => s.id === serviceId) ?? null;
   const selectedBarber = barbers.find((b) => b.id === barberId) ?? null;
+
+  const confirmationWaLink = useMemo(() => {
+    if (!slotStart || !selectedService || !selectedBarber) return null;
+    const when = new Date(slotStart).toLocaleString("es-DO", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      hour: "numeric",
+      minute: "2-digit",
+      timeZone: timezone,
+    });
+    return waLink(
+      tenantWhatsapp,
+      `Hola, soy ${name || "un cliente"}. Reservé ${selectedService.name} con ${selectedBarber.display_name} el ${when}. Quería confirmar.`,
+    );
+  }, [slotStart, selectedService, selectedBarber, name, timezone, tenantWhatsapp]);
 
   const eligibleBarbers = useMemo(() => {
     if (!serviceId) return [];
@@ -318,12 +337,24 @@ export function BookingWizard({
           <p className="text-sm text-neutral-500">
             Te esperamos. La barbería confirmará tu cita pronto.
           </p>
-          <Link
-            href={`/${tenantSlug}/mi-cita`}
-            className="inline-block rounded-xl bg-[#171717] px-5 py-2.5 text-sm font-semibold text-white hover:bg-neutral-800"
-          >
-            Consultar mi cita
-          </Link>
+          <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
+            {confirmationWaLink && (
+              <a
+                href={confirmationWaLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-xl bg-[#25D366] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1ebe57]"
+              >
+                Avisar por WhatsApp
+              </a>
+            )}
+            <Link
+              href={`/${tenantSlug}/mi-cita`}
+              className="inline-flex items-center justify-center rounded-xl bg-[#171717] px-5 py-2.5 text-sm font-semibold text-white hover:bg-neutral-800"
+            >
+              Consultar mi cita
+            </Link>
+          </div>
         </div>
       )}
     </div>

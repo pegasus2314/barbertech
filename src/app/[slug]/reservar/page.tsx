@@ -51,6 +51,7 @@ export default async function ReservarPage({
           <BookingWizard
             tenantId={barbershop.id}
             tenantSlug={barbershop.slug}
+            tenantWhatsapp={barbershop.whatsapp}
             timezone={barbershop.timezone}
             services={services ?? []}
             barbers={barbers ?? []}

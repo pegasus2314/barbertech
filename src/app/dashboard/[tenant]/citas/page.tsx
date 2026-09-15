@@ -35,6 +35,16 @@ export default async function AppointmentsPage({
 
   const { data: appointments } = await query.limit(100);
 
+  const appointmentIds = (appointments ?? []).map((a) => a.id);
+  const { data: paidPayments } = appointmentIds.length
+    ? await supabase
+        .from("payments")
+        .select("appointment_id")
+        .eq("status", "recorded")
+        .in("appointment_id", appointmentIds)
+    : { data: [] };
+  const paidAppointmentIds = new Set((paidPayments ?? []).map((p) => p.appointment_id));
+
   const [{ data: services }, { data: barbers }] = canManage
     ? await Promise.all([
         supabase
@@ -101,6 +111,8 @@ export default async function AppointmentsPage({
               tenant={tenant}
               appointment={a}
               timezone={barbershop.timezone}
+              isPaid={paidAppointmentIds.has(a.id)}
+              canManage={canManage}
             />
           ))
         ) : (

@@ -2,17 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
+import { waLink } from "@/lib/whatsapp";
 
 const WEEKDAYS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
 function formatMoney(cents: number) {
   return (cents / 100).toLocaleString("es-DO", { style: "currency", currency: "DOP" });
-}
-
-function waLink(phone: string | null, message: string) {
-  if (!phone) return null;
-  const digits = phone.replace(/[^\d]/g, "");
-  return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
 }
 
 async function getStorefront(slug: string) {
