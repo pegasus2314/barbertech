@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { createBarber } from "./actions";
 
 export function BarberForm({
@@ -10,6 +11,7 @@ export function BarberForm({
   tenant: string;
   services: { id: string; name: string }[];
 }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
@@ -49,6 +51,7 @@ export function BarberForm({
       setName("");
       setSelected([]);
       setOpen(false);
+      router.refresh();
     });
   }
 

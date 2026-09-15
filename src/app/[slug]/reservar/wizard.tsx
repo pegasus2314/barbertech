@@ -1,0 +1,329 @@
+"use client";
+
+import { useMemo, useState, useTransition } from "react";
+import Link from "next/link";
+import { bookAppointment, getAvailableSlots } from "../actions";
+
+type Service = { id: string; name: string; price_cents: number; duration_minutes: number };
+type Barber = { id: string; display_name: string; photo_url: string | null };
+type BarberService = { barber_id: string; service_id: string };
+
+type Step = 1 | 2 | 3 | 4 | 5;
+
+function formatMoney(cents: number) {
+  return (cents / 100).toLocaleString("es-DO", { style: "currency", currency: "DOP" });
+}
+
+function todayISO() {
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 10);
+}
+
+export function BookingWizard({
+  tenantId,
+  tenantSlug,
+  timezone,
+  services,
+  barbers,
+  barberServices,
+}: {
+  tenantId: string;
+  tenantSlug: string;
+  timezone: string;
+  services: Service[];
+  barbers: Barber[];
+  barberServices: BarberService[];
+}) {
+  const [step, setStep] = useState<Step>(1);
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  const [serviceId, setServiceId] = useState<string | null>(null);
+  const [barberId, setBarberId] = useState<string | null>(null);
+  const [day, setDay] = useState(todayISO());
+  const [slots, setSlots] = useState<string[]>([]);
+  const [slotStart, setSlotStart] = useState<string | null>(null);
+
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [notes, setNotes] = useState("");
+
+  const selectedService = services.find((s) => s.id === serviceId) ?? null;
+  const selectedBarber = barbers.find((b) => b.id === barberId) ?? null;
+
+  const eligibleBarbers = useMemo(() => {
+    if (!serviceId) return [];
+    const barberIds = new Set(
+      barberServices.filter((bs) => bs.service_id === serviceId).map((bs) => bs.barber_id),
+    );
+    return barbers.filter((b) => barberIds.has(b.id));
+  }, [barberServices, barbers, serviceId]);
+
+  function pickService(id: string) {
+    setServiceId(id);
+    setBarberId(null);
+    setStep(2);
+  }
+
+  function pickBarber(id: string) {
+    setBarberId(id);
+    setSlots([]);
+    setSlotStart(null);
+    setStep(3);
+    void loadSlots(id, day);
+  }
+
+  function loadSlots(bId: string, d: string) {
+    if (!serviceId) return;
+    setError(null);
+    startTransition(async () => {
+      const result = await getAvailableSlots(tenantId, bId, serviceId, d);
+      if (!result.ok) {
+        setError(result.error);
+        setSlots([]);
+        return;
+      }
+      setSlots(result.slots);
+    });
+  }
+
+  function handleDayChange(d: string) {
+    setDay(d);
+    setSlotStart(null);
+    if (barberId) loadSlots(barberId, d);
+  }
+
+  function confirmSlot() {
+    if (!slotStart) return;
+    setStep(4);
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+
+    if (!serviceId || !barberId || !slotStart) return;
+    if (!name.trim() || !phone.trim()) {
+      setError("Completa tu nombre y teléfono.");
+      return;
+    }
+
+    startTransition(async () => {
+      const result = await bookAppointment({
+        tenantId,
+        barberId,
+        serviceId,
+        startsAt: slotStart,
+        clientName: name,
+        clientPhone: phone,
+        clientEmail: email,
+        notes,
+      });
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      setStep(5);
+    });
+  }
+
+  return (
+    <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
+      {step === 1 && (
+        <div className="space-y-3">
+          <h2 className="text-base font-semibold text-neutral-900">Elige un servicio</h2>
+          {services.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => pickService(s.id)}
+              className="flex w-full items-center justify-between rounded-lg border border-neutral-200 px-4 py-3 text-left hover:border-neutral-400"
+            >
+              <span>
+                <span className="block text-sm font-medium text-neutral-900">{s.name}</span>
+                <span className="block text-xs text-neutral-500">{s.duration_minutes} min</span>
+              </span>
+              <span className="text-sm font-semibold text-neutral-900">
+                {formatMoney(s.price_cents)}
+              </span>
+            </button>
+          ))}
+          {services.length === 0 && (
+            <p className="text-sm text-neutral-500">No hay servicios disponibles.</p>
+          )}
+        </div>
+      )}
+
+      {step === 2 && (
+        <div className="space-y-3">
+          <button
+            onClick={() => setStep(1)}
+            className="text-xs text-neutral-500 hover:text-neutral-900"
+          >
+            ← Cambiar servicio
+          </button>
+          <h2 className="text-base font-semibold text-neutral-900">Elige un barbero</h2>
+          {eligibleBarbers.map((b) => (
+            <button
+              key={b.id}
+              onClick={() => pickBarber(b.id)}
+              className="flex w-full items-center gap-3 rounded-lg border border-neutral-200 px-4 py-3 text-left hover:border-neutral-400"
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-neutral-100 text-sm font-semibold text-neutral-600">
+                {b.display_name.slice(0, 1).toUpperCase()}
+              </span>
+              <span className="text-sm font-medium text-neutral-900">{b.display_name}</span>
+            </button>
+          ))}
+          {eligibleBarbers.length === 0 && (
+            <p className="text-sm text-neutral-500">
+              Ningún barbero ofrece este servicio todavía.
+            </p>
+          )}
+        </div>
+      )}
+
+      {step === 3 && (
+        <div className="space-y-4">
+          <button
+            onClick={() => setStep(2)}
+            className="text-xs text-neutral-500 hover:text-neutral-900"
+          >
+            ← Cambiar barbero
+          </button>
+          <h2 className="text-base font-semibold text-neutral-900">Elige fecha y hora</h2>
+
+          <input
+            type="date"
+            value={day}
+            min={todayISO()}
+            onChange={(e) => handleDayChange(e.target.value)}
+            className="rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+          />
+
+          {pending && <p className="text-sm text-neutral-500">Buscando horarios...</p>}
+          {error && <p className="text-sm text-red-600">{error}</p>}
+
+          {!pending && slots.length === 0 && (
+            <p className="text-sm text-neutral-500">No hay horarios disponibles ese día.</p>
+          )}
+
+          <div className="grid grid-cols-3 gap-2">
+            {slots.map((s) => {
+              const label = new Date(s).toLocaleTimeString("es-DO", {
+                hour: "numeric",
+                minute: "2-digit",
+                timeZone: timezone,
+              });
+              const active = s === slotStart;
+              return (
+                <button
+                  key={s}
+                  onClick={() => setSlotStart(s)}
+                  className={`rounded-lg border px-2 py-2 text-sm transition ${
+                    active
+                      ? "border-neutral-900 bg-neutral-900 text-white"
+                      : "border-neutral-300 text-neutral-700 hover:border-neutral-400"
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            onClick={confirmSlot}
+            disabled={!slotStart}
+            className="w-full rounded-lg bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+          >
+            Continuar
+          </button>
+        </div>
+      )}
+
+      {step === 4 && (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <button
+            type="button"
+            onClick={() => setStep(3)}
+            className="text-xs text-neutral-500 hover:text-neutral-900"
+          >
+            ← Cambiar horario
+          </button>
+          <h2 className="text-base font-semibold text-neutral-900">Tus datos</h2>
+
+          <div className="rounded-lg bg-neutral-50 p-3 text-sm text-neutral-600">
+            {selectedService?.name} con {selectedBarber?.display_name}
+            <br />
+            {slotStart &&
+              new Date(slotStart).toLocaleString("es-DO", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                hour: "numeric",
+                minute: "2-digit",
+                timeZone: timezone,
+              })}
+          </div>
+
+          <input
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Nombre completo"
+            className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+          />
+          <input
+            required
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="Teléfono"
+            className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+          />
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Correo (opcional)"
+            className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+          />
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Notas (opcional)"
+            rows={2}
+            className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+          />
+
+          {error && <p className="text-sm text-red-600">{error}</p>}
+
+          <button
+            type="submit"
+            disabled={pending}
+            className="w-full rounded-lg bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+          >
+            {pending ? "Confirmando..." : "Confirmar cita"}
+          </button>
+        </form>
+      )}
+
+      {step === 5 && (
+        <div className="space-y-4 text-center">
+          <h2 className="text-base font-semibold text-neutral-900">¡Cita solicitada!</h2>
+          <p className="text-sm text-neutral-600">
+            Te esperamos. La barbería confirmará tu cita pronto.
+          </p>
+          <Link
+            href={`/${tenantSlug}/mi-cita`}
+            className="inline-block rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"
+          >
+            Consultar mi cita
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}

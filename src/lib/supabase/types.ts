@@ -880,6 +880,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cancel_public_appointment: {
+        Args: { p_appointment_id: string; p_phone: string }
+        Returns: boolean
+      }
       create_barbershop_with_owner: {
         Args: { p_base_slug: string; p_name: string }
         Returns: Json
@@ -908,6 +912,18 @@ export type Database = {
         }
         Returns: {
           slot_start: string
+        }[]
+      }
+      get_client_appointments: {
+        Args: { p_phone: string; p_tenant_id: string }
+        Returns: {
+          barber_name: string
+          ends_at: string
+          id: string
+          price_cents: number
+          service_name: string
+          starts_at: string
+          status: string
         }[]
       }
       has_role: {

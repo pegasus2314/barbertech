@@ -5,9 +5,13 @@ import { usePathname } from "next/navigation";
 
 const LINKS = [
   { href: "", label: "Resumen" },
+  { href: "/citas", label: "Citas" },
+  { href: "/clientes", label: "Clientes" },
   { href: "/servicios", label: "Servicios" },
   { href: "/barberos", label: "Barberos" },
   { href: "/horarios", label: "Horarios" },
+  { href: "/finanzas", label: "Finanzas" },
+  { href: "/configuracion", label: "Configuración" },
 ] as const;
 
 export function DashboardNav({ tenant }: { tenant: string }) {

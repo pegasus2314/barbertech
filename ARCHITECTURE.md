@@ -176,6 +176,37 @@ Completado y probado en navegador end-to-end (registro → onboarding de 4 pasos
 
 **Bug de RLS encontrado y corregido (importante para futuras tablas):** en Postgres, `INSERT ... RETURNING` exige que la fila insertada sea visible bajo las políticas de `SELECT`, no solo bajo el `WITH CHECK` del `INSERT`. Al crear una barbería, el usuario aún no tiene membresía en el momento del insert, así que ninguna política de `SELECT` de `barbershops` permitía verla de vuelta — Postgres reportaba esto como un genérico "new row violates row-level security policy", indistinguible de un fallo real del `WITH CHECK`. Diagnosticado aislando el problema con `curl` directo contra PostgREST (fuera de la app) y una tabla de prueba mínima. **Solución:** cualquier operación de "bootstrap" donde una fila y su registro de pertenencia (membership) se crean en el mismo paso debe hacerse en una función `SECURITY DEFINER` atómica (ver `create_barbershop_with_owner` en [supabase/migrations/0001_init.sql](supabase/migrations/0001_init.sql)), nunca como inserts separados desde el cliente con `.select()`.
 
-## 11. Siguiente fase propuesta (Fase 3)
+## 11. Estado de las Fases 3–7 (producto completo)
 
-Motor de disponibilidad + citas: interfaz de reserva pública usando `get_available_slots`/`create_public_appointment` (ya existen en la BD desde la Fase 1), calendario de citas en el dashboard, estados de citas con transiciones válidas (ya existen en la BD), historial/auditoría visible.
+Todo lo siguiente está implementado, compilado y probado en navegador con datos reales (usuarios `owner.qa@barbertech.test` / `admin.qa@barbertech.test`, contraseña `SuperClave123!`):
+
+**Storefront público y reservas** (`src/app/[slug]/`)
+- `/  [slug]`: página pública con logo/portada, servicios, barberos, horario, botón de WhatsApp (`wa.me`), metadata SEO (`generateMetadata` con Open Graph).
+- `/[slug]/reservar`: wizard de reserva (servicio → barbero filtrado por `barber_services` → fecha/hora vía `get_available_slots` → datos del cliente → confirmar vía `create_public_appointment`).
+- `/[slug]/mi-cita`: consulta de citas por teléfono (`get_client_appointments`) y cancelación (`cancel_public_appointment`), ambas RPCs `SECURITY DEFINER` — el cliente nunca tiene acceso directo a las tablas `clients`/`appointments`.
+
+**Dashboard del negocio** (`src/app/dashboard/[tenant]/`)
+- `citas`: lista con pestañas Hoy/Próximas/Pasadas, cambios de estado respetando las transiciones válidas de la BD, alta manual de citas (walk-ins) reutilizando `get_available_slots`.
+- `clientes`: CRM básico con notas; `total_spent_cents` y `last_visit_at` se recalculan automáticamente vía triggers (`recalculate_client_spend`, `update_client_last_visit` en la migración 022), no en el cliente.
+- `finanzas`: registro manual de pagos (efectivo/transferencia) vinculados o no a una cita, ingresos del día, anulación append-only (nunca se borra un pago, solo cambia su estado).
+- `configuracion`: perfil del negocio, publicar/despublicar (bloqueado si no hay al menos 1 servicio y 1 barbero activos), logo/portada/galería vía Supabase Storage (bucket `barbershop-media`, políticas por carpeta `<tenant_id>/...`), estado de suscripción de solo lectura + formulario para que el owner registre un pago de suscripción (queda `pending`, nunca se autoconfirma).
+- `resumen`: estadísticas reales del día (citas, pendientes, completadas, ingresos) y próximas citas.
+
+**Super Admin** (`src/app/admin/`, guardado por `platform_admins`, independiente de cualquier tenant)
+- Listado y búsqueda de barberías, cambio de estado (trial/active/past_due/grace/suspended) con auditoría, cambio de plan, confirmación/rechazo de pagos de suscripción pendientes (`/admin/pagos`) — verificado que el propio owner NO puede confirmar su pago (política RLS `sub_payments_write_admin` solo permite `is_platform_admin()`).
+
+**SEO/PWA**: `robots.ts` (bloquea `/dashboard`, `/admin`, `/onboarding`, auth), `manifest.json` + ícono SVG, metadata Open Graph en el storefront.
+
+### Bugs reales encontrados y corregidos durante las pruebas
+
+1. **Zona horaria en horarios de citas**: el motor de disponibilidad genera `timestamptz` correctos en la zona del negocio, pero el frontend los formateaba con `toLocaleTimeString` sin especificar `timeZone`, mostrando horas desplazadas para cualquier visitante en otra zona horaria (probado: desplazamiento de 6 horas). Corregido pasando `barbershop.timezone` explícitamente a todos los `toLocaleString`/`toLocaleTimeString` del storefront, mi-cita y dashboard de citas.
+2. **Listas que no se actualizaban tras una mutación**: las Server Actions llaman `revalidatePath`, pero los componentes cliente que las invocan vía `useTransition` (no un `<form action>` nativo) no refrescaban el árbol de Server Components automáticamente. Corregido añadiendo `router.refresh()` después de cada mutación exitosa en todos los formularios y botones de acción del dashboard y del panel admin.
+3. **`total_spent_cents`/`last_visit_at` de clientes nunca se actualizaban**: no existía el trigger mencionado en el diseño original. Agregado en la migración 022, con backfill para los datos de prueba ya existentes.
+
+### Pendiente / mejoras futuras razonables (no bloqueantes)
+- Habilitar "Leaked Password Protection" de Supabase Auth (HaveIBeenPwned) — requiere el dashboard de Supabase, no hay API vía MCP para esto.
+- El límite "hoy" del filtro de citas en el dashboard usa la hora del servidor, no la zona horaria del negocio (a diferencia de todo el *display* de horas, que sí es correcto) — edge case solo relevante cerca de la medianoche.
+- `sitemap.xml` dinámico listando tenants publicados (se agregó `robots.txt` pero no el sitemap, por tiempo).
+- Horario individual por barbero (`barber_hours`, ya existe en el esquema) no tiene UI todavía — el motor de disponibilidad ya lo respeta si se llenara la tabla.
+- Bloqueos de horario (`time_blocks`) no tienen UI todavía, aunque el esquema y el motor de disponibilidad ya los soportan.
+- Tests automatizados (unit/integration) no se escribieron — todo se verificó manualmente en navegador con datos reales por falta de infraestructura de testing en el scaffold inicial. Recomendado antes de producción real.

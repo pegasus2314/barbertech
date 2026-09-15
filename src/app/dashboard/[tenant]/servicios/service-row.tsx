@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 import type { Tables } from "@/lib/supabase/types";
 import { toggleServiceActive } from "./actions";
 
@@ -17,11 +18,13 @@ export function ServiceRow({
   service: Tables<"services">;
   canManage: boolean;
 }) {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
 
   function handleToggle() {
     startTransition(async () => {
       await toggleServiceActive(tenant, service.id, !service.is_active);
+      router.refresh();
     });
   }
 

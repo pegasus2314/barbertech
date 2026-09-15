@@ -2,14 +2,14 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { createService } from "./actions";
+import { createClient } from "./actions";
 
-export function ServiceForm({ tenant }: { tenant: string }) {
+export function ClientForm({ tenant }: { tenant: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
-  const [duration, setDuration] = useState("30");
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -19,7 +19,7 @@ export function ServiceForm({ tenant }: { tenant: string }) {
         onClick={() => setOpen(true)}
         className="rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
       >
-        + Nuevo servicio
+        + Nuevo cliente
       </button>
     );
   }
@@ -27,23 +27,21 @@ export function ServiceForm({ tenant }: { tenant: string }) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    const priceCents = Math.round(parseFloat(price || "0") * 100);
-    const durationMinutes = parseInt(duration || "0", 10);
 
-    if (!name.trim() || priceCents <= 0 || durationMinutes <= 0) {
-      setError("Completa nombre, precio y duración válidos.");
+    if (!fullName.trim() || !phone.trim()) {
+      setError("Completa nombre y teléfono.");
       return;
     }
 
     startTransition(async () => {
-      const result = await createService(tenant, { name, priceCents, durationMinutes });
+      const result = await createClient(tenant, { fullName, phone, email });
       if (!result.ok) {
         setError(result.error);
         return;
       }
-      setName("");
-      setPrice("");
-      setDuration("30");
+      setFullName("");
+      setPhone("");
+      setEmail("");
       setOpen(false);
       router.refresh();
     });
@@ -57,31 +55,24 @@ export function ServiceForm({ tenant }: { tenant: string }) {
       <div className="flex flex-wrap gap-3">
         <input
           autoFocus
-          required
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Nombre del servicio"
-          className="min-w-[10rem] flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          placeholder="Nombre completo"
+          className="min-w-[10rem] flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
         />
         <input
-          required
-          type="number"
-          min="1"
-          step="0.01"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          placeholder="Precio RD$"
-          className="w-32 rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+          type="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="Teléfono"
+          className="w-40 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
         />
         <input
-          required
-          type="number"
-          min="5"
-          step="5"
-          value={duration}
-          onChange={(e) => setDuration(e.target.value)}
-          placeholder="Minutos"
-          className="w-28 rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Correo (opcional)"
+          className="w-48 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
         />
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}

@@ -1,6 +1,20 @@
 import Link from "next/link";
 import { getTenantContext } from "@/lib/tenant/get-tenant-context";
 
+function formatMoney(cents: number) {
+  return (cents / 100).toLocaleString("es-DO", { style: "currency", currency: "DOP" });
+}
+
+const STATUS_LABELS: Record<string, string> = {
+  pending: "Pendiente",
+  confirmed: "Confirmada",
+  in_progress: "En curso",
+  completed: "Completada",
+  cancelled: "Cancelada",
+  rejected: "Rechazada",
+  no_show: "No se presentó",
+};
+
 export default async function TenantDashboardHome({
   params,
 }: {
@@ -9,18 +23,30 @@ export default async function TenantDashboardHome({
   const { tenant } = await params;
   const { supabase, barbershop } = await getTenantContext(tenant);
 
-  const [{ count: serviceCount }, { count: barberCount }] = await Promise.all([
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayEnd = new Date();
+  todayEnd.setHours(23, 59, 59, 999);
+
+  const [{ data: todaysAppointments }, { data: todaysPayments }] = await Promise.all([
     supabase
-      .from("services")
-      .select("id", { count: "exact", head: true })
+      .from("appointments")
+      .select("*, clients(full_name), services(name), barbers(display_name)")
       .eq("tenant_id", barbershop.id)
-      .eq("is_active", true),
+      .gte("starts_at", todayStart.toISOString())
+      .lte("starts_at", todayEnd.toISOString())
+      .order("starts_at"),
     supabase
-      .from("barbers")
-      .select("id", { count: "exact", head: true })
+      .from("payments")
+      .select("amount_cents")
       .eq("tenant_id", barbershop.id)
-      .eq("is_active", true),
+      .eq("status", "recorded")
+      .gte("created_at", todayStart.toISOString()),
   ]);
+
+  const pendingCount = (todaysAppointments ?? []).filter((a) => a.status === "pending").length;
+  const completedCount = (todaysAppointments ?? []).filter((a) => a.status === "completed").length;
+  const todayRevenue = (todaysPayments ?? []).reduce((sum, p) => sum + p.amount_cents, 0);
 
   return (
     <div className="space-y-6">
@@ -40,38 +66,73 @@ export default async function TenantDashboardHome({
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-        <StatCard label="Servicios activos" value={serviceCount ?? 0} />
-        <StatCard label="Barberos activos" value={barberCount ?? 0} />
-        <StatCard label="Citas hoy" value="—" hint="Próximamente" />
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <StatCard label="Citas hoy" value={todaysAppointments?.length ?? 0} />
+        <StatCard label="Pendientes" value={pendingCount} />
+        <StatCard label="Completadas hoy" value={completedCount} />
+        <StatCard label="Ingresos hoy" value={formatMoney(todayRevenue)} />
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-neutral-900">Próximas citas de hoy</h2>
+          <Link
+            href={`/dashboard/${tenant}/citas`}
+            className="text-xs font-medium text-neutral-500 hover:text-neutral-900"
+          >
+            Ver todas →
+          </Link>
+        </div>
+        <div className="mt-3 space-y-2">
+          {(todaysAppointments ?? []).slice(0, 5).map((a) => (
+            <div
+              key={a.id}
+              className="flex items-center justify-between rounded-xl border border-neutral-200 bg-white p-3 text-sm"
+            >
+              <div>
+                <p className="font-medium text-neutral-900">
+                  {a.clients?.full_name ?? "Cliente"} · {a.services?.name}
+                </p>
+                <p className="text-xs text-neutral-500">con {a.barbers?.display_name}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-neutral-700">
+                  {new Date(a.starts_at).toLocaleTimeString("es-DO", {
+                    hour: "numeric",
+                    minute: "2-digit",
+                    timeZone: barbershop.timezone,
+                  })}
+                </p>
+                <p className="text-xs text-neutral-400">{STATUS_LABELS[a.status] ?? a.status}</p>
+              </div>
+            </div>
+          ))}
+          {(todaysAppointments ?? []).length === 0 && (
+            <p className="rounded-xl border border-neutral-200 bg-white px-4 py-6 text-sm text-neutral-500">
+              No hay citas hoy.
+            </p>
+          )}
+        </div>
       </div>
 
       <div>
         <h2 className="text-sm font-semibold text-neutral-900">Acciones rápidas</h2>
         <div className="mt-3 flex flex-wrap gap-2">
+          <QuickAction href={`/dashboard/${tenant}/citas`} label="Nueva cita" />
+          <QuickAction href={`/dashboard/${tenant}/clientes`} label="Nuevo cliente" />
           <QuickAction href={`/dashboard/${tenant}/servicios`} label="Nuevo servicio" />
           <QuickAction href={`/dashboard/${tenant}/barberos`} label="Nuevo barbero" />
-          <QuickAction href={`/dashboard/${tenant}/horarios`} label="Editar horarios" />
         </div>
       </div>
     </div>
   );
 }
 
-function StatCard({
-  label,
-  value,
-  hint,
-}: {
-  label: string;
-  value: number | string;
-  hint?: string;
-}) {
+function StatCard({ label, value }: { label: string; value: number | string }) {
   return (
     <div className="rounded-xl border border-neutral-200 bg-white p-4">
       <p className="text-2xl font-semibold text-neutral-900">{value}</p>
       <p className="mt-1 text-xs text-neutral-500">{label}</p>
-      {hint && <p className="mt-0.5 text-[11px] text-neutral-400">{hint}</p>}
     </div>
   );
 }

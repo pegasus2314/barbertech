@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import type { Tables } from "@/lib/supabase/types";
 import { setBarberServices, toggleBarberActive } from "./actions";
 
@@ -17,12 +18,14 @@ export function BarberRow({
   selectedServiceIds: string[];
   canManage: boolean;
 }) {
+  const router = useRouter();
   const [selected, setSelected] = useState(selectedServiceIds);
   const [pending, startTransition] = useTransition();
 
   function handleToggleActive() {
     startTransition(async () => {
       await toggleBarberActive(tenant, barber.id, !barber.is_active);
+      router.refresh();
     });
   }
 

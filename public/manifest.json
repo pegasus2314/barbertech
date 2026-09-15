@@ -1,0 +1,16 @@
+{
+  "name": "BarberTech",
+  "short_name": "BarberTech",
+  "description": "Gestión y reservas en línea para barberías.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#171717",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
