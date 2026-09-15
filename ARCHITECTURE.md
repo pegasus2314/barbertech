@@ -178,7 +178,7 @@ Completado y probado en navegador end-to-end (registro → onboarding de 4 pasos
 
 ## 11. Estado de las Fases 3–7 (producto completo)
 
-Todo lo siguiente está implementado, compilado y probado en navegador con datos reales (usuarios `owner.qa@barbertech.test` / `admin.qa@barbertech.test`, contraseña `SuperClave123!`):
+Todo lo siguiente está implementado, compilado y probado en navegador con datos reales (usuarios `owner.qa@barbertech.test` / `admin.qa@barbertech.test` / `intruder.qa@barbertech.test` — este último sin membresía en ninguna barbería real, usado para probar aislamiento entre tenants —, contraseña `SuperClave123!`):
 
 **Storefront público y reservas** (`src/app/[slug]/`)
 - `/  [slug]`: página pública con logo/portada, servicios, barberos, horario, botón de WhatsApp (`wa.me`), metadata SEO (`generateMetadata` con Open Graph).
@@ -274,5 +274,15 @@ Reglas de negocio (decisión del usuario): **6 días de prueba → 3 días de gr
 
 El toggle nativo de Supabase ("Leaked Password Protection") está detrás del plan Pro — el proyecto está en el plan gratuito. En vez de pagar solo por esto, se replicó la misma protección con la API pública y gratuita de "Pwned Passwords" de HaveIBeenPwned ([src/lib/security/pwned-password.ts](src/lib/security/pwned-password.ts)): k-anonimato, solo se envían los primeros 5 caracteres del hash SHA-1 de la contraseña (calculado en el navegador vía Web Crypto), nunca la contraseña ni el hash completo. Falla "abierto" (no bloquea el registro) si la API no responde. Conectado al formulario de registro — probado en navegador con una contraseña filtrada real (rechazada) y una fuerte/única (pasó correctamente).
 
+### Tests de integración contra RLS real (`npm run test:integration`)
+
+Docker no está instalado en la máquina de desarrollo (bloquea la ruta local pgTAP + Supabase CLI), y se descartó un branch de pruebas de pago ($0.01344/hora) a favor de la opción gratuita. En su lugar, [src/test/integration/rls.integration.test.ts](src/test/integration/rls.integration.test.ts) usa `@supabase/supabase-js` real contra el mismo proyecto de Supabase (Postgres/RLS/Auth reales, nada simulado), aislado así:
+
+- Usuario dedicado `intruder.qa@barbertech.test` (sin membresía en ninguna barbería real) para probar aislamiento entre tenants sin tocar `barber-king-qa` ni `los-baah`.
+- Cada corrida crea su propia barbería desechable con prefijo `zzz-test-`, y la borra al final vía el RPC `cleanup_test_barbershop` (migración [0007_test_cleanup_rpc.sql](supabase/migrations/0007_test_cleanup_rpc.sql)) — que se niega a borrar cualquier cosa sin ese prefijo, así que no hace falta una service role key ni hay riesgo de borrar algo real por error.
+- Corre por separado de `npm test` (config propia en `vitest.integration.config.ts`) porque necesita red y las credenciales de `.env.local`.
+
+12 tests, los 12 pasando contra el proyecto real: visibilidad de `RETURNING` al crear una barbería, aislamiento cruzado de tenants (lectura Y escritura bloqueadas en ambos sentidos), acceso anónimo al storefront público, que suspender una barbería bloquea `create_public_appointment` incluso llamando el RPC directamente, y que un owner no puede autoconfirmarse su propio pago de suscripción (solo `platform_admin` puede).
+
 ### Pendiente / mejoras futuras razonables (no bloqueantes)
-- **Tests de integración/RLS**: la cobertura de Vitest es solo lógica pura en TypeScript. Los dos bugs más graves encontrados esta sesión (visibilidad de RLS en `RETURNING`, `EXECUTE` denegado a `anon` en funciones usadas por políticas públicas) solo se habrían detectado con tests que ejercitan Postgres/RLS de verdad — requiere un proyecto Supabase de pruebas dedicado o pgTAP, no intentado aún por el costo de configuración.
+- Instalar Docker para poder correr pgTAP localmente sería la mejora natural sobre el enfoque actual (probaría contra una base de datos completamente aislada en vez del proyecto compartido) — no bloqueante, la cobertura actual ya es real.
