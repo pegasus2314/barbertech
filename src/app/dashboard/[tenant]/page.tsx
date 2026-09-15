@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getTenantContext } from "@/lib/tenant/get-tenant-context";
+import { zonedDayBounds } from "@/lib/timezone";
 
 function formatMoney(cents: number) {
   return (cents / 100).toLocaleString("es-DO", { style: "currency", currency: "DOP" });
@@ -23,10 +24,7 @@ export default async function TenantDashboardHome({
   const { tenant } = await params;
   const { supabase, barbershop } = await getTenantContext(tenant);
 
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-  const todayEnd = new Date();
-  todayEnd.setHours(23, 59, 59, 999);
+  const { start: todayStart, end: todayEnd } = zonedDayBounds(barbershop.timezone);
 
   const [{ data: todaysAppointments }, { data: todaysPayments }] = await Promise.all([
     supabase

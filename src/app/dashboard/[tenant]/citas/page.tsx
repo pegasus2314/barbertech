@@ -1,6 +1,7 @@
 import { getTenantContext } from "@/lib/tenant/get-tenant-context";
 import { AppointmentRow } from "./appointment-row";
 import { NewAppointmentForm } from "./new-appointment-form";
+import { zonedDayBounds } from "@/lib/timezone";
 
 export default async function AppointmentsPage({
   params,
@@ -20,10 +21,7 @@ export default async function AppointmentsPage({
     .order("starts_at", { ascending: view !== "past" });
 
   const now = new Date();
-  const todayStart = new Date(now);
-  todayStart.setHours(0, 0, 0, 0);
-  const todayEnd = new Date(now);
-  todayEnd.setHours(23, 59, 59, 999);
+  const { start: todayStart, end: todayEnd } = zonedDayBounds(barbershop.timezone, now);
 
   if (view === "today") {
     query = query.gte("starts_at", todayStart.toISOString()).lte("starts_at", todayEnd.toISOString());

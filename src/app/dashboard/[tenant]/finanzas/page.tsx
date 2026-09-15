@@ -2,6 +2,7 @@ import { getTenantContext } from "@/lib/tenant/get-tenant-context";
 import { PaymentForm } from "./payment-form";
 import { PaymentRow } from "./payment-row";
 import { CARD } from "@/lib/ui";
+import { zonedDayBounds } from "@/lib/timezone";
 
 function formatMoney(cents: number) {
   return (cents / 100).toLocaleString("es-DO", { style: "currency", currency: "DOP" });
@@ -23,8 +24,7 @@ export default async function FinancesPage({
     );
   }
 
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
+  const { start: todayStart } = zonedDayBounds(barbershop.timezone);
 
   const [{ data: payments }, { data: recentAppointments }] = await Promise.all([
     supabase
