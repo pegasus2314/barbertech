@@ -255,7 +255,10 @@ El advisor reportó 3 categorías de hallazgo. Se revisó cada una contra el có
   - `waLink()` — teléfonos nulos/vacíos/sin dígitos, limpieza de símbolos, encoding del mensaje.
   - `siteUrl()` — precedencia de variables de entorno.
 
+### Corrección de zona horaria en los límites de "hoy" (lado de consulta, no de display)
+
+El resumen del dashboard, "Ingresos de hoy" en Finanzas, y el filtro "Hoy" en Citas calculaban el inicio/fin del día con `new Date(); setHours(0,0,0,0)`, que usa la zona horaria del proceso de Node (el servidor), no la de la barbería — mismo tipo de bug ya corregido antes en el *display* de horas, pero esta vez del lado de la consulta. Reemplazado por `zonedDayBounds()` ([src/lib/timezone.ts](src/lib/timezone.ts)), que calcula los instantes UTC reales de medianoche a medianoche en cualquier zona IANA. El test que escribí para esta función detectó un bug real en mi primera implementación (el redondeo de segundos de `Intl.DateTimeFormat` desviaba el offset ~1s justo en el límite `.999`) antes de que llegara a la app — prueba concreta del valor de tener tests para este tipo de lógica.
+
 ### Pendiente / mejoras futuras razonables (no bloqueantes)
 - Habilitar "Leaked Password Protection" de Supabase Auth (HaveIBeenPwned) — requiere el dashboard de Supabase, no hay API vía MCP para esto.
-- El límite "hoy" del filtro de citas en el dashboard usa la hora del servidor, no la zona horaria del negocio (a diferencia de todo el *display* de horas, que sí es correcto) — edge case solo relevante cerca de la medianoche.
 - **Tests de integración/RLS**: la cobertura de Vitest es solo lógica pura en TypeScript. Los dos bugs más graves encontrados esta sesión (visibilidad de RLS en `RETURNING`, `EXECUTE` denegado a `anon` en funciones usadas por políticas públicas) solo se habrían detectado con tests que ejercitan Postgres/RLS de verdad — requiere un proyecto Supabase de pruebas dedicado o pgTAP, no intentado aún por el costo de configuración.
