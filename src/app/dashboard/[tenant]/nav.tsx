@@ -19,7 +19,7 @@ export function DashboardNav({ tenant }: { tenant: string }) {
   const base = `/dashboard/${tenant}`;
 
   return (
-    <nav className="flex gap-1 overflow-x-auto border-b border-neutral-200 px-4 sm:flex-col sm:gap-0.5 sm:border-b-0 sm:border-r sm:px-2 sm:py-4">
+    <nav className="flex gap-1 overflow-x-auto border-b border-neutral-200 px-4 py-2 sm:flex-col sm:gap-0.5 sm:border-b-0 sm:px-3 sm:py-4">
       {LINKS.map((link) => {
         const href = `${base}${link.href}`;
         const active = pathname === href;
