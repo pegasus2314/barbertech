@@ -57,7 +57,7 @@ export default async function FinancesPage({
         </p>
       </div>
 
-      <div className={`${CARD} border-[#171717] bg-[#171717] p-5 text-white`}>
+      <div className="rounded-2xl border border-[#171717] bg-[#171717] p-5 text-white shadow-[0_8px_30px_rgba(23,23,23,0.04)]">
         <p className="text-2xl font-bold tracking-tight">{formatMoney(todayTotal)}</p>
         <p className="text-xs text-white/55">Ingresos de hoy</p>
       </div>
