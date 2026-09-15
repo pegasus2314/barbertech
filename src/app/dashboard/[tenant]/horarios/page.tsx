@@ -1,6 +1,7 @@
 import { getTenantContext } from "@/lib/tenant/get-tenant-context";
 import { HoursForm } from "./hours-form";
 import { BarberHoursForm } from "./barber-hours-form";
+import { TimeBlocksSection } from "./time-blocks-section";
 import { CARD } from "@/lib/ui";
 
 const WEEKDAYS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
@@ -42,6 +43,13 @@ export default async function HoursPage({
     .order("sort_order");
 
   const activeBarberId = selectedBarberId ?? barbers?.[0]?.id ?? null;
+
+  const { data: timeBlocks } = await supabase
+    .from("time_blocks")
+    .select("id, barber_id, starts_at, ends_at, type, reason, barbers(display_name)")
+    .eq("tenant_id", barbershop.id)
+    .gte("ends_at", new Date().toISOString())
+    .order("starts_at");
 
   let barberRows: {
     weekday: number;
@@ -127,6 +135,29 @@ export default async function HoursPage({
           Agrega un barbero primero para configurar su horario individual.
         </div>
       )}
+
+      <div>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Bloqueos</p>
+        <p className="mt-1 text-sm text-neutral-500">
+          Almuerzos, vacaciones, reuniones u otros momentos en los que no se puede reservar.
+        </p>
+      </div>
+
+      <TimeBlocksSection
+        tenant={tenant}
+        timezone={barbershop.timezone}
+        barbers={barbers ?? []}
+        blocks={(timeBlocks ?? []).map((b) => ({
+          id: b.id,
+          barberId: b.barber_id,
+          barberName: b.barbers?.display_name ?? null,
+          startsAt: b.starts_at,
+          endsAt: b.ends_at,
+          type: b.type,
+          reason: b.reason,
+        }))}
+        readOnly={!canManage}
+      />
     </div>
   );
 }

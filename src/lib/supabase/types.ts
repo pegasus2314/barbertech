@@ -901,6 +901,17 @@ export type Database = {
         }
         Returns: string
       }
+      create_time_block: {
+        Args: {
+          p_barber_id?: string
+          p_ends_at_local: string
+          p_reason?: string
+          p_starts_at_local: string
+          p_tenant_id: string
+          p_type: string
+        }
+        Returns: string
+      }
       current_barber_id: { Args: { p_tenant_id: string }; Returns: string }
       get_available_slots: {
         Args: {
