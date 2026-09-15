@@ -232,8 +232,15 @@ Verificado en navegador (Chrome vía MCP, escritorio y móvil 375px) con las cue
 
 Todo lo anterior verificado en navegador con datos reales, incluyendo el efecto en el motor de disponibilidad público (no solo que el formulario guarda, sino que `/[slug]/reservar` refleja los cambios).
 
+### SEO y pruebas automatizadas
+
+- **`sitemap.xml` dinámico** ([src/app/sitemap.ts](src/app/sitemap.ts)): lista la landing más cada barbería publicada (storefront + página de reserva), usando `updated_at` como `lastmod`. `robots.txt` ahora apunta a él. La URL base se resuelve en [src/lib/site-url.ts](src/lib/site-url.ts): `NEXT_PUBLIC_SITE_URL` si está definida, si no `VERCEL_PROJECT_PRODUCTION_URL` (inyectada automáticamente por Vercel, estable entre deployments a diferencia de `VERCEL_URL`), si no `localhost:3000`.
+- **Vitest** (`npm test`): primera infraestructura de tests del proyecto. Cubre la lógica pura más crítica:
+  - `nextStatuses()` — verificado que coincide exactamente con el mapa de transiciones dentro del trigger `enforce_appointment_status_transition()` en `0001_init.sql`. Estas dos copias están duplicadas a mano sin ningún otro mecanismo que las mantenga sincronizadas; si alguien cambia una sin la otra, el test lo detecta.
+  - `waLink()` — teléfonos nulos/vacíos/sin dígitos, limpieza de símbolos, encoding del mensaje.
+  - `siteUrl()` — precedencia de variables de entorno.
+
 ### Pendiente / mejoras futuras razonables (no bloqueantes)
 - Habilitar "Leaked Password Protection" de Supabase Auth (HaveIBeenPwned) — requiere el dashboard de Supabase, no hay API vía MCP para esto.
 - El límite "hoy" del filtro de citas en el dashboard usa la hora del servidor, no la zona horaria del negocio (a diferencia de todo el *display* de horas, que sí es correcto) — edge case solo relevante cerca de la medianoche.
-- `sitemap.xml` dinámico listando tenants publicados (se agregó `robots.txt` pero no el sitemap, por tiempo).
-- Tests automatizados (unit/integration) no se escribieron — todo se verificó manualmente en navegador con datos reales por falta de infraestructura de testing en el scaffold inicial. Recomendado antes de producción real.
+- **Tests de integración/RLS**: la cobertura de Vitest es solo lógica pura en TypeScript. Los dos bugs más graves encontrados esta sesión (visibilidad de RLS en `RETURNING`, `EXECUTE` denegado a `anon` en funciones usadas por políticas públicas) solo se habrían detectado con tests que ejercitan Postgres/RLS de verdad — requiere un proyecto Supabase de pruebas dedicado o pgTAP, no intentado aún por el costo de configuración.
