@@ -880,6 +880,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_barbershop_with_owner: {
+        Args: { p_base_slug: string; p_name: string }
+        Returns: Json
+      }
       create_public_appointment: {
         Args: {
           p_barber_id: string

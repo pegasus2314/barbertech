@@ -377,7 +377,7 @@ create policy profiles_insert_own on profiles for insert with check (id = auth.u
 create policy barbershops_select_member on barbershops for select using (is_member_of(id));
 create policy barbershops_select_public on barbershops for select using (is_published = true);
 create policy barbershops_select_admin on barbershops for select using (is_platform_admin());
-create policy barbershops_insert_authenticated on barbershops for insert with check (auth.uid() is not null);
+create policy barbershops_insert_authenticated on barbershops for insert to authenticated with check (auth.uid() is not null);
 create policy barbershops_update_owner on barbershops for update using (has_role(id, array['owner','manager'])) with check (has_role(id, array['owner','manager']));
 create policy barbershops_update_admin on barbershops for update using (is_platform_admin()) with check (is_platform_admin());
 
@@ -688,3 +688,55 @@ grant execute on function public.current_barber_id(uuid) to authenticated;
 grant execute on function public.is_platform_admin() to authenticated;
 
 revoke execute on function public.handle_new_user() from public, anon, authenticated;
+
+-- ============ Barbershop bootstrap (barbershop + owner membership + default hours) ============
+--
+-- INSERT ... RETURNING requires the SELECT policy to allow visibility of the new row.
+-- A freshly created barbershop has no membership yet, so no SELECT policy on barbershops
+-- permits the creator to see it back, and PostgREST/Postgres report that as a generic
+-- RLS violation on the INSERT itself. Bootstrapping (barbershop + owner membership +
+-- default hours) must happen atomically, server-side, as one trusted SECURITY DEFINER
+-- call instead of separate client-driven inserts.
+create or replace function public.create_barbershop_with_owner(p_name text, p_base_slug text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_slug text := p_base_slug;
+  v_id uuid;
+  v_attempt int := 0;
+begin
+  if auth.uid() is null then
+    raise exception 'Authentication required';
+  end if;
+
+  loop
+    begin
+      insert into barbershops (name, slug) values (p_name, v_slug) returning id into v_id;
+      exit;
+    exception when unique_violation then
+      v_attempt := v_attempt + 1;
+      if v_attempt >= 5 then
+        raise exception 'Could not generate a unique slug';
+      end if;
+      v_slug := p_base_slug || '-' || substr(md5(random()::text), 1, 4);
+    end;
+  end loop;
+
+  insert into memberships (tenant_id, user_id, role) values (v_id, auth.uid(), 'owner');
+
+  insert into business_hours (tenant_id, weekday, open_time, close_time, is_closed)
+  select v_id, w,
+         case when w = 0 then null else '09:00'::time end,
+         case when w = 0 then null else '19:00'::time end,
+         w = 0
+  from generate_series(0, 6) as w;
+
+  return jsonb_build_object('id', v_id, 'slug', v_slug);
+end;
+$$;
+
+revoke execute on function public.create_barbershop_with_owner(text, text) from public;
+grant execute on function public.create_barbershop_with_owner(text, text) to authenticated;

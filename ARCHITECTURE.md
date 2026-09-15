@@ -163,6 +163,19 @@ Completado:
 - Scaffold Next.js 15 + TS + Tailwind + App Router en este repo, con clientes Supabase (`src/lib/supabase/client.ts`, `server.ts`) y middleware de refresco de sesión (`src/middleware.ts`).
 
 Pendiente / abierto:
-- Repositorio remoto en GitHub: no hay `gh` CLI ni token disponible en este entorno para crear el repo por API. Necesito que me des la URL de un repo vacío (o que lo crees tú) para hacer el primer push.
 - Dominio real para producción (por ahora rutas `/[slug]` en un solo dominio, como pediste).
 - Proveedor de hosting (Vercel es el objetivo natural para Next.js).
+
+## 10. Estado de la Fase 2 (onboarding + dashboard base)
+
+Completado y probado en navegador end-to-end (registro → onboarding de 4 pasos → dashboard → CRUD):
+- Auth: `/signup`, `/login`, cierre de sesión, middleware de refresco de sesión.
+- Onboarding: wizard de 4 pasos (barbería → servicio → barbero → publicar) que crea horario general por defecto (lunes–sábado 9:00–19:00, domingo cerrado).
+- Dashboard por tenant (`/dashboard/[slug]`): resumen con estadísticas básicas, CRUD de servicios, CRUD de barberos con asignación de servicios, edición de horario general.
+- Verificado con dos usuarios reales contra la base de datos: un usuario sin membresía en la barbería es redirigido a `/onboarding` al intentar acceder al dashboard de otro tenant — el aislamiento multi-tenant funciona tanto a nivel de RLS como de la capa de aplicación.
+
+**Bug de RLS encontrado y corregido (importante para futuras tablas):** en Postgres, `INSERT ... RETURNING` exige que la fila insertada sea visible bajo las políticas de `SELECT`, no solo bajo el `WITH CHECK` del `INSERT`. Al crear una barbería, el usuario aún no tiene membresía en el momento del insert, así que ninguna política de `SELECT` de `barbershops` permitía verla de vuelta — Postgres reportaba esto como un genérico "new row violates row-level security policy", indistinguible de un fallo real del `WITH CHECK`. Diagnosticado aislando el problema con `curl` directo contra PostgREST (fuera de la app) y una tabla de prueba mínima. **Solución:** cualquier operación de "bootstrap" donde una fila y su registro de pertenencia (membership) se crean en el mismo paso debe hacerse en una función `SECURITY DEFINER` atómica (ver `create_barbershop_with_owner` en [supabase/migrations/0001_init.sql](supabase/migrations/0001_init.sql)), nunca como inserts separados desde el cliente con `.select()`.
+
+## 11. Siguiente fase propuesta (Fase 3)
+
+Motor de disponibilidad + citas: interfaz de reserva pública usando `get_available_slots`/`create_public_appointment` (ya existen en la BD desde la Fase 1), calendario de citas en el dashboard, estados de citas con transiciones válidas (ya existen en la BD), historial/auditoría visible.
