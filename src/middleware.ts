@@ -4,10 +4,17 @@ import { type NextRequest, NextResponse } from "next/server";
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // Keep public routes available even if the deployment is missing Supabase
+  // environment variables. Authenticated routes will still require Supabase.
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return supabaseResponse;
+  }
+
+  try {
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -20,11 +27,14 @@ export async function middleware(request: NextRequest) {
           );
         },
       },
-    },
-  );
+    });
 
-  // Refreshes the auth session cookie on every request. Required by @supabase/ssr.
-  await supabase.auth.getUser();
+    // Refresh the auth session cookie on every request. Required by @supabase/ssr.
+    await supabase.auth.getUser();
+  } catch {
+    // Do not take down the entire site when Supabase is temporarily unavailable
+    // or its deployment configuration is incomplete. Public pages can continue.
+  }
 
   return supabaseResponse;
 }
