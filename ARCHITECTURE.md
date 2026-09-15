@@ -259,6 +259,17 @@ El advisor reportó 3 categorías de hallazgo. Se revisó cada una contra el có
 
 El resumen del dashboard, "Ingresos de hoy" en Finanzas, y el filtro "Hoy" en Citas calculaban el inicio/fin del día con `new Date(); setHours(0,0,0,0)`, que usa la zona horaria del proceso de Node (el servidor), no la de la barbería — mismo tipo de bug ya corregido antes en el *display* de horas, pero esta vez del lado de la consulta. Reemplazado por `zonedDayBounds()` ([src/lib/timezone.ts](src/lib/timezone.ts)), que calcula los instantes UTC reales de medianoche a medianoche en cualquier zona IANA. El test que escribí para esta función detectó un bug real en mi primera implementación (el redondeo de segundos de `Intl.DateTimeFormat` desviaba el offset ~1s justo en el límite `.999`) antes de que llegara a la app — prueba concreta del valor de tener tests para este tipo de lógica.
 
+### Cumplimiento real de suscripción (migración [0006_shorten_trial_and_access_enforcement.sql](supabase/migrations/0006_shorten_trial_and_access_enforcement.sql))
+
+Hasta este punto `barbershops.status` era solo una etiqueta — nada en el código realmente restringía el acceso de una barbería con la prueba vencida o sin pagar. Cualquiera podía registrarse y usar la plataforma indefinidamente gratis.
+
+Reglas de negocio (decisión del usuario): **6 días de prueba → 3 días de gracia (acceso completo + aviso) → bloqueado**.
+
+- [`src/lib/subscription/access.ts`](src/lib/subscription/access.ts): `getAccessState()` calculado al momento de la consulta desde `trial_ends_at`/`current_period_end`, sin depender de un cron que actualice un estado guardado.
+- Bloqueo aplicado en tres puntos: el layout del dashboard (pantalla de "renueva tu suscripción" que incrusta el propio formulario de pago, para que el dueño pueda pagar sin necesitar otra página que también estaría bloqueada), el storefront público y `/reservar`, y — el punto que realmente importa — dentro del RPC `create_public_appointment` mismo, para que nadie pueda saltarse el bloqueo llamando la API directamente. `is_barbershop_active(uuid)` es el espejo público de la misma lógica, ya que `anon` no puede leer `subscriptions` (solo miembros/admin por RLS).
+- **Bug real encontrado antes de enviarlo**: la primera versión usaba `trial_ends_at` como respaldo aunque ya hubiera pasado `current_period_end`, porque la fecha de prueba original (fijada una sola vez al registrarse) seguía siendo numéricamente futura. Corregido haciendo que `current_period_end` reemplace a `trial_ends_at` en cuanto existe, en ambas copias (TS y SQL); agregado un test de regresión.
+- Verificado en navegador de punta a punta: forcé una barbería a estado bloqueado, confirmé que dashboard/storefront/reserva rechazan acceso correctamente, registré un pago de suscripción desde la pantalla bloqueada, lo confirmé como admin de plataforma, y confirmé que la barbería quedó usable de inmediato.
+
 ### Pendiente / mejoras futuras razonables (no bloqueantes)
 - Habilitar "Leaked Password Protection" de Supabase Auth (HaveIBeenPwned) — requiere el dashboard de Supabase, no hay API vía MCP para esto.
 - **Tests de integración/RLS**: la cobertura de Vitest es solo lógica pura en TypeScript. Los dos bugs más graves encontrados esta sesión (visibilidad de RLS en `RETURNING`, `EXECUTE` denegado a `anon` en funciones usadas por políticas públicas) solo se habrían detectado con tests que ejercitan Postgres/RLS de verdad — requiere un proyecto Supabase de pruebas dedicado o pgTAP, no intentado aún por el costo de configuración.
