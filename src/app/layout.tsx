@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { siteUrl } from "@/lib/site-url";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,6 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl()),
   title: {
     default: "BarberTech",
     template: "%s | BarberTech",
@@ -22,6 +24,18 @@ export const metadata: Metadata = {
   icons: {
     icon: "/icon.png",
     apple: "/icon.png",
+  },
+  openGraph: {
+    title: "BarberTech",
+    description: "Gestión y reservas en línea para barberías modernas.",
+    images: ["/icon.png"],
+    siteName: "BarberTech",
+  },
+  twitter: {
+    card: "summary",
+    title: "BarberTech",
+    description: "Gestión y reservas en línea para barberías modernas.",
+    images: ["/icon.png"],
   },
 };
 

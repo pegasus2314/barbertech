@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     openGraph: {
       title: data.barbershop.name,
       description: data.barbershop.description ?? undefined,
-      images: data.barbershop.cover_url ? [data.barbershop.cover_url] : undefined,
+      images: [data.barbershop.cover_url ?? "/barbershop-default-cover.jpg"],
     },
   };
 }
