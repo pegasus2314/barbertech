@@ -132,7 +132,8 @@ function ProductPreview() {
   return (
     <div className="relative mx-auto w-full max-w-xl lg:mx-0">
       <div className="absolute -inset-5 rounded-[2.5rem] bg-[#c7a15a]/15 blur-3xl" />
-      <div className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-white shadow-[0_30px_80px_-30px_rgba(0,0,0,.35)]">
+      <div className="absolute inset-x-10 -bottom-8 h-10 animate-float-shadow rounded-[50%] bg-black/40 blur-2xl" />
+      <div className="animate-float relative overflow-hidden rounded-[2rem] border border-black/10 bg-white shadow-[0_30px_80px_-30px_rgba(0,0,0,.35)]">
         <div className="flex items-center justify-between border-b border-black/10 bg-[#171717] px-5 py-4 text-white">
           <div className="flex items-center gap-2"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#c7a15a] text-xs font-black text-[#171717]">B</span><span className="text-sm font-bold">BarberTech</span></div>
           <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white/60">Panel</span>
