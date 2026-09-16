@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { waLink } from "@/lib/whatsapp";
 
 function formatPrice(cents: number) {
   return (cents / 100).toLocaleString("es-DO", { style: "currency", currency: "DOP", maximumFractionDigits: 0 });
@@ -111,6 +112,17 @@ export default async function Home() {
               ))}
             </div>
             <p className="mt-8 text-center text-sm text-black/40">Precios en pesos dominicanos (DOP). Pago por transferencia o efectivo, sin comisiones ocultas.</p>
+            <p className="mt-3 text-center text-sm text-black/50">
+              ¿Prefieres hablar antes?{" "}
+              <a
+                href={waLink("18496510308", "Estoy interesado en comprar")!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-[#25D366] hover:underline"
+              >
+                Escríbenos por WhatsApp
+              </a>
+            </p>
           </div>
         </section>
 
