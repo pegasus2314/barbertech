@@ -284,5 +284,13 @@ Docker no está instalado en la máquina de desarrollo (bloquea la ruta local pg
 
 12 tests, los 12 pasando contra el proyecto real: visibilidad de `RETURNING` al crear una barbería, aislamiento cruzado de tenants (lectura Y escritura bloqueadas en ambos sentidos), acceso anónimo al storefront público, que suspender una barbería bloquea `create_public_appointment` incluso llamando el RPC directamente, y que un owner no puede autoconfirmarse su propio pago de suscripción (solo `platform_admin` puede).
 
+### Estadísticas mensuales + exportar Excel/PDF (`src/app/dashboard/[tenant]/estadisticas/`)
+
+Nueva página con selector de mes (por defecto el mes actual en la zona horaria de la barbería, vía `zonedMonthBounds()` en [src/lib/timezone.ts](src/lib/timezone.ts)): ingresos, citas completadas, ticket promedio, canceladas, y top 5 de servicios/barberos/clientes — todo calculado de citas y pagos reales, nada hardcodeado.
+
+Dos rutas de exportación (Route Handlers, no Server Actions, porque necesitan mandar los headers reales de descarga):
+- **Excel** (`export/csv`): CSV real con BOM UTF-8 (para que Excel muestre bien acentos y el símbolo de RD$), en vez del paquete `xlsx` de npm — ese paquete tiene dos vulnerabilidades "high" sin parche (prototype pollution, ReDoS) en su código de *lectura*. Ninguna aplica aquí (solo escribimos datos que generamos, nunca leemos un archivo subido), pero un CSV abre igual en Excel sin ninguna dependencia ni riesgo, así que no había razón para aceptar esa exposición. `npm audit --omit=dev` da 0 vulnerabilidades tras quitar `xlsx`.
+- **PDF** (`export/pdf`): usa `pdf-lib` (sin advisories conocidos) para dibujar un reporte de una página. Verificado descomprimiendo el stream de contenido generado directamente (confirma operadores de dibujo reales) y renderizando el archivo en el visor nativo de PDF de Chrome vía blob URL — el archivo es válido; la vista previa en blanco que dio la herramienta Read al principio era una rareza de ese visor, no un bug del archivo.
+
 ### Pendiente / mejoras futuras razonables (no bloqueantes)
 - Instalar Docker para poder correr pgTAP localmente sería la mejora natural sobre el enfoque actual (probaría contra una base de datos completamente aislada en vez del proyecto compartido) — no bloqueante, la cobertura actual ya es real.
