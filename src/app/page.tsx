@@ -200,7 +200,7 @@ function PlanCard({ plan }: { plan: { id: string; key: string; name: string; pri
             : "bg-[#171717] text-white hover:bg-black"
         }`}
       >
-        Empezar prueba gratis
+        {isFree ? "Empezar prueba gratis" : "Compra ya"}
       </Link>
     </div>
   );

@@ -36,6 +36,12 @@ export default function LoginPage() {
 
   return (
     <>
+      <Link
+        href="/"
+        className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-neutral-500 hover:text-neutral-900"
+      >
+        ← Volver al inicio
+      </Link>
       <h1 className="text-xl font-bold tracking-tight text-[#171717]">Inicia sesión</h1>
       <p className="mt-1 text-sm text-neutral-500">Accede al panel de tu barbería.</p>
 
