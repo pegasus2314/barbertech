@@ -22,8 +22,16 @@ export const metadata: Metadata = {
   description: "Gestión y reservas en línea para barberías modernas.",
   manifest: "/manifest.json",
   icons: {
-    icon: "/icon.png",
-    apple: "/icon.png",
+    icon: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: "/icon-180.png",
+  },
+  appleWebApp: {
+    capable: true,
+    title: "BarberTech",
+    statusBarStyle: "black-translucent",
   },
   openGraph: {
     title: "BarberTech",

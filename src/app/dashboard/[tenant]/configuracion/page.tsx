@@ -4,6 +4,7 @@ import { PublishToggle } from "./publish-toggle";
 import { GalleryUploader, LogoCoverUploader } from "./media-uploader";
 import { SubscriptionPaymentForm } from "./subscription-payment-form";
 import { BookingLinkCard } from "./booking-link-card";
+import { InstallAppCard } from "./install-app-card";
 import { CARD } from "@/lib/ui";
 import { siteUrl } from "@/lib/site-url";
 
@@ -59,6 +60,8 @@ export default async function SettingsPage({
       </div>
 
       <PublishToggle tenant={tenant} isPublished={barbershop.is_published} />
+
+      <InstallAppCard />
 
       <BookingLinkCard
         storefrontUrl={`${base}/${barbershop.slug}`}
