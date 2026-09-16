@@ -1,8 +1,10 @@
 import { getTenantContext } from "@/lib/tenant/get-tenant-context";
 import { PaymentForm } from "./payment-form";
 import { PaymentRow } from "./payment-row";
+import { EmptyState } from "../empty-state";
 import { CARD } from "@/lib/ui";
 import { zonedDayBounds } from "@/lib/timezone";
+import { IconDollar } from "@/lib/icons";
 
 function formatMoney(cents: number) {
   return (cents / 100).toLocaleString("es-DO", { style: "currency", currency: "DOP" });
@@ -48,18 +50,28 @@ export default async function FinancesPage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Dinero</p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Finanzas</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Registro manual de pagos (efectivo o transferencia). El historial no se borra: anular
-          crea un nuevo estado, no elimina el registro.
-        </p>
+      <div className="flex items-start gap-3.5">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fff8e9] text-[#9d7837]">
+          <IconDollar />
+        </span>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Dinero</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Finanzas</h1>
+          <p className="mt-1 text-sm text-neutral-500">
+            Registro manual de pagos (efectivo o transferencia). El historial no se borra: anular
+            crea un nuevo estado, no elimina el registro.
+          </p>
+        </div>
       </div>
 
-      <div className="rounded-2xl border border-[#171717] bg-[#171717] p-5 text-white shadow-[0_8px_30px_rgba(23,23,23,0.04)]">
-        <p className="text-2xl font-bold tracking-tight">{formatMoney(todayTotal)}</p>
-        <p className="text-xs text-white/55">Ingresos de hoy</p>
+      <div className="flex items-center justify-between rounded-2xl border border-[#171717] bg-[#171717] p-5 text-white shadow-[0_8px_30px_rgba(23,23,23,0.04)]">
+        <div>
+          <p className="text-2xl font-bold tracking-tight">{formatMoney(todayTotal)}</p>
+          <p className="text-xs text-white/55">Ingresos de hoy</p>
+        </div>
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-[#e2c17f]">
+          <IconDollar />
+        </span>
       </div>
 
       <PaymentForm tenant={tenant} appointments={recentAppointments ?? []} />
@@ -68,9 +80,7 @@ export default async function FinancesPage({
         {payments && payments.length > 0 ? (
           payments.map((p) => <PaymentRow key={p.id} tenant={tenant} payment={p} />)
         ) : (
-          <p className="rounded-2xl border border-dashed border-[#d8d1c3] bg-white px-4 py-8 text-center text-sm text-neutral-500">
-            Aún no hay pagos registrados.
-          </p>
+          <EmptyState icon={<IconDollar />} title="Aún no hay pagos registrados" subtitle="Los pagos que registres aparecerán aquí." />
         )}
       </div>
     </div>

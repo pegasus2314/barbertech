@@ -5,6 +5,7 @@ import { GalleryUploader, LogoCoverUploader } from "./media-uploader";
 import { SubscriptionPaymentForm } from "./subscription-payment-form";
 import { BookingLinkCard } from "./booking-link-card";
 import { InstallAppCard } from "./install-app-card";
+import { IconSettings } from "@/lib/icons";
 import { CARD } from "@/lib/ui";
 import { siteUrl } from "@/lib/site-url";
 
@@ -54,9 +55,14 @@ export default async function SettingsPage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Negocio</p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Configuración</h1>
+      <div className="flex items-start gap-3.5">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fff8e9] text-[#9d7837]">
+          <IconSettings />
+        </span>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Negocio</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Configuración</h1>
+        </div>
       </div>
 
       <PublishToggle tenant={tenant} isPublished={barbershop.is_published} />

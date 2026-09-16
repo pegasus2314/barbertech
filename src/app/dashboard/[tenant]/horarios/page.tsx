@@ -3,6 +3,7 @@ import { HoursForm } from "./hours-form";
 import { BarberHoursForm } from "./barber-hours-form";
 import { TimeBlocksSection } from "./time-blocks-section";
 import { CARD } from "@/lib/ui";
+import { IconClock } from "@/lib/icons";
 
 const WEEKDAYS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
@@ -83,13 +84,18 @@ export default async function HoursPage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Disponibilidad</p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Horarios</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Este es el horario general de la barbería. Cada barbero puede tener su propio
-          horario individual debajo.
-        </p>
+      <div className="flex items-start gap-3.5">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fff8e9] text-[#9d7837]">
+          <IconClock />
+        </span>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Disponibilidad</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Horarios</h1>
+          <p className="mt-1 text-sm text-neutral-500">
+            Este es el horario general de la barbería. Cada barbero puede tener su propio
+            horario individual debajo.
+          </p>
+        </div>
       </div>
 
       <HoursForm tenant={tenant} initialRows={rows} readOnly={!canManage} />

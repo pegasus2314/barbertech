@@ -2,6 +2,7 @@ import { getTenantContext } from "@/lib/tenant/get-tenant-context";
 import { getMonthlyStats, monthLabel, formatMoney } from "./data";
 import { MonthPicker } from "./month-picker";
 import { CARD, EYEBROW } from "@/lib/ui";
+import { IconChart, IconDollar } from "@/lib/icons";
 
 export default async function EstadisticasPage({
   params,
@@ -33,10 +34,15 @@ export default async function EstadisticasPage({
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className={EYEBROW}>Negocio</p>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Estadísticas</h1>
-          <p className="mt-1 text-sm text-neutral-500">Cómo le fue a {stats.barbershopName} en {monthLabel(month, year)}.</p>
+        <div className="flex items-start gap-3.5">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fff8e9] text-[#9d7837]">
+            <IconChart />
+          </span>
+          <div>
+            <p className={EYEBROW}>Negocio</p>
+            <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Estadísticas</h1>
+            <p className="mt-1 text-sm text-neutral-500">Cómo le fue a {stats.barbershopName} en {monthLabel(month, year)}.</p>
+          </div>
         </div>
         <MonthPicker tenant={tenant} year={year} month={month} />
       </div>
@@ -57,9 +63,14 @@ export default async function EstadisticasPage({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className={`${CARD} border-[#171717] bg-[#171717] p-5 text-white`}>
-          <p className="text-xs text-white/55">Ingresos del mes</p>
-          <p className="mt-2 text-2xl font-bold tracking-tight">{formatMoney(stats.totalRevenueCents)}</p>
+        <div className={`${CARD} flex items-center justify-between border-[#171717] bg-[#171717] p-5 text-white`}>
+          <div>
+            <p className="text-xs text-white/55">Ingresos del mes</p>
+            <p className="mt-2 text-2xl font-bold tracking-tight">{formatMoney(stats.totalRevenueCents)}</p>
+          </div>
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-[#e2c17f]">
+            <IconDollar />
+          </span>
         </div>
         <div className={`${CARD} p-5`}>
           <p className="text-xs text-neutral-500">Citas completadas</p>

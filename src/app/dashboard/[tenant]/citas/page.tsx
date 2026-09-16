@@ -1,7 +1,9 @@
 import { getTenantContext } from "@/lib/tenant/get-tenant-context";
 import { AppointmentRow } from "./appointment-row";
 import { NewAppointmentForm } from "./new-appointment-form";
+import { EmptyState } from "../empty-state";
 import { zonedDayBounds } from "@/lib/timezone";
+import { IconCalendar } from "@/lib/icons";
 
 export default async function AppointmentsPage({
   params,
@@ -68,12 +70,17 @@ export default async function AppointmentsPage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Agenda</p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Citas</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          {role === "barber" ? "Tus citas asignadas." : "Todas las citas de la barbería."}
-        </p>
+      <div className="flex items-start gap-3.5">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fff8e9] text-[#9d7837]">
+          <IconCalendar />
+        </span>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Agenda</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Citas</h1>
+          <p className="mt-1 text-sm text-neutral-500">
+            {role === "barber" ? "Tus citas asignadas." : "Todas las citas de la barbería."}
+          </p>
+        </div>
       </div>
 
       {canManage && (
@@ -114,9 +121,7 @@ export default async function AppointmentsPage({
             />
           ))
         ) : (
-          <p className="rounded-2xl border border-dashed border-[#d8d1c3] bg-white px-4 py-8 text-center text-sm text-neutral-500">
-            No hay citas en este rango.
-          </p>
+          <EmptyState icon={<IconCalendar />} title="No hay citas en este rango" subtitle="Prueba otra pestaña o crea una cita nueva." />
         )}
       </div>
     </div>
