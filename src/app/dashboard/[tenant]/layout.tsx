@@ -4,7 +4,6 @@ import { SignOutButton } from "../sign-out-button";
 import { DashboardNav } from "./nav";
 import { NotificationBell } from "./notification-bell";
 import { SubscriptionPaymentForm } from "./configuracion/subscription-payment-form";
-import { BankTransferDetails } from "@/components/bank-transfer-details";
 
 export default async function TenantDashboardLayout({
   children,
@@ -41,11 +40,8 @@ export default async function TenantDashboardLayout({
             mientras tanto.
           </p>
           {canManage ? (
-            <div className="mt-6 space-y-4 text-left">
-              <BankTransferDetails />
-              <div className="rounded-xl border border-[#e7e3da] bg-[#f7f6f2] p-4">
-                <SubscriptionPaymentForm tenant={tenant} />
-              </div>
+            <div className="mt-6 rounded-xl border border-[#e7e3da] bg-[#f7f6f2] p-4 text-left">
+              <SubscriptionPaymentForm tenant={tenant} />
             </div>
           ) : (
             <p className="mt-6 text-sm text-neutral-500">Pídele al dueño de la barbería que renueve la suscripción.</p>
