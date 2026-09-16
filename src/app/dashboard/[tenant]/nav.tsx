@@ -11,6 +11,7 @@ const LINKS = [
   { href: "/barberos", label: "Barberos" },
   { href: "/horarios", label: "Horarios" },
   { href: "/finanzas", label: "Finanzas" },
+  { href: "/estadisticas", label: "Estadísticas" },
   { href: "/configuracion", label: "Configuración" },
 ] as const;
 

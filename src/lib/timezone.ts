@@ -54,6 +54,18 @@ export function zonedDayBounds(timeZone: string, reference: Date = new Date()) {
   };
 }
 
+/** The [00:00:00.000, 23:59:59.999] range of a calendar month (1-12) as it
+ * exists in `timeZone`. */
+export function zonedMonthBounds(timeZone: string, year: number, month: number) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+
+  return {
+    start: zonedTime(`${year}-${pad(month)}-01T00:00:00.000`, timeZone),
+    end: zonedTime(`${year}-${pad(month)}-${pad(daysInMonth)}T23:59:59.999`, timeZone),
+  };
+}
+
 /** "Buenos días" / "Buenas tardes" / "Buenas noches", based on the current
  * hour in `timeZone` — not the visiting browser's or server's own clock. */
 export function timeOfDayGreeting(timeZone: string, reference: Date = new Date()): string {

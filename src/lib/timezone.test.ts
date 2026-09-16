@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { timeOfDayGreeting, zonedDayBounds } from "./timezone";
+import { timeOfDayGreeting, zonedDayBounds, zonedMonthBounds } from "./timezone";
 
 describe("zonedDayBounds", () => {
   it("computes midnight-to-midnight in the given timezone, not UTC", () => {
@@ -20,6 +20,23 @@ describe("zonedDayBounds", () => {
 
     expect(start.toISOString()).toBe("2026-09-16T00:00:00.000Z");
     expect(end.toISOString()).toBe("2026-09-16T23:59:59.999Z");
+  });
+});
+
+describe("zonedMonthBounds", () => {
+  it("spans the 1st through the last day of a 31-day month in the shop's timezone", () => {
+    const { start, end } = zonedMonthBounds("America/Santo_Domingo", 2026, 9);
+
+    expect(start.toISOString()).toBe("2026-09-01T04:00:00.000Z"); // Sept 1, 00:00 local (UTC-4)
+    expect(end.toISOString()).toBe("2026-10-01T03:59:59.999Z"); // Sept 30, 23:59:59.999 local
+  });
+
+  it("gets February's day count right (including a leap year)", () => {
+    const { end: end2027 } = zonedMonthBounds("UTC", 2027, 2);
+    expect(end2027.toISOString()).toBe("2027-02-28T23:59:59.999Z");
+
+    const { end: end2028 } = zonedMonthBounds("UTC", 2028, 2); // 2028 is a leap year
+    expect(end2028.toISOString()).toBe("2028-02-29T23:59:59.999Z");
   });
 });
 
