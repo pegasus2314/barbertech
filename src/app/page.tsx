@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { BankTransferDetails } from "@/components/bank-transfer-details";
 
 function formatPrice(cents: number) {
   return (cents / 100).toLocaleString("es-DO", { style: "currency", currency: "DOP", maximumFractionDigits: 0 });
@@ -114,6 +115,30 @@ export default async function Home() {
           </div>
         </section>
 
+        <section id="pagar" className="border-y border-[#e4dfd5] bg-white/60">
+          <div className="mx-auto max-w-3xl px-5 py-20 sm:px-8 sm:py-28">
+            <div className="text-center">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#a47d36]">¿Ya decidiste?</p>
+              <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Así se paga BarberTech.</h2>
+              <p className="mt-4 text-lg leading-7 text-black/55">
+                Transfiere a esta cuenta y crea tu cuenta para registrar el pago desde tu panel — tu acceso
+                completo queda activo apenas lo confirmemos.
+              </p>
+            </div>
+            <div className="mt-10">
+              <BankTransferDetails note="Escanea el código para copiar estos datos en tu teléfono, o transfiere directamente con la información de al lado." />
+            </div>
+            <div className="mt-8 text-center">
+              <Link
+                href="/signup"
+                className="inline-flex items-center justify-center rounded-2xl bg-[#171717] px-6 py-4 text-sm font-bold text-white shadow-xl shadow-black/15 hover:-translate-y-0.5 hover:bg-black"
+              >
+                Ya transferí, crear mi cuenta →
+              </Link>
+            </div>
+          </div>
+        </section>
+
         <section className="px-5 pb-20 sm:px-8 sm:pb-28">
           <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#171717] px-7 py-12 text-white shadow-2xl shadow-black/20 sm:px-12 sm:py-16 lg:flex lg:items-center lg:justify-between lg:gap-12">
             <div>
@@ -193,7 +218,7 @@ function PlanCard({ plan }: { plan: { id: string; key: string; name: string; pri
         ))}
       </ul>
       <Link
-        href="/signup"
+        href={isFree ? "/signup" : "#pagar"}
         className={`mt-8 inline-flex items-center justify-center rounded-2xl px-5 py-3.5 text-sm font-bold shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] ${
           copy.highlight
             ? "bg-[#c7a15a] text-[#171717] shadow-black/20 hover:bg-[#d5b36c]"

@@ -4,7 +4,7 @@ import { SignOutButton } from "../sign-out-button";
 import { DashboardNav } from "./nav";
 import { NotificationBell } from "./notification-bell";
 import { SubscriptionPaymentForm } from "./configuracion/subscription-payment-form";
-import { BankTransferDetails } from "./configuracion/bank-transfer-details";
+import { BankTransferDetails } from "@/components/bank-transfer-details";
 
 export default async function TenantDashboardLayout({
   children,

@@ -3,7 +3,7 @@ import { ProfileForm } from "./profile-form";
 import { PublishToggle } from "./publish-toggle";
 import { GalleryUploader, LogoCoverUploader } from "./media-uploader";
 import { SubscriptionPaymentForm } from "./subscription-payment-form";
-import { BankTransferDetails } from "./bank-transfer-details";
+import { BankTransferDetails } from "@/components/bank-transfer-details";
 import { BookingLinkCard } from "./booking-link-card";
 import { CARD } from "@/lib/ui";
 import { siteUrl } from "@/lib/site-url";

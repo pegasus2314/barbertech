@@ -11,7 +11,11 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
-export async function BankTransferDetails() {
+export async function BankTransferDetails({
+  note = "Escanea el código para copiar estos datos en tu teléfono, o transfiere directamente con la información de al lado. Luego registra tu pago abajo.",
+}: {
+  note?: string;
+}) {
   const details = getSubscriptionBankDetails();
   if (!details) return null;
 
@@ -40,10 +44,7 @@ export async function BankTransferDetails() {
           <Row label="SWIFT" value={details.swift} />
         </div>
       </div>
-      <p className="mt-3 text-xs text-neutral-500">
-        Escanea el código para copiar estos datos en tu teléfono, o transfiere directamente con la
-        información de al lado. Luego registra tu pago abajo.
-      </p>
+      <p className="mt-3 text-xs text-neutral-500">{note}</p>
     </div>
   );
 }
