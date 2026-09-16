@@ -3,6 +3,7 @@ import { ProfileForm } from "./profile-form";
 import { PublishToggle } from "./publish-toggle";
 import { GalleryUploader, LogoCoverUploader } from "./media-uploader";
 import { SubscriptionPaymentForm } from "./subscription-payment-form";
+import { BankTransferDetails } from "./bank-transfer-details";
 import { BookingLinkCard } from "./booking-link-card";
 import { CARD } from "@/lib/ui";
 import { siteUrl } from "@/lib/site-url";
@@ -107,7 +108,8 @@ export default async function SettingsPage({
         ) : (
           <p className="mt-3 text-sm text-neutral-500">Sin suscripción registrada.</p>
         )}
-        <div className="mt-4 border-t border-[#eeeae2] pt-4">
+        <div className="mt-4 space-y-4 border-t border-[#eeeae2] pt-4">
+          <BankTransferDetails />
           <SubscriptionPaymentForm tenant={tenant} />
         </div>
       </div>
