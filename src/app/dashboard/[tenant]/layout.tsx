@@ -61,7 +61,7 @@ export default async function TenantDashboardLayout({
       <aside className="hidden w-72 shrink-0 flex-col border-r border-[#e7e3da] bg-[#171717] text-white sm:flex">
         <div className="border-b border-white/10 px-6 py-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#c7a15a] text-lg font-bold text-[#171717]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#c7a15a] text-lg font-bold text-[#171717] ring-1 ring-white/10 ring-offset-2 ring-offset-[#171717]">
               {barbershop.name.slice(0, 1).toUpperCase()}
             </div>
             <div className="min-w-0 flex-1">

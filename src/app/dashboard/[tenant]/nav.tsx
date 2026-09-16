@@ -2,17 +2,28 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  IconHome,
+  IconCalendar,
+  IconUsers,
+  IconScissors,
+  IconBarber,
+  IconClock,
+  IconDollar,
+  IconChart,
+  IconSettings,
+} from "@/lib/icons";
 
 const LINKS = [
-  { href: "", label: "Resumen" },
-  { href: "/citas", label: "Citas" },
-  { href: "/clientes", label: "Clientes" },
-  { href: "/servicios", label: "Servicios" },
-  { href: "/barberos", label: "Barberos" },
-  { href: "/horarios", label: "Horarios" },
-  { href: "/finanzas", label: "Finanzas" },
-  { href: "/estadisticas", label: "Estadísticas" },
-  { href: "/configuracion", label: "Configuración" },
+  { href: "", label: "Resumen", Icon: IconHome },
+  { href: "/citas", label: "Citas", Icon: IconCalendar },
+  { href: "/clientes", label: "Clientes", Icon: IconUsers },
+  { href: "/servicios", label: "Servicios", Icon: IconScissors },
+  { href: "/barberos", label: "Barberos", Icon: IconBarber },
+  { href: "/horarios", label: "Horarios", Icon: IconClock },
+  { href: "/finanzas", label: "Finanzas", Icon: IconDollar },
+  { href: "/estadisticas", label: "Estadísticas", Icon: IconChart },
+  { href: "/configuracion", label: "Configuración", Icon: IconSettings },
 ] as const;
 
 export function DashboardNav({ tenant }: { tenant: string }) {
@@ -28,12 +39,18 @@ export function DashboardNav({ tenant }: { tenant: string }) {
           <Link
             key={link.href}
             href={href}
-            className={`whitespace-nowrap rounded-xl px-3.5 py-2.5 text-sm font-medium transition sm:text-[13.5px] ${
+            className={`group relative flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-xl px-3.5 py-2.5 text-sm font-medium transition sm:text-[13.5px] ${
               active
-                ? "bg-[#c7a15a] text-[#171717] font-semibold sm:bg-white/10 sm:text-white"
-                : "text-neutral-600 hover:bg-neutral-100 sm:text-white/55 sm:hover:bg-white/5 sm:hover:text-white"
+                ? "bg-[#c7a15a] text-[#171717] font-semibold sm:bg-white/[0.08] sm:text-white"
+                : "text-neutral-600 hover:bg-neutral-100 sm:text-white/50 sm:hover:bg-white/5 sm:hover:text-white"
             }`}
           >
+            <span
+              className={`hidden sm:absolute sm:inset-y-1.5 sm:left-0 sm:block sm:w-[3px] sm:rounded-full sm:transition ${
+                active ? "bg-[#c7a15a]" : "bg-transparent"
+              }`}
+            />
+            <link.Icon className={active ? "" : "opacity-70 group-hover:opacity-100"} />
             {link.label}
           </Link>
         );

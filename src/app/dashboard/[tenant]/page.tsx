@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getTenantContext } from "@/lib/tenant/get-tenant-context";
 import { zonedDayBounds, timeOfDayGreeting } from "@/lib/timezone";
+import { IconCalendar, IconClock, IconCheck, IconDollar } from "@/lib/icons";
 
 function formatMoney(cents: number) {
   return (cents / 100).toLocaleString("es-DO", { style: "currency", currency: "DOP" });
@@ -51,10 +52,13 @@ export default async function TenantDashboardHome({
     <div className="space-y-8">
       <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9d7837]">Panel de control</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-neutral-950">{greeting} 👋</h1>
+          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#9d7837]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#c7a15a]" />
+            Panel de control
+          </p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-neutral-950 sm:text-4xl">{greeting} 👋</h1>
           <p className="mt-2 text-sm text-neutral-500">
-            Aquí tienes una vista rápida de lo que ocurre hoy en {barbershop.name}.
+            Aquí tienes una vista rápida de lo que ocurre hoy en <span className="font-medium text-neutral-700">{barbershop.name}</span>.
           </p>
         </div>
         <Link
@@ -66,10 +70,10 @@ export default async function TenantDashboardHome({
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Citas hoy" value={todaysAppointments?.length ?? 0} accent="gold" />
-        <StatCard label="Pendientes" value={pendingCount} />
-        <StatCard label="Completadas" value={completedCount} />
-        <StatCard label="Ingresos de hoy" value={formatMoney(todayRevenue)} accent="dark" />
+        <StatCard label="Citas hoy" value={todaysAppointments?.length ?? 0} accent="gold" Icon={IconCalendar} />
+        <StatCard label="Pendientes" value={pendingCount} Icon={IconClock} />
+        <StatCard label="Completadas" value={completedCount} Icon={IconCheck} />
+        <StatCard label="Ingresos de hoy" value={formatMoney(todayRevenue)} accent="dark" Icon={IconDollar} />
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
@@ -85,7 +89,7 @@ export default async function TenantDashboardHome({
           </div>
           <div className="divide-y divide-[#eeeae2]">
             {(todaysAppointments ?? []).slice(0, 6).map((a) => (
-              <div key={a.id} className="flex items-center gap-4 px-5 py-4 sm:px-6">
+              <div key={a.id} className="flex items-center gap-4 px-5 py-4 transition hover:bg-[#f7f6f2]/60 sm:px-6">
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#f7f6f2] text-xs font-semibold text-neutral-700">
                   {new Date(a.starts_at).toLocaleTimeString("es-DO", { hour: "numeric", minute: "2-digit", timeZone: barbershop.timezone })}
                 </div>
@@ -136,12 +140,32 @@ export default async function TenantDashboardHome({
   );
 }
 
-function StatCard({ label, value, accent }: { label: string; value: number | string; accent?: "gold" | "dark" }) {
+function StatCard({
+  label,
+  value,
+  accent,
+  Icon,
+}: {
+  label: string;
+  value: number | string;
+  accent?: "gold" | "dark";
+  Icon: (props: { className?: string }) => React.ReactElement;
+}) {
   return (
-    <div className={`rounded-2xl border p-5 shadow-[0_6px_24px_rgba(23,23,23,0.035)] ${accent === "dark" ? "border-[#171717] bg-[#171717] text-white" : accent === "gold" ? "border-[#d7c08c] bg-[#fffaf0]" : "border-[#e7e3da] bg-white"}`}>
+    <div
+      className={`group rounded-2xl border p-5 shadow-[0_6px_24px_rgba(23,23,23,0.035)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(23,23,23,0.08)] ${
+        accent === "dark" ? "border-[#171717] bg-[#171717] text-white" : accent === "gold" ? "border-[#d7c08c] bg-[#fffaf0]" : "border-[#e7e3da] bg-white"
+      }`}
+    >
       <div className="flex items-center justify-between gap-3">
         <p className={`text-xs font-medium ${accent === "dark" ? "text-white/55" : "text-neutral-500"}`}>{label}</p>
-        <span className={`h-2 w-2 rounded-full ${accent === "gold" ? "bg-[#c7a15a]" : accent === "dark" ? "bg-[#c7a15a]" : "bg-neutral-200"}`} />
+        <span
+          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition group-hover:scale-105 ${
+            accent === "dark" ? "bg-white/10 text-[#e2c17f]" : accent === "gold" ? "bg-[#c7a15a]/15 text-[#9d7837]" : "bg-neutral-100 text-neutral-500"
+          }`}
+        >
+          <Icon />
+        </span>
       </div>
       <p className="mt-4 text-2xl font-semibold tracking-tight">{value}</p>
     </div>
