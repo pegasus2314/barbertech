@@ -143,6 +143,9 @@ export default async function Home() {
           <div className="flex items-center gap-2 font-bold text-black/70"><span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#171717] text-[10px] text-[#f5d89a]">B</span> BarberTech</div>
           <span>© {new Date().getFullYear()} BarberTech. Hecho para barberías.</span>
         </div>
+        <div className="border-t border-[#e4dfd5]/70 px-5 py-4 text-center text-xs text-black/35 sm:px-8">
+          Desarrollado por <span className="font-semibold text-black/50">Albert Silvestre</span>
+        </div>
       </footer>
     </div>
   );
