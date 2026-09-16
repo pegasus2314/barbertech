@@ -1,6 +1,8 @@
 "use server";
 
+import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { sendPushToTenant } from "@/lib/push/send";
 
 export type SlotsResult =
   | { ok: true; slots: string[] }
@@ -34,8 +36,10 @@ export type BookingResult =
 
 export async function bookAppointment(input: {
   tenantId: string;
+  tenantSlug: string;
   barberId: string;
   serviceId: string;
+  serviceName: string;
   startsAt: string;
   clientName: string;
   clientPhone: string;
@@ -61,6 +65,14 @@ export async function bookAppointment(input: {
       error: error?.message ?? "No se pudo crear la cita. Intenta con otro horario.",
     };
   }
+
+  after(() =>
+    sendPushToTenant(input.tenantId, {
+      title: "Nueva cita",
+      body: `${input.clientName} reservó ${input.serviceName}.`,
+      url: `/dashboard/${input.tenantSlug}/citas`,
+    }),
+  );
 
   return { ok: true, appointmentId: data };
 }

@@ -533,6 +533,54 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          appointment_id: string | null
+          body: string
+          created_at: string
+          id: string
+          is_read: boolean
+          tenant_id: string
+          title: string
+          type: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          tenant_id: string
+          title: string
+          type: string
+        }
+        Update: {
+          appointment_id?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          tenant_id?: string
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "barbershops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount_cents: number
@@ -674,6 +722,44 @@ export type Database = {
           phone?: string | null
         }
         Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          tenant_id: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          tenant_id: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          tenant_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "barbershops"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       services: {
         Row: {
@@ -917,7 +1003,6 @@ export type Database = {
         Returns: string
       }
       current_barber_id: { Args: { p_tenant_id: string }; Returns: string }
-      is_barbershop_active: { Args: { p_tenant_id: string }; Returns: boolean }
       get_available_slots: {
         Args: {
           p_barber_id: string
@@ -946,6 +1031,7 @@ export type Database = {
         Args: { p_roles: string[]; p_tenant_id: string }
         Returns: boolean
       }
+      is_barbershop_active: { Args: { p_tenant_id: string }; Returns: boolean }
       is_member_of: { Args: { p_tenant_id: string }; Returns: boolean }
       is_platform_admin: { Args: never; Returns: boolean }
     }

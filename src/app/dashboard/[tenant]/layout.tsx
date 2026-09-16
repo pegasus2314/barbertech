@@ -2,6 +2,7 @@ import { getTenantContext } from "@/lib/tenant/get-tenant-context";
 import { getAccessState, graceDaysLeft } from "@/lib/subscription/access";
 import { SignOutButton } from "../sign-out-button";
 import { DashboardNav } from "./nav";
+import { NotificationBell } from "./notification-bell";
 import { SubscriptionPaymentForm } from "./configuracion/subscription-payment-form";
 
 export default async function TenantDashboardLayout({
@@ -61,10 +62,11 @@ export default async function TenantDashboardLayout({
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#c7a15a] text-lg font-bold text-[#171717]">
               {barbershop.name.slice(0, 1).toUpperCase()}
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold">{barbershop.name}</p>
               <p className="mt-0.5 text-xs capitalize text-white/50">{role}</p>
             </div>
+            <NotificationBell tenant={tenant} tenantId={barbershop.id} variant="dark" />
           </div>
         </div>
         <DashboardNav tenant={tenant} />
@@ -85,7 +87,10 @@ export default async function TenantDashboardLayout({
                 <p className="text-[11px] capitalize text-neutral-500">{role}</p>
               </div>
             </div>
-            <SignOutButton />
+            <div className="flex items-center gap-1">
+              <NotificationBell tenant={tenant} tenantId={barbershop.id} />
+              <SignOutButton />
+            </div>
           </div>
           <DashboardNav tenant={tenant} />
         </header>

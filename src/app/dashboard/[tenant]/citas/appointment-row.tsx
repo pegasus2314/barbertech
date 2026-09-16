@@ -64,9 +64,30 @@ export function AppointmentRow({
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const options = nextStatuses(appointment.status);
 
+  const when = new Date(appointment.starts_at).toLocaleString("es-DO", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: timezone,
+  });
+  const clientFirstName = appointment.clients?.full_name?.split(" ")[0] ?? "";
+  const serviceName = appointment.services?.name ?? "tu servicio";
+  const barberName = appointment.barbers?.display_name;
+
+  const CLIENT_MESSAGES: Record<string, string> = {
+    pending: `Hola ${clientFirstName}, tu cita de ${serviceName} para el ${when} está pendiente de confirmar. Te avisamos apenas la confirmemos.`,
+    confirmed: `Hola ${clientFirstName}, tu cita de ${serviceName}${barberName ? ` con ${barberName}` : ""} está confirmada para el ${when}. ¡Te esperamos!`,
+    cancelled: `Hola ${clientFirstName}, lamentamos informarte que tu cita de ${serviceName} para el ${when} fue cancelada. Contáctanos si quieres reagendar.`,
+    rejected: `Hola ${clientFirstName}, no pudimos confirmar tu cita de ${serviceName} para el ${when}. Contáctanos si quieres agendar otro horario.`,
+    no_show: `Hola ${clientFirstName}, notamos que no llegaste a tu cita de ${serviceName} del ${when}. ¿Quieres reagendar?`,
+  };
+
   const clientWaLink = waLink(
     appointment.clients?.phone,
-    `Hola ${appointment.clients?.full_name ?? ""}, te escribo sobre tu cita de ${appointment.services?.name ?? "tu servicio"}.`,
+    CLIENT_MESSAGES[appointment.status] ??
+      `Hola ${clientFirstName}, te escribo sobre tu cita de ${serviceName} para el ${when}.`,
   );
 
   function handleChange(status: string) {
@@ -121,7 +142,7 @@ export function AppointmentRow({
                 rel="noopener noreferrer"
                 className="text-xs font-semibold text-[#25D366] hover:underline"
               >
-                WhatsApp
+                Notificar por WhatsApp
               </a>
             )}
           </div>

@@ -137,8 +137,10 @@ export function BookingWizard({
     startTransition(async () => {
       const result = await bookAppointment({
         tenantId,
+        tenantSlug,
         barberId,
         serviceId,
+        serviceName: selectedService?.name ?? "un servicio",
         startsAt: slotStart,
         clientName: name,
         clientPhone: phone,
