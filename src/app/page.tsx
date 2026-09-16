@@ -164,16 +164,16 @@ function Step({ number, title, body }: { number: string; title: string; body: st
 const PLAN_COPY: Record<string, { tagline: string; bullets: string[]; highlight?: boolean }> = {
   basic: {
     tagline: "Para probar el sistema sin compromiso.",
-    bullets: ["Hasta 2 barberos", "Página de reservas propia", "Agenda y clientes básicos"],
+    bullets: ["1 barbero", "Página de reservas propia", "Agenda y clientes básicos"],
   },
   pro: {
-    tagline: "Para barberías que ya tienen movimiento.",
-    bullets: ["Hasta 6 barberos", "Todo lo del plan Basic", "Reportes y estadísticas avanzadas"],
+    tagline: "Para profesionales y barberías pequeñas.",
+    bullets: ["Hasta 5 barberos", "Citas y clientes ilimitados", "Finanzas y registro de pagos", "Reportes y estadísticas avanzadas"],
     highlight: true,
   },
   premium: {
-    tagline: "Para barberías con varias sedes o mucho volumen.",
-    bullets: ["Hasta 20 barberos", "Todo lo del plan Pro", "Soporte prioritario"],
+    tagline: "Para barberías con una operación más grande.",
+    bullets: ["Hasta 15 barberos", "Todo lo del plan Pro", "Soporte prioritario y ayuda con la configuración"],
   },
 };
 
