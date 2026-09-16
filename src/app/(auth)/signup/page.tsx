@@ -71,6 +71,9 @@ export default function SignupPage() {
       <p className="mt-1 text-sm text-neutral-500">
         Empieza a gestionar tu barbería en minutos.
       </p>
+      <p className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-[#fff8e9] px-3 py-2 text-xs font-semibold text-[#8b6729]">
+        ✓ 6 días de prueba gratis, sin tarjeta. Después, desde RD$999/mes.
+      </p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div>

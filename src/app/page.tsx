@@ -2,11 +2,20 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
+function formatPrice(cents: number) {
+  return (cents / 100).toLocaleString("es-DO", { style: "currency", currency: "DOP", maximumFractionDigits: 0 });
+}
+
 export default async function Home() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (user) redirect("/dashboard");
+
+  const { data: plans } = await supabase
+    .from("plans")
+    .select("id, key, name, price_cents")
+    .order("sort_order");
 
   return (
     <div className="min-h-screen bg-[#f7f6f2] text-[#171717]">
@@ -19,6 +28,7 @@ export default async function Home() {
           <nav className="flex items-center gap-3 sm:gap-7">
             <a href="#funciones" className="hidden text-sm font-medium text-black/60 hover:text-black sm:block">Funciones</a>
             <a href="#como-funciona" className="hidden text-sm font-medium text-black/60 hover:text-black md:block">Cómo funciona</a>
+            <a href="#precios" className="hidden text-sm font-medium text-black/60 hover:text-black md:block">Precios</a>
             <Link href="/login" className="text-sm font-semibold text-black/70 hover:text-black">Entrar</Link>
             <Link href="/signup" className="rounded-xl bg-[#171717] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-black/15 hover:-translate-y-0.5 hover:bg-black">Empezar</Link>
           </nav>
@@ -49,7 +59,7 @@ export default async function Home() {
                 </Link>
               </div>
               <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium text-black/45">
-                <span>✓ Configuración rápida</span><span>✓ Reservas 24/7</span><span>✓ Panel completo</span>
+                <span>✓ 6 días de prueba gratis</span><span>✓ Sin tarjeta para empezar</span><span>✓ Cancela cuando quieras</span>
               </div>
             </div>
             <ProductPreview />
@@ -86,6 +96,24 @@ export default async function Home() {
           </div>
         </section>
 
+        <section id="precios" className="border-y border-[#e4dfd5] bg-white/60">
+          <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-28">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#a47d36]">Precios</p>
+              <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Empieza gratis, crece cuando lo necesites.</h2>
+              <p className="mt-4 text-lg leading-7 text-black/55">
+                Todo plan incluye <strong className="text-black/75">6 días de prueba gratis</strong>, sin tarjeta. Después, elige el plan que se ajuste a tu barbería.
+              </p>
+            </div>
+            <div className="mt-14 grid gap-6 lg:grid-cols-3">
+              {(plans ?? []).map((plan) => (
+                <PlanCard key={plan.id} plan={plan} />
+              ))}
+            </div>
+            <p className="mt-8 text-center text-sm text-black/40">Precios en pesos dominicanos (DOP). Pago por transferencia o efectivo, sin comisiones ocultas.</p>
+          </div>
+        </section>
+
         <section className="px-5 pb-20 sm:px-8 sm:pb-28">
           <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#171717] px-7 py-12 text-white shadow-2xl shadow-black/20 sm:px-12 sm:py-16 lg:flex lg:items-center lg:justify-between lg:gap-12">
             <div>
@@ -114,6 +142,66 @@ function Step({ number, title, body }: { number: string; title: string; body: st
       <span className="text-sm font-black text-[#b28a43]">{number}</span>
       <h3 className="mt-8 text-xl font-black">{title}</h3>
       <p className="mt-3 text-sm leading-7 text-black/55">{body}</p>
+    </div>
+  );
+}
+
+const PLAN_COPY: Record<string, { tagline: string; bullets: string[]; highlight?: boolean }> = {
+  basic: {
+    tagline: "Para probar el sistema sin compromiso.",
+    bullets: ["Hasta 2 barberos", "Página de reservas propia", "Agenda y clientes básicos"],
+  },
+  pro: {
+    tagline: "Para barberías que ya tienen movimiento.",
+    bullets: ["Hasta 6 barberos", "Todo lo del plan Basic", "Reportes y estadísticas avanzadas"],
+    highlight: true,
+  },
+  premium: {
+    tagline: "Para barberías con varias sedes o mucho volumen.",
+    bullets: ["Hasta 20 barberos", "Todo lo del plan Pro", "Soporte prioritario"],
+  },
+};
+
+function PlanCard({ plan }: { plan: { id: string; key: string; name: string; price_cents: number } }) {
+  const copy = PLAN_COPY[plan.key] ?? { tagline: "", bullets: [] };
+  const isFree = plan.price_cents === 0;
+
+  return (
+    <div
+      className={`relative flex flex-col rounded-3xl border p-8 ${
+        copy.highlight
+          ? "border-[#c7a15a] bg-[#171717] text-white shadow-2xl shadow-black/20 lg:-translate-y-3"
+          : "border-[#e4dfd5] bg-white"
+      }`}
+    >
+      {copy.highlight && (
+        <span className="absolute -top-3 left-8 rounded-full bg-[#c7a15a] px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#171717]">
+          Más elegido
+        </span>
+      )}
+      <h3 className={`text-lg font-black ${copy.highlight ? "text-[#e2c17f]" : "text-black"}`}>{plan.name}</h3>
+      <p className={`mt-1 text-sm ${copy.highlight ? "text-white/55" : "text-black/50"}`}>{copy.tagline}</p>
+      <div className="mt-6 flex items-baseline gap-1">
+        <span className="text-4xl font-black tracking-tight">{isFree ? "Gratis" : formatPrice(plan.price_cents)}</span>
+        {!isFree && <span className={`text-sm font-semibold ${copy.highlight ? "text-white/45" : "text-black/40"}`}>/mes</span>}
+      </div>
+      <ul className={`mt-7 flex-1 space-y-3 text-sm ${copy.highlight ? "text-white/75" : "text-black/65"}`}>
+        {copy.bullets.map((b) => (
+          <li key={b} className="flex items-start gap-2">
+            <span className={copy.highlight ? "text-[#e2c17f]" : "text-[#a47d36]"}>✓</span> {b}
+          </li>
+        ))}
+      </ul>
+      <Link
+        href="/signup"
+        className={`mt-8 inline-flex items-center justify-center rounded-2xl px-5 py-3.5 text-sm font-bold ${
+          copy.highlight
+            ? "bg-[#c7a15a] text-[#171717] hover:bg-[#d5b36c]"
+            : "bg-[#171717] text-white hover:bg-black"
+        }`}
+      >
+        Empezar prueba gratis
+      </Link>
     </div>
   );
 }
