@@ -16,14 +16,20 @@ export async function updateProfile(
   const { supabase, barbershop, canManage } = await getTenantContext(tenant);
   if (!canManage) return { ok: false as const, error: "No tienes permiso para hacer esto." };
 
+  const name = input.name.trim();
+  const description = input.description.trim();
+  const phone = input.phone.trim();
+  const whatsapp = input.whatsapp.trim();
+  const address = input.address.trim();
+
   const { error } = await supabase
     .from("barbershops")
     .update({
-      name: input.name,
-      description: input.description || null,
-      phone: input.phone || null,
-      whatsapp: input.whatsapp || null,
-      address: input.address || null,
+      name,
+      description: description || null,
+      phone: phone || null,
+      whatsapp: whatsapp || null,
+      address: address || null,
     })
     .eq("id", barbershop.id);
 

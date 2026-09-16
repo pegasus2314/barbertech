@@ -12,10 +12,10 @@ export async function createService(
 
   const { error } = await supabase.from("services").insert({
     tenant_id: barbershop.id,
-    name: input.name,
+    name: input.name.trim(),
     price_cents: input.priceCents,
     duration_minutes: input.durationMinutes,
-    description: input.description || null,
+    description: input.description?.trim() || null,
   });
 
   if (error) return { ok: false as const, error: error.message };

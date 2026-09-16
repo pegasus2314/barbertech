@@ -12,7 +12,7 @@ export async function createBarber(
 
   const { data: barber, error } = await supabase
     .from("barbers")
-    .insert({ tenant_id: barbershop.id, display_name: input.displayName })
+    .insert({ tenant_id: barbershop.id, display_name: input.displayName.trim() })
     .select("id")
     .single();
 

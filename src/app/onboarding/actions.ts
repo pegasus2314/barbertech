@@ -16,9 +16,10 @@ export type ActionResult<T = undefined> =
   | { ok: true; data: T }
   | { ok: false; error: string };
 
-export async function createBarbershop(name: string): Promise<ActionResult<{ tenantId: string; slug: string }>> {
+export async function createBarbershop(rawName: string): Promise<ActionResult<{ tenantId: string; slug: string }>> {
   const { supabase } = await requireUser();
 
+  const name = rawName.trim();
   const baseSlug = slugify(name);
   if (!baseSlug) {
     return { ok: false, error: "El nombre debe contener al menos una letra o número." };
@@ -51,7 +52,7 @@ export async function addService(
     .from("services")
     .insert({
       tenant_id: tenantId,
-      name: input.name,
+      name: input.name.trim(),
       price_cents: input.priceCents,
       duration_minutes: input.durationMinutes,
     })
@@ -73,7 +74,7 @@ export async function addBarber(
 
   const { data: barber, error } = await supabase
     .from("barbers")
-    .insert({ tenant_id: tenantId, display_name: input.displayName })
+    .insert({ tenant_id: tenantId, display_name: input.displayName.trim() })
     .select("id")
     .single();
 
