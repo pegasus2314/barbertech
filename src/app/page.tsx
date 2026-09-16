@@ -194,10 +194,10 @@ function PlanCard({ plan }: { plan: { id: string; key: string; name: string; pri
       </ul>
       <Link
         href="/signup"
-        className={`mt-8 inline-flex items-center justify-center rounded-2xl px-5 py-3.5 text-sm font-bold ${
+        className={`mt-8 inline-flex items-center justify-center rounded-2xl px-5 py-3.5 text-sm font-bold shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] ${
           copy.highlight
-            ? "bg-[#c7a15a] text-[#171717] hover:bg-[#d5b36c]"
-            : "bg-[#171717] text-white hover:bg-black"
+            ? "bg-[#c7a15a] text-[#171717] shadow-black/20 hover:bg-[#d5b36c]"
+            : "bg-[#171717] text-white shadow-black/10 hover:bg-black"
         }`}
       >
         {isFree ? "Empezar prueba gratis" : "Compra ya"}
