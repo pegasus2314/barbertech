@@ -141,7 +141,11 @@ export default async function Home() {
       <footer className="border-t border-[#e4dfd5] bg-white/50">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-sm text-black/45 sm:flex-row sm:items-center sm:justify-between sm:px-8">
           <div className="flex items-center gap-2 font-bold text-black/70"><span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#171717] text-[10px] text-[#f5d89a]">B</span> BarberTech</div>
-          <span>© {new Date().getFullYear()} BarberTech. Hecho para barberías.</span>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <span>© {new Date().getFullYear()} BarberTech. Hecho para barberías.</span>
+            <Link href="/terminos" className="hover:text-black">Términos</Link>
+            <Link href="/privacidad" className="hover:text-black">Privacidad</Link>
+          </div>
         </div>
         <div className="border-t border-[#e4dfd5]/70 px-5 py-4 text-center text-xs text-black/35 sm:px-8">
           Desarrollado por <span className="font-semibold text-black/50">Albert Silvestre</span>
