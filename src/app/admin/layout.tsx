@@ -1,3 +1,4 @@
+// Panel de Super Admin — desarrollado por Albert Silvestre
 import Link from "next/link";
 import { requirePlatformAdmin } from "@/lib/auth/require-platform-admin";
 import { SignOutButton } from "@/app/dashboard/sign-out-button";

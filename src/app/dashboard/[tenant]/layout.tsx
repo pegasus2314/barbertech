@@ -1,3 +1,4 @@
+// Panel de la barbería — desarrollado por Albert Silvestre
 import { getTenantContext } from "@/lib/tenant/get-tenant-context";
 import { getAccessState, graceDaysLeft } from "@/lib/subscription/access";
 import { SignOutButton } from "../sign-out-button";

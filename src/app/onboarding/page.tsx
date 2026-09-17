@@ -1,3 +1,4 @@
+// Flujo de onboarding — desarrollado por Albert Silvestre
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { requireUser } from "@/lib/auth/require-user";

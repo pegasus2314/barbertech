@@ -1,3 +1,4 @@
+// Flujo de reserva pública — desarrollado por Albert Silvestre
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
