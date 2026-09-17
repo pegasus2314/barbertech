@@ -77,6 +77,31 @@ export function IconSettings({ className }: IconProps) {
     </svg>
   );
 }
+export function IconStore({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" className={className} {...base}>
+      <path d="M4 9.5 5 4h14l1 5.5" />
+      <path d="M3.5 9.5a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0" />
+      <path d="M5 10v9.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10" />
+      <path d="M9.5 20.5V15a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v5.5" />
+    </svg>
+  );
+}
+export function IconActivity({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" className={className} {...base}>
+      <path d="M2.5 13h4l2.2-7 4.6 15 2.7-11 1.6 3h3.9" />
+    </svg>
+  );
+}
+export function IconSearch({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" className={className} {...base}>
+      <circle cx="10.5" cy="10.5" r="6.5" />
+      <path d="m20 20-4.3-4.3" />
+    </svg>
+  );
+}
 export function IconCheck({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" width="20" height="20" className={className} {...base}>

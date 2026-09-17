@@ -966,6 +966,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_search_barbershops: {
+        Args: { search?: string }
+        Returns: {
+          created_at: string
+          id: string
+          is_published: boolean
+          name: string
+          plan_id: string
+          plan_name: string
+          plan_price_cents: number
+          slug: string
+          status: string
+        }[]
+      }
       cancel_public_appointment: {
         Args: { p_appointment_id: string; p_phone: string }
         Returns: boolean

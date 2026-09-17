@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requirePlatformAdmin } from "@/lib/auth/require-platform-admin";
 import { PaymentActions } from "../[tenant]/payment-actions";
 import { CARD, EYEBROW } from "@/lib/ui";
+import { IconDollar } from "@/lib/icons";
 
 function formatMoney(cents: number) {
   return (cents / 100).toLocaleString("es-DO", { style: "currency", currency: "DOP" });
@@ -18,12 +19,17 @@ export default async function AdminPaymentsPage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <div>
-        <p className={EYEBROW}>Suscripciones</p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Pagos pendientes</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Pagos de suscripción registrados por dueños, esperando confirmación.
-        </p>
+      <div className="flex items-start gap-3.5">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fff8e9] text-[#9d7837]">
+          <IconDollar />
+        </span>
+        <div>
+          <p className={EYEBROW}>Suscripciones</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">Pagos pendientes</h1>
+          <p className="mt-1 text-sm text-neutral-500">
+            Pagos de suscripción registrados por dueños, esperando confirmación.
+          </p>
+        </div>
       </div>
 
       <div className="space-y-3">

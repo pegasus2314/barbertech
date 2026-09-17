@@ -1,9 +1,12 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requirePlatformAdmin } from "@/lib/auth/require-platform-admin";
 import { StatusControls } from "./status-controls";
 import { PlanSelector } from "./plan-selector";
 import { PaymentActions } from "./payment-actions";
+import { ExtendTrial } from "./extend-trial";
 import { CARD, EYEBROW } from "@/lib/ui";
+import { IconStore } from "@/lib/icons";
 
 function formatMoney(cents: number, currency = "DOP") {
   return (cents / 100).toLocaleString("es-DO", { style: "currency", currency });
@@ -39,10 +42,19 @@ export default async function AdminTenantPage({
 
   return (
     <div className="max-w-2xl space-y-6">
-      <div>
-        <p className={EYEBROW}>Barbería</p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">{barbershop.name}</h1>
-        <p className="text-sm text-neutral-500">/{barbershop.slug}</p>
+      <Link href="/admin" className="inline-flex items-center gap-1.5 text-sm font-medium text-neutral-500 hover:text-neutral-900">
+        ← Todas las barberías
+      </Link>
+
+      <div className="flex items-start gap-3.5">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fff8e9] text-[#9d7837]">
+          <IconStore />
+        </span>
+        <div>
+          <p className={EYEBROW}>Barbería</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-950">{barbershop.name}</h1>
+          <p className="text-sm text-neutral-500">/{barbershop.slug}</p>
+        </div>
       </div>
 
       <div className={`${CARD} p-5`}>
@@ -50,6 +62,12 @@ export default async function AdminTenantPage({
         <p className="mt-1 text-sm text-neutral-500">Estado actual: {barbershop.status}</p>
         <div className="mt-3">
           <StatusControls tenantId={barbershop.id} currentStatus={barbershop.status} />
+        </div>
+        <div className="mt-4 border-t border-[#eeeae2] pt-4">
+          <p className="text-xs font-semibold text-neutral-500">Extender período de prueba</p>
+          <div className="mt-2">
+            <ExtendTrial tenantId={barbershop.id} />
+          </div>
         </div>
       </div>
 

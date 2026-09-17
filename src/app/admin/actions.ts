@@ -75,6 +75,44 @@ export async function confirmSubscriptionPayment(paymentId: string, tenantId: st
   return { ok: true as const };
 }
 
+export async function extendTrial(tenantId: string, days: number) {
+  const { supabase, user } = await requirePlatformAdmin();
+
+  const { data: subscription } = await supabase
+    .from("subscriptions")
+    .select("id, trial_ends_at")
+    .eq("tenant_id", tenantId)
+    .maybeSingle();
+
+  if (!subscription) return { ok: false as const, error: "Esta barbería no tiene suscripción." };
+
+  const base = subscription.trial_ends_at && new Date(subscription.trial_ends_at) > new Date()
+    ? new Date(subscription.trial_ends_at)
+    : new Date();
+  base.setDate(base.getDate() + days);
+
+  const { error } = await supabase
+    .from("subscriptions")
+    .update({ status: "trial", trial_ends_at: base.toISOString() })
+    .eq("id", subscription.id);
+  if (error) return { ok: false as const, error: error.message };
+
+  await supabase.from("barbershops").update({ status: "trial" }).eq("id", tenantId);
+
+  await supabase.from("audit_log").insert({
+    tenant_id: tenantId,
+    actor_id: user.id,
+    action: "extended_trial",
+    entity_type: "subscription",
+    entity_id: subscription.id,
+    metadata: { days, new_trial_ends_at: base.toISOString() },
+  });
+
+  revalidatePath("/admin");
+  revalidatePath(`/admin/${tenantId}`);
+  return { ok: true as const };
+}
+
 export async function rejectSubscriptionPayment(paymentId: string, tenantId: string) {
   const { supabase, user } = await requirePlatformAdmin();
 
