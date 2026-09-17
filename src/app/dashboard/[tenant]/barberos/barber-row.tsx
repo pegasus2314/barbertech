@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import type { Tables } from "@/lib/supabase/types";
 import { setBarberServices, toggleBarberActive } from "./actions";
 import { CARD, PILL_ACTIVE, PILL_INACTIVE } from "@/lib/ui";
+import { useOptimisticAction } from "@/lib/use-optimistic-action";
 
 export function BarberRow({
   tenant,
@@ -19,15 +19,12 @@ export function BarberRow({
   selectedServiceIds: string[];
   canManage: boolean;
 }) {
-  const router = useRouter();
   const [selected, setSelected] = useState(selectedServiceIds);
-  const [pending, startTransition] = useTransition();
+  const [servicesPending, startTransition] = useTransition();
+  const { value: isActive, pending: activePending, run: runToggleActive } = useOptimisticAction(barber.is_active);
 
   function handleToggleActive() {
-    startTransition(async () => {
-      await toggleBarberActive(tenant, barber.id, !barber.is_active);
-      router.refresh();
-    });
+    runToggleActive(!isActive, () => toggleBarberActive(tenant, barber.id, !isActive));
   }
 
   function handleToggleService(id: string) {
@@ -50,12 +47,12 @@ export function BarberRow({
         {canManage && (
           <button
             onClick={handleToggleActive}
-            disabled={pending}
+            disabled={activePending}
             className={`rounded-full px-3 py-1 text-xs font-semibold transition disabled:opacity-50 ${
-              barber.is_active ? `${PILL_ACTIVE} hover:bg-emerald-100` : `${PILL_INACTIVE} hover:bg-neutral-200`
+              isActive ? `${PILL_ACTIVE} hover:bg-emerald-100` : `${PILL_INACTIVE} hover:bg-neutral-200`
             }`}
           >
-            {barber.is_active ? "Activo" : "Inactivo"}
+            {isActive ? "Activo" : "Inactivo"}
           </button>
         )}
       </div>
@@ -66,7 +63,7 @@ export function BarberRow({
             <button
               key={service.id}
               onClick={() => handleToggleService(service.id)}
-              disabled={pending}
+              disabled={servicesPending}
               className={`rounded-full border px-3 py-1 text-xs font-medium transition disabled:opacity-50 ${
                 selected.includes(service.id)
                   ? "border-[#171717] bg-[#171717] text-white"

@@ -1,23 +1,20 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { togglePublish } from "./actions";
 import { CARD } from "@/lib/ui";
+import { useOptimisticAction } from "@/lib/use-optimistic-action";
 
 export function PublishToggle({ tenant, isPublished }: { tenant: string; isPublished: boolean }) {
-  const [published, setPublished] = useState(isPublished);
+  const { value: published, pending, run } = useOptimisticAction(isPublished);
   const [error, setError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
 
   function handleToggle() {
     setError(null);
-    startTransition(async () => {
-      const result = await togglePublish(tenant, !published);
-      if (!result.ok) {
-        setError(result.error);
-        return;
-      }
-      setPublished(!published);
+    const next = !published;
+    run(next, async () => {
+      const result = await togglePublish(tenant, next);
+      if (!result.ok) setError(result.error);
     });
   }
 

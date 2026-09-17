@@ -1,6 +1,7 @@
 import { getTenantContext } from "@/lib/tenant/get-tenant-context";
 import { AppointmentRow } from "./appointment-row";
 import { NewAppointmentForm } from "./new-appointment-form";
+import { CitasRealtimeRefresh } from "./realtime-refresh";
 import { EmptyState } from "../empty-state";
 import { zonedDayBounds } from "@/lib/timezone";
 import { IconCalendar } from "@/lib/icons";
@@ -70,6 +71,7 @@ export default async function AppointmentsPage({
 
   return (
     <div className="space-y-6">
+      <CitasRealtimeRefresh tenantId={barbershop.id} />
       <div className="flex items-start gap-3.5">
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fff8e9] text-[#9d7837]">
           <IconCalendar />

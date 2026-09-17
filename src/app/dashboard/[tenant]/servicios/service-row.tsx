@@ -1,10 +1,9 @@
 "use client";
 
-import { useTransition } from "react";
-import { useRouter } from "next/navigation";
 import type { Tables } from "@/lib/supabase/types";
 import { toggleServiceActive } from "./actions";
 import { PILL_ACTIVE, PILL_INACTIVE } from "@/lib/ui";
+import { useOptimisticAction } from "@/lib/use-optimistic-action";
 
 function formatMoney(cents: number) {
   return (cents / 100).toLocaleString("es-DO", { style: "currency", currency: "DOP" });
@@ -19,14 +18,10 @@ export function ServiceRow({
   service: Tables<"services">;
   canManage: boolean;
 }) {
-  const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const { value: isActive, pending, run } = useOptimisticAction(service.is_active);
 
   function handleToggle() {
-    startTransition(async () => {
-      await toggleServiceActive(tenant, service.id, !service.is_active);
-      router.refresh();
-    });
+    run(!isActive, () => toggleServiceActive(tenant, service.id, !isActive));
   }
 
   return (
@@ -42,10 +37,10 @@ export function ServiceRow({
           onClick={handleToggle}
           disabled={pending}
           className={`rounded-full px-3 py-1 text-xs font-semibold transition disabled:opacity-50 ${
-            service.is_active ? `${PILL_ACTIVE} hover:bg-emerald-100` : `${PILL_INACTIVE} hover:bg-neutral-200`
+            isActive ? `${PILL_ACTIVE} hover:bg-emerald-100` : `${PILL_INACTIVE} hover:bg-neutral-200`
           }`}
         >
-          {service.is_active ? "Activo" : "Inactivo"}
+          {isActive ? "Activo" : "Inactivo"}
         </button>
       )}
     </div>

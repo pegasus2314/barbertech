@@ -6,6 +6,7 @@ import { nextStatuses } from "@/lib/appointments/status";
 import { updateAppointmentStatus, deleteAppointment } from "./actions";
 import { recordPayment } from "../finanzas/actions";
 import { waLink } from "@/lib/whatsapp";
+import { useOptimisticAction } from "@/lib/use-optimistic-action";
 
 const STATUS_LABELS: Record<string, string> = {
   pending: "Pendiente",
@@ -55,14 +56,14 @@ export function AppointmentRow({
   canManage: boolean;
 }) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const { value: status, pending, run: runStatusChange } = useOptimisticAction(appointment.status);
   const [payOpen, setPayOpen] = useState(false);
   const [payPending, startPayTransition] = useTransition();
   const [payError, setPayError] = useState<string | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deletePending, startDeleteTransition] = useTransition();
   const [deleteError, setDeleteError] = useState<string | null>(null);
-  const options = nextStatuses(appointment.status);
+  const options = nextStatuses(status);
 
   const when = new Date(appointment.starts_at).toLocaleString("es-DO", {
     weekday: "long",
@@ -86,15 +87,12 @@ export function AppointmentRow({
 
   const clientWaLink = waLink(
     appointment.clients?.phone,
-    CLIENT_MESSAGES[appointment.status] ??
+    CLIENT_MESSAGES[status] ??
       `Hola ${clientFirstName}, te escribo sobre tu cita de ${serviceName} para el ${when}.`,
   );
 
-  function handleChange(status: string) {
-    startTransition(async () => {
-      await updateAppointmentStatus(tenant, appointment.id, status);
-      router.refresh();
-    });
+  function handleChange(nextStatus: string) {
+    runStatusChange(nextStatus, () => updateAppointmentStatus(tenant, appointment.id, nextStatus));
   }
 
   function handleRegisterPayment() {
@@ -149,11 +147,11 @@ export function AppointmentRow({
         </div>
         <div className="flex flex-col items-end gap-1">
           <span
-            className={`rounded-full px-2.5 py-1 text-xs font-semibold ${STATUS_COLORS[appointment.status] ?? "bg-neutral-100 text-neutral-600"}`}
+            className={`rounded-full px-2.5 py-1 text-xs font-semibold ${STATUS_COLORS[status] ?? "bg-neutral-100 text-neutral-600"}`}
           >
-            {STATUS_LABELS[appointment.status] ?? appointment.status}
+            {STATUS_LABELS[status] ?? status}
           </span>
-          {appointment.status === "completed" && (
+          {status === "completed" && (
             <span
               className={`rounded-full px-2.5 py-1 text-xs font-semibold ${isPaid ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}
             >
@@ -180,19 +178,19 @@ export function AppointmentRow({
         <span className="font-semibold text-neutral-900">{formatMoney(appointment.price_cents)}</span>
       </div>
 
-      {(options.length > 0 || (canManage && appointment.status === "completed" && !isPaid)) && (
+      {(options.length > 0 || (canManage && status === "completed" && !isPaid)) && (
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          {options.map((status) => (
+          {options.map((option) => (
             <button
-              key={status}
-              onClick={() => handleChange(status)}
+              key={option}
+              onClick={() => handleChange(option)}
               disabled={pending}
               className="rounded-lg border border-[#e7e3da] px-3 py-1 text-xs font-medium text-neutral-700 transition hover:border-[#c7a15a] hover:bg-[#fffaf0] disabled:opacity-50"
             >
-              {STATUS_LABELS[status]}
+              {STATUS_LABELS[option]}
             </button>
           ))}
-          {canManage && appointment.status === "completed" && !isPaid && !payOpen && (
+          {canManage && status === "completed" && !isPaid && !payOpen && (
             <button
               onClick={() => setPayOpen(true)}
               className="rounded-lg border border-[#c7a15a] bg-[#fffaf0] px-3 py-1 text-xs font-semibold text-[#9d7837] transition hover:bg-[#fff3d9]"

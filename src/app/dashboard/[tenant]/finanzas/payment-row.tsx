@@ -1,9 +1,8 @@
 "use client";
 
-import { useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { voidPayment } from "./actions";
 import { CARD } from "@/lib/ui";
+import { useOptimisticAction } from "@/lib/use-optimistic-action";
 
 type Payment = {
   id: string;
@@ -20,14 +19,10 @@ function formatMoney(cents: number) {
 }
 
 export function PaymentRow({ tenant, payment }: { tenant: string; payment: Payment }) {
-  const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const { value: status, pending, run } = useOptimisticAction(payment.status);
 
   function handleVoid() {
-    startTransition(async () => {
-      await voidPayment(tenant, payment.id);
-      router.refresh();
-    });
+    run("voided", () => voidPayment(tenant, payment.id));
   }
 
   return (
@@ -45,7 +40,7 @@ export function PaymentRow({ tenant, payment }: { tenant: string; payment: Payme
           {payment.reference ? ` · ${payment.reference}` : ""}
         </p>
       </div>
-      {payment.status === "voided" ? (
+      {status === "voided" ? (
         <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-500">
           Anulado
         </span>
