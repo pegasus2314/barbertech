@@ -761,6 +761,27 @@ export type Database = {
           },
         ]
       }
+      rate_limits: {
+        Row: {
+          action: string
+          created_at: string
+          id: number
+          key: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: never
+          key: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: never
+          key?: string
+        }
+        Relationships: []
+      }
       services: {
         Row: {
           created_at: string

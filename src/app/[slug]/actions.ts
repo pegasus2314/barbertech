@@ -3,6 +3,9 @@
 import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendPushToTenant } from "@/lib/push/send";
+import { checkRateLimit, clientIp } from "@/lib/rate-limit";
+
+const RATE_LIMIT_MESSAGE = "Demasiados intentos. Espera unos minutos e intenta de nuevo.";
 
 export type SlotsResult =
   | { ok: true; slots: string[] }
@@ -46,6 +49,13 @@ export async function bookAppointment(input: {
   clientEmail?: string;
   notes?: string;
 }): Promise<BookingResult> {
+  const ip = await clientIp();
+  const [phoneOk, ipOk] = await Promise.all([
+    checkRateLimit(`phone:${input.clientPhone}`, "book", 5, 10),
+    checkRateLimit(`ip:${ip}`, "book", 15, 10),
+  ]);
+  if (!phoneOk || !ipOk) return { ok: false, error: RATE_LIMIT_MESSAGE };
+
   const supabase = await createClient();
 
   const { data, error } = await supabase.rpc("create_public_appointment", {
@@ -93,6 +103,13 @@ export type LookupResult =
   | { ok: false; error: string };
 
 export async function lookupAppointments(tenantId: string, phone: string): Promise<LookupResult> {
+  const ip = await clientIp();
+  const [phoneOk, ipOk] = await Promise.all([
+    checkRateLimit(`phone:${phone}`, "lookup", 10, 10),
+    checkRateLimit(`ip:${ip}`, "lookup", 30, 10),
+  ]);
+  if (!phoneOk || !ipOk) return { ok: false, error: RATE_LIMIT_MESSAGE };
+
   const supabase = await createClient();
 
   const { data, error } = await supabase.rpc("get_client_appointments", {
@@ -111,6 +128,13 @@ export async function cancelAppointment(
   appointmentId: string,
   phone: string,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
+  const ip = await clientIp();
+  const [phoneOk, ipOk] = await Promise.all([
+    checkRateLimit(`phone:${phone}`, "cancel", 5, 10),
+    checkRateLimit(`ip:${ip}`, "cancel", 15, 10),
+  ]);
+  if (!phoneOk || !ipOk) return { ok: false, error: RATE_LIMIT_MESSAGE };
+
   const supabase = await createClient();
 
   const { data, error } = await supabase.rpc("cancel_public_appointment", {
