@@ -222,6 +222,50 @@ export type Database = {
           },
         ]
       }
+      barber_invites: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          display_name: string
+          email: string
+          id: string
+          invited_by: string | null
+          service_ids: string[]
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          display_name: string
+          email: string
+          id?: string
+          invited_by?: string | null
+          service_ids?: string[]
+          status?: string
+          tenant_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          display_name?: string
+          email?: string
+          id?: string
+          invited_by?: string | null
+          service_ids?: string[]
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "barber_invites_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "barbershops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       barber_services: {
         Row: {
           barber_id: string

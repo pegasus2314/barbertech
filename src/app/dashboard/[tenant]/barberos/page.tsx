@@ -1,5 +1,6 @@
 import { getTenantContext } from "@/lib/tenant/get-tenant-context";
 import { BarberForm } from "./barber-form";
+import { InviteBarberForm } from "./invite-barber-form";
 import { BarberRow } from "./barber-row";
 import { EmptyState } from "../empty-state";
 import { IconBarber } from "@/lib/icons";
@@ -50,7 +51,12 @@ export default async function BarbersPage({
         </div>
       </div>
 
-      {canManage && <BarberForm tenant={tenant} services={services ?? []} />}
+      {canManage && (
+        <div className="flex flex-wrap gap-2">
+          <BarberForm tenant={tenant} services={services ?? []} />
+          <InviteBarberForm tenant={tenant} services={services ?? []} />
+        </div>
+      )}
 
       <div className="space-y-3">
         {barbers && barbers.length > 0 ? (

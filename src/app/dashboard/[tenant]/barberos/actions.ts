@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { getTenantContext } from "@/lib/tenant/get-tenant-context";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { siteUrl } from "@/lib/site-url";
 
 export async function createBarber(
   tenant: string,
@@ -29,6 +31,52 @@ export async function createBarber(
     const { error: linkError } = await supabase.from("barber_services").insert(links);
     if (linkError) return { ok: false as const, error: linkError.message };
   }
+
+  revalidatePath(`/dashboard/${tenant}/barberos`);
+  return { ok: true as const };
+}
+
+export async function inviteBarber(
+  tenant: string,
+  input: { email: string; displayName: string; serviceIds: string[] },
+) {
+  const { barbershop, user, canManage } = await getTenantContext(tenant);
+  if (!canManage) return { ok: false as const, error: "No tienes permiso para hacer esto." };
+
+  const email = input.email.trim().toLowerCase();
+  const displayName = input.displayName.trim();
+  if (!email || !displayName) {
+    return { ok: false as const, error: "Completa el correo y el nombre." };
+  }
+
+  const admin = createAdminClient();
+
+  // Send the invite first — if this fails (e.g. that email already has an
+  // account) we don't want a dangling barber_invites row nothing will ever
+  // pick up.
+  const { error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
+    redirectTo: `${siteUrl()}/invite/accept`,
+    data: { invited_barbershop_name: barbershop.name },
+  });
+
+  if (inviteError) {
+    const alreadyExists = /already.*regist/i.test(inviteError.message);
+    return {
+      ok: false as const,
+      error: alreadyExists
+        ? "Ese correo ya tiene una cuenta en BarberTech — pídele que inicie sesión directamente en vez de invitarlo."
+        : inviteError.message,
+    };
+  }
+
+  const { error: inviteRowError } = await admin.from("barber_invites").insert({
+    tenant_id: barbershop.id,
+    email,
+    display_name: displayName,
+    service_ids: input.serviceIds,
+    invited_by: user.id,
+  });
+  if (inviteRowError) return { ok: false as const, error: inviteRowError.message };
 
   revalidatePath(`/dashboard/${tenant}/barberos`);
   return { ok: true as const };
