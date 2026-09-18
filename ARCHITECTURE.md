@@ -370,3 +370,14 @@ No se agregó limpieza automática de filas viejas en `rate_limits` (la tabla cr
 **Cómo se aplica el color** (`src/lib/color.ts`): el dueño elige un solo hex; `accentPalette()` deriva una variante oscura (`shade(-0.35)`, para texto legible sobre fondo crema) y una clara (`shade(+0.55)`, para texto sobre fondo oscuro) mezclando hacia negro/blanco — así no hay que pedirle 3 colores a alguien que solo quiere "mi color". Los tres valores se inyectan como variables CSS (`--accent`, `--accent-deep`, `--accent-light`) en el contenedor raíz de `[slug]/page.tsx` y `[slug]/reservar/wizard.tsx`, y las clases de Tailwind los referencian como `bg-[var(--accent)]` en vez de hex fijos — así un solo cambio de color se propaga a botones, textos y bordes sin tocar cada componente. El punto dorado "BarberTech" en la portada se dejó fijo a propósito: es la marca de la plataforma, no la de la barbería.
 
 Sin personalización (`theme: {}`), `accentPalette()` cae al dorado original (`#c7a15a`) — verificado que una barbería sin configurar (la real, `los-baah`) se ve exactamente igual que antes de este cambio.
+
+## 18. Recuperar contraseña
+
+De las 4 plantillas de correo con marca propia (sección "Correo transaccional con marca propia" más arriba), "Reset Password" era la única con una plantilla lista pero sin ninguna forma de dispararla desde la app — no había link de "¿Olvidaste tu contraseña?" en ningún lado. ("Magic Link" e "Invite user" siguen sin usarse: no existen login sin contraseña ni invitar-barbero-por-correo como funciones reales todavía, así que configurarlas en Supabase no tendría efecto.)
+
+Flujo agregado, dos páginas nuevas dentro del grupo `(auth)` (mismo layout, misma `SupportBubble`):
+
+- **`/forgot-password`**: pide el correo, llama `supabase.auth.resetPasswordForEmail(email, { redirectTo: siteUrl() + "/reset-password" })`. Muestra el mismo mensaje de "revisa tu correo" exista o no una cuenta con ese correo — lo contrario convertiría el formulario en una forma de averiguar qué correos tienen cuenta.
+- **`/reset-password`**: a donde cae el enlace del correo. Supabase deja al navegador con una sesión temporal al abrir ese enlace (así confirma que la persona controla el correo); la página solo revisa `getSession()` — si hay sesión, muestra el formulario de nueva contraseña (con la misma verificación contra HaveIBeenPwned que ya usa el registro); si no, muestra "Enlace inválido o vencido" con un botón para pedir uno nuevo.
+
+Verificado de punta a punta: se pidió un enlace real desde el navegador (cuenta `owner.qa@barbertech.test`) y se confirmó en los logs de Supabase (`query_logs`, `source = 'auth_logs'`) la entrada `action: user_recovery_requested`, `status: 200` — el correo salió de verdad, no solo la llamada a la API. También se confirmó que `/reset-password` sin sesión (cookies borradas) muestra correctamente "Enlace inválido o vencido".
