@@ -5,6 +5,7 @@ import { SignOutButton } from "../sign-out-button";
 import { DashboardNav } from "./nav";
 import { NotificationBell } from "./notification-bell";
 import { RegisterServiceWorker } from "./register-sw";
+import { SupportBubble } from "./support-bubble";
 import { SubscriptionPaymentForm } from "./configuracion/subscription-payment-form";
 
 export default async function TenantDashboardLayout({
@@ -59,6 +60,7 @@ export default async function TenantDashboardLayout({
   return (
     <div className="min-h-screen bg-[#f7f6f2] text-neutral-950 sm:flex">
       <RegisterServiceWorker />
+      <SupportBubble barbershopName={barbershop.name} />
       <aside className="hidden w-72 shrink-0 flex-col border-r border-[#e7e3da] bg-[#171717] text-white sm:flex">
         <div className="border-b border-white/10 px-6 py-6">
           <div className="flex items-center gap-3">
