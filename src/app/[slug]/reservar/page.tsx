@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { BookingWizard } from "./wizard";
+import { IconCalendar } from "@/lib/icons";
 
 export default async function ReservarPage({
   params,
@@ -61,7 +62,12 @@ export default async function ReservarPage({
         <Link href={`/${slug}`} className="text-sm text-neutral-400 hover:text-neutral-600">
           ← {barbershop.name}
         </Link>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight text-[#171717]">Reservar cita</h1>
+        <div className="mt-2 flex items-center gap-3">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#fff8e9] text-[#9d7837]">
+            <IconCalendar />
+          </span>
+          <h1 className="text-2xl font-bold tracking-tight text-[#171717]">Reservar cita</h1>
+        </div>
 
         <div className="mt-6">
           <BookingWizard

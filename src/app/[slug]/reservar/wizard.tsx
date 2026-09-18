@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { bookAppointment, getAvailableSlots } from "../actions";
 import { waLink } from "@/lib/whatsapp";
+import { IconScissors, IconBarber, IconClock, IconUsers } from "@/lib/icons";
 
 type Service = { id: string; name: string; price_cents: number; duration_minutes: number };
 type Barber = { id: string; display_name: string; photo_url: string | null };
@@ -155,11 +156,34 @@ export function BookingWizard({
     });
   }
 
+  const STEP_LABELS = ["Servicio", "Barbero", "Horario", "Tus datos"];
+
   return (
-    <div className="rounded-2xl border border-[#e7e3da] bg-white p-6 shadow-[0_8px_30px_rgba(23,23,23,0.04)]">
+    <div>
+      {step !== 5 && (
+        <div className="mb-5 flex items-center gap-2">
+          {STEP_LABELS.map((label, i) => {
+            const n = i + 1;
+            const filled = step >= n;
+            return (
+              <div
+                key={label}
+                className={`h-1.5 flex-1 rounded-full transition ${filled ? "bg-[#c7a15a]" : "bg-[#e7e3da]"}`}
+              />
+            );
+          })}
+        </div>
+      )}
+
+      <div className="rounded-2xl border border-[#e7e3da] bg-white p-6 shadow-[0_8px_30px_rgba(23,23,23,0.04)]">
       {step === 1 && (
         <div className="space-y-3">
-          <h2 className="text-lg font-bold tracking-tight text-[#171717]">Elige un servicio</h2>
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#fff8e9] text-[#9d7837]">
+              <IconScissors />
+            </span>
+            <h2 className="text-lg font-bold tracking-tight text-[#171717]">Elige un servicio</h2>
+          </div>
           {services.map((s) => (
             <button
               key={s.id}
@@ -189,7 +213,12 @@ export function BookingWizard({
           >
             ← Cambiar servicio
           </button>
-          <h2 className="text-lg font-bold tracking-tight text-[#171717]">Elige un barbero</h2>
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#fff8e9] text-[#9d7837]">
+              <IconBarber />
+            </span>
+            <h2 className="text-lg font-bold tracking-tight text-[#171717]">Elige un barbero</h2>
+          </div>
           {eligibleBarbers.map((b) => (
             <button
               key={b.id}
@@ -218,7 +247,12 @@ export function BookingWizard({
           >
             ← Cambiar barbero
           </button>
-          <h2 className="text-lg font-bold tracking-tight text-[#171717]">Elige fecha y hora</h2>
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#fff8e9] text-[#9d7837]">
+              <IconClock />
+            </span>
+            <h2 className="text-lg font-bold tracking-tight text-[#171717]">Elige fecha y hora</h2>
+          </div>
 
           <input
             type="date"
@@ -274,7 +308,12 @@ export function BookingWizard({
           >
             ← Cambiar horario
           </button>
-          <h2 className="text-lg font-bold tracking-tight text-[#171717]">Tus datos</h2>
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#fff8e9] text-[#9d7837]">
+              <IconUsers />
+            </span>
+            <h2 className="text-lg font-bold tracking-tight text-[#171717]">Tus datos</h2>
+          </div>
 
           <div className="rounded-xl bg-[#fffaf0] p-3.5 text-sm text-[#7f602d]">
             <span className="font-semibold">
@@ -359,6 +398,7 @@ export function BookingWizard({
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }
