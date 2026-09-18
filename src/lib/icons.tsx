@@ -102,6 +102,30 @@ export function IconSearch({ className }: IconProps) {
     </svg>
   );
 }
+export function IconInstagram({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" className={className} {...base}>
+      <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+export function IconFacebook({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" className={className} {...base}>
+      <path d="M14.5 21v-7.5H17l.5-3.5h-3V7.8c0-1 .3-1.8 1.8-1.8H17.5V3c-.3 0-1.4-.1-2.6-.1-2.6 0-4.4 1.6-4.4 4.5V10h-3v3.5h3V21" />
+    </svg>
+  );
+}
+export function IconTiktok({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" className={className} {...base}>
+      <path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5c.35 0 .68.05 1 .14" />
+      <path d="M14 3a5 5 0 0 0 5 5" />
+    </svg>
+  );
+}
 export function IconCheck({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" width="20" height="20" className={className} {...base}>

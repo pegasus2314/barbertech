@@ -23,7 +23,7 @@ function todayISO() {
 }
 
 const INPUT_CLASS =
-  "w-full rounded-xl border border-[#e7e3da] px-3.5 py-2.5 text-sm focus:border-[#c7a15a] focus:outline-none focus:ring-1 focus:ring-[#c7a15a]";
+  "w-full rounded-xl border border-[#e7e3da] px-3.5 py-2.5 text-sm focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]";
 const PRIMARY_BUTTON =
   "w-full rounded-xl bg-[#171717] px-3 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:opacity-50";
 
@@ -35,6 +35,7 @@ export function BookingWizard({
   services,
   barbers,
   barberServices,
+  bookingNote,
 }: {
   tenantId: string;
   tenantSlug: string;
@@ -43,6 +44,7 @@ export function BookingWizard({
   services: Service[];
   barbers: Barber[];
   barberServices: BarberService[];
+  bookingNote?: string | null;
 }) {
   const [step, setStep] = useState<Step>(1);
   const [pending, startTransition] = useTransition();
@@ -72,11 +74,12 @@ export function BookingWizard({
       minute: "2-digit",
       timeZone: timezone,
     });
+    const noteSuffix = bookingNote?.trim() ? ` Nota: ${bookingNote.trim()}` : "";
     return waLink(
       tenantWhatsapp,
-      `Hola, soy ${name || "un cliente"}. Reservé ${selectedService.name} con ${selectedBarber.display_name} el ${when}. Quería confirmar.`,
+      `Hola, soy ${name || "un cliente"}. Reservé ${selectedService.name} con ${selectedBarber.display_name} el ${when}. Quería confirmar.${noteSuffix}`,
     );
-  }, [slotStart, selectedService, selectedBarber, name, timezone, tenantWhatsapp]);
+  }, [slotStart, selectedService, selectedBarber, name, timezone, tenantWhatsapp, bookingNote]);
 
   const eligibleBarbers = useMemo(() => {
     if (!serviceId) return [];
@@ -168,7 +171,7 @@ export function BookingWizard({
             return (
               <div
                 key={label}
-                className={`h-1.5 flex-1 rounded-full transition ${filled ? "bg-[#c7a15a]" : "bg-[#e7e3da]"}`}
+                className={`h-1.5 flex-1 rounded-full transition ${filled ? "bg-[var(--accent)]" : "bg-[#e7e3da]"}`}
               />
             );
           })}
@@ -179,7 +182,7 @@ export function BookingWizard({
       {step === 1 && (
         <div className="space-y-3">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#fff8e9] text-[#9d7837]">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)] text-[var(--accent-deep)]">
               <IconScissors />
             </span>
             <h2 className="text-lg font-bold tracking-tight text-[#171717]">Elige un servicio</h2>
@@ -188,7 +191,7 @@ export function BookingWizard({
             <button
               key={s.id}
               onClick={() => pickService(s.id)}
-              className="flex w-full items-center justify-between rounded-xl border border-[#e7e3da] px-4 py-3.5 text-left transition hover:border-[#c7a15a] hover:bg-[#fffaf0]"
+              className="flex w-full items-center justify-between rounded-xl border border-[#e7e3da] px-4 py-3.5 text-left transition hover:border-[var(--accent)] hover:bg-[var(--accent-light)]"
             >
               <span>
                 <span className="block text-sm font-semibold text-neutral-900">{s.name}</span>
@@ -214,7 +217,7 @@ export function BookingWizard({
             ← Cambiar servicio
           </button>
           <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#fff8e9] text-[#9d7837]">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)] text-[var(--accent-deep)]">
               <IconBarber />
             </span>
             <h2 className="text-lg font-bold tracking-tight text-[#171717]">Elige un barbero</h2>
@@ -223,7 +226,7 @@ export function BookingWizard({
             <button
               key={b.id}
               onClick={() => pickBarber(b.id)}
-              className="flex w-full items-center gap-3 rounded-xl border border-[#e7e3da] px-4 py-3.5 text-left transition hover:border-[#c7a15a] hover:bg-[#fffaf0]"
+              className="flex w-full items-center gap-3 rounded-xl border border-[#e7e3da] px-4 py-3.5 text-left transition hover:border-[var(--accent)] hover:bg-[var(--accent-light)]"
             >
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f7f6f2] text-sm font-bold text-neutral-600">
                 {b.display_name.slice(0, 1).toUpperCase()}
@@ -248,7 +251,7 @@ export function BookingWizard({
             ← Cambiar barbero
           </button>
           <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#fff8e9] text-[#9d7837]">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)] text-[var(--accent-deep)]">
               <IconClock />
             </span>
             <h2 className="text-lg font-bold tracking-tight text-[#171717]">Elige fecha y hora</h2>
@@ -284,7 +287,7 @@ export function BookingWizard({
                   className={`rounded-xl border px-2 py-2.5 text-sm font-medium transition ${
                     active
                       ? "border-[#171717] bg-[#171717] text-white"
-                      : "border-[#e7e3da] text-neutral-700 hover:border-[#c7a15a]"
+                      : "border-[#e7e3da] text-neutral-700 hover:border-[var(--accent)]"
                   }`}
                 >
                   {label}
@@ -309,13 +312,13 @@ export function BookingWizard({
             ← Cambiar horario
           </button>
           <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#fff8e9] text-[#9d7837]">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-light)] text-[var(--accent-deep)]">
               <IconUsers />
             </span>
             <h2 className="text-lg font-bold tracking-tight text-[#171717]">Tus datos</h2>
           </div>
 
-          <div className="rounded-xl bg-[#fffaf0] p-3.5 text-sm text-[#7f602d]">
+          <div className="rounded-xl bg-[var(--accent-light)] p-3.5 text-sm text-[var(--accent-deep)]">
             <span className="font-semibold">
               {selectedService?.name} con {selectedBarber?.display_name}
             </span>
@@ -371,13 +374,18 @@ export function BookingWizard({
 
       {step === 5 && (
         <div className="space-y-4 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff8e9] text-xl">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent-light)] text-xl">
             ✓
           </div>
           <h2 className="text-lg font-bold tracking-tight text-[#171717]">¡Cita solicitada!</h2>
           <p className="text-sm text-neutral-500">
             Te esperamos. La barbería confirmará tu cita pronto.
           </p>
+          {bookingNote?.trim() && (
+            <p className="mx-auto max-w-sm rounded-xl bg-[var(--accent-light)] px-4 py-3 text-sm text-[var(--accent-deep)]">
+              {bookingNote.trim()}
+            </p>
+          )}
           <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
             {confirmationWaLink && (
               <a

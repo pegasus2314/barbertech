@@ -41,6 +41,45 @@ export async function updateProfile(
   return { ok: true as const };
 }
 
+export async function updateCustomization(
+  tenant: string,
+  input: {
+    accent: string;
+    overlay: "light" | "medium" | "dark";
+    instagram: string;
+    facebook: string;
+    tiktok: string;
+    bookingNote: string;
+  },
+) {
+  const { supabase, barbershop, canManage } = await getTenantContext(tenant);
+  if (!canManage) return { ok: false as const, error: "No tienes permiso para hacer esto." };
+
+  const hexOk = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(input.accent);
+  if (!hexOk) return { ok: false as const, error: "El color de acento no es un código hex válido." };
+
+  const socialLinks: Record<string, string> = {};
+  if (input.instagram.trim()) socialLinks.instagram = input.instagram.trim();
+  if (input.facebook.trim()) socialLinks.facebook = input.facebook.trim();
+  if (input.tiktok.trim()) socialLinks.tiktok = input.tiktok.trim();
+
+  const { error } = await supabase
+    .from("barbershops")
+    .update({
+      theme: { accent: input.accent, overlay: input.overlay },
+      social_links: socialLinks,
+      booking_note: input.bookingNote.trim() || null,
+    })
+    .eq("id", barbershop.id);
+
+  if (error) return { ok: false as const, error: error.message };
+
+  revalidatePath(`/dashboard/${tenant}/configuracion`);
+  revalidatePath(`/${barbershop.slug}`);
+  revalidatePath(`/${barbershop.slug}/reservar`);
+  return { ok: true as const };
+}
+
 export async function togglePublish(tenant: string, publish: boolean) {
   const { supabase, barbershop, canManage } = await getTenantContext(tenant);
   if (!canManage) return { ok: false as const, error: "No tienes permiso para hacer esto." };

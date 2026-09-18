@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { waLink } from "@/lib/whatsapp";
+import { accentPalette } from "@/lib/color";
+import { IconInstagram, IconFacebook, IconTiktok } from "@/lib/icons";
 
 const WEEKDAYS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
@@ -87,8 +89,26 @@ export default async function StorefrontPage({ params }: { params: Promise<{ slu
   const todayHours = hours.find((h) => h.weekday === today);
   const whatsappHref = waLink(barbershop.whatsapp, `Hola, tengo una pregunta sobre ${barbershop.name}.`);
 
+  const theme = (barbershop.theme as { accent?: string; overlay?: "light" | "medium" | "dark" } | null) ?? {};
+  const palette = accentPalette(theme.accent);
+  const overlayGradient = {
+    light: "from-black/10 via-black/15 to-black/55",
+    medium: "from-black/20 via-black/30 to-black/75",
+    dark: "from-black/25 via-black/35 to-black/90",
+  }[theme.overlay ?? "dark"];
+  const social = (barbershop.social_links as { instagram?: string; facebook?: string; tiktok?: string } | null) ?? {};
+
   return (
-    <main className="min-h-screen bg-[#f7f6f2] pb-24 text-neutral-950 sm:pb-0">
+    <main
+      className="min-h-screen bg-[#f7f6f2] pb-24 text-neutral-950 sm:pb-0"
+      style={
+        {
+          "--accent": palette.base,
+          "--accent-deep": palette.deep,
+          "--accent-light": palette.light,
+        } as React.CSSProperties
+      }
+    >
       {/* Hero */}
       <section className="relative isolate overflow-hidden bg-[#111111] text-white">
         <div className="absolute inset-0">
@@ -98,7 +118,7 @@ export default async function StorefrontPage({ params }: { params: Promise<{ slu
             alt=""
             className="h-full w-full object-cover opacity-55"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/35 to-black/90" />
+          <div className={`absolute inset-0 bg-gradient-to-b ${overlayGradient}`} />
         </div>
 
         <div className="relative mx-auto max-w-6xl px-5 pb-12 pt-5 sm:px-8 sm:pb-16 sm:pt-7">
@@ -123,7 +143,7 @@ export default async function StorefrontPage({ params }: { params: Promise<{ slu
                 )}
               </div>
               <div className="pb-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#e2c98f]">Reserva online</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent-light)]">Reserva online</p>
                 <h1 className="mt-1 text-4xl font-bold tracking-[-0.04em] sm:text-6xl">{barbershop.name}</h1>
               </div>
             </div>
@@ -141,14 +161,33 @@ export default async function StorefrontPage({ params }: { params: Promise<{ slu
               {barbershop.address && <span className="rounded-full border border-white/10 bg-white/10 px-3 py-2 backdrop-blur">{barbershop.address}</span>}
             </div>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href={`/${slug}/reservar`} className="inline-flex items-center justify-center rounded-xl bg-[#c7a15a] px-6 py-3.5 text-sm font-bold text-[#171717] shadow-lg shadow-black/20 hover:bg-[#d8b66f]">
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link href={`/${slug}/reservar`} className="inline-flex items-center justify-center rounded-xl bg-[var(--accent)] px-6 py-3.5 text-sm font-bold text-[#171717] shadow-lg shadow-black/20 transition hover:brightness-110">
                 Reservar cita <span className="ml-2">→</span>
               </Link>
               {whatsappHref && (
                 <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/10 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur hover:bg-white/15">
                   WhatsApp
                 </a>
+              )}
+              {(social.instagram || social.facebook || social.tiktok) && (
+                <div className="flex items-center gap-2">
+                  {social.instagram && (
+                    <a href={social.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white backdrop-blur hover:bg-white/15">
+                      <IconInstagram />
+                    </a>
+                  )}
+                  {social.facebook && (
+                    <a href={social.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white backdrop-blur hover:bg-white/15">
+                      <IconFacebook />
+                    </a>
+                  )}
+                  {social.tiktok && (
+                    <a href={social.tiktok} target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white backdrop-blur hover:bg-white/15">
+                      <IconTiktok />
+                    </a>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -162,7 +201,7 @@ export default async function StorefrontPage({ params }: { params: Promise<{ slu
             <section id="servicios">
               <div className="flex items-end justify-between gap-4">
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#9d7837]">Nuestra carta</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent-deep)]">Nuestra carta</p>
                   <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">Servicios</h2>
                 </div>
                 <span className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-neutral-500 shadow-sm ring-1 ring-[#e7e3da]">{services.length} disponibles</span>
@@ -170,17 +209,17 @@ export default async function StorefrontPage({ params }: { params: Promise<{ slu
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {services.map((service) => (
-                  <Link key={service.id} href={`/${slug}/reservar`} className="group rounded-2xl border border-[#e7e3da] bg-white p-5 shadow-[0_8px_30px_rgba(23,23,23,0.04)] hover:-translate-y-0.5 hover:border-[#c7a15a] hover:shadow-lg">
+                  <Link key={service.id} href={`/${slug}/reservar`} className="group rounded-2xl border border-[#e7e3da] bg-white p-5 shadow-[0_8px_30px_rgba(23,23,23,0.04)] transition hover:-translate-y-0.5 hover:border-[var(--accent)] hover:shadow-lg">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="font-bold text-neutral-900 group-hover:text-[#9d7837]">{service.name}</h3>
+                        <h3 className="font-bold text-neutral-900 group-hover:text-[var(--accent-deep)]">{service.name}</h3>
                         {service.description && <p className="mt-1.5 line-clamp-2 text-sm leading-5 text-neutral-500">{service.description}</p>}
                       </div>
                       <span className="text-lg font-extrabold text-neutral-900">{formatMoney(service.price_cents)}</span>
                     </div>
                     <div className="mt-5 flex items-center justify-between border-t border-neutral-100 pt-3 text-xs font-medium text-neutral-400">
                       <span>{service.duration_minutes} min</span>
-                      <span className="text-[#9d7837] opacity-0 transition group-hover:opacity-100">Elegir →</span>
+                      <span className="text-[var(--accent-deep)] opacity-0 transition group-hover:opacity-100">Elegir →</span>
                     </div>
                   </Link>
                 ))}
@@ -190,7 +229,7 @@ export default async function StorefrontPage({ params }: { params: Promise<{ slu
 
             {barbers.length > 0 && (
               <section className="mt-14" id="barberos">
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#9d7837]">Nuestro equipo</p>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent-deep)]">Nuestro equipo</p>
                 <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">Barberos</h2>
                 <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
                   {barbers.map((barber) => (
@@ -211,7 +250,7 @@ export default async function StorefrontPage({ params }: { params: Promise<{ slu
 
             {gallery.length > 0 && (
               <section className="mt-14">
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#9d7837]">El ambiente</p>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent-deep)]">El ambiente</p>
                 <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">Galería</h2>
                 <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {gallery.map((img, index) => (
@@ -228,19 +267,19 @@ export default async function StorefrontPage({ params }: { params: Promise<{ slu
           {/* Sidebar */}
           <aside className="lg:sticky lg:top-6 lg:self-start">
             <div className="rounded-3xl border border-[#e7e3da] bg-[#171717] p-6 text-white shadow-xl shadow-black/10">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#d8b66f]">Tu próxima visita</p>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent-light)]">Tu próxima visita</p>
               <h2 className="mt-3 text-2xl font-bold">Reserva en menos de un minuto.</h2>
               <p className="mt-2 text-sm leading-6 text-white/55">Elige servicio, barbero, fecha y hora. Sin llamadas.</p>
-              <Link href={`/${slug}/reservar`} className="mt-6 flex items-center justify-center rounded-xl bg-[#c7a15a] px-5 py-3.5 text-sm font-bold text-[#171717] hover:bg-[#d8b66f]">Agendar ahora →</Link>
+              <Link href={`/${slug}/reservar`} className="mt-6 flex items-center justify-center rounded-xl bg-[var(--accent)] px-5 py-3.5 text-sm font-bold text-[#171717] transition hover:brightness-110">Agendar ahora →</Link>
               <Link href={`/${slug}/mi-cita`} className="mt-2 flex items-center justify-center rounded-xl border border-white/10 px-5 py-3 text-sm font-semibold text-white/75 hover:bg-white/5">Consultar una cita</Link>
             </div>
 
             <div className="mt-4 rounded-3xl border border-[#e7e3da] bg-white p-6">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#9d7837]">Horario</p>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent-deep)]">Horario</p>
               <div className="mt-4 divide-y divide-neutral-100">
                 {hours.map((h) => (
                   <div key={h.weekday} className={`flex items-center justify-between py-2.5 text-sm ${h.weekday === today ? "font-bold text-neutral-950" : "text-neutral-500"}`}>
-                    <span className="flex items-center gap-2">{h.weekday === today && <span className="h-1.5 w-1.5 rounded-full bg-[#c7a15a]" />}{WEEKDAYS[h.weekday]}</span>
+                    <span className="flex items-center gap-2">{h.weekday === today && <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />}{WEEKDAYS[h.weekday]}</span>
                     <span>{h.is_closed ? "Cerrado" : `${h.open_time?.slice(0, 5)} – ${h.close_time?.slice(0, 5)}`}</span>
                   </div>
                 ))}

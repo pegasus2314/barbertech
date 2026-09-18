@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { BookingWizard } from "./wizard";
 import { IconCalendar } from "@/lib/icons";
+import { accentPalette } from "@/lib/color";
 
 export default async function ReservarPage({
   params,
@@ -15,7 +16,7 @@ export default async function ReservarPage({
 
   const { data: barbershop } = await supabase
     .from("barbershops")
-    .select("id, name, slug, timezone, whatsapp")
+    .select("id, name, slug, timezone, whatsapp, theme, booking_note")
     .eq("slug", slug)
     .eq("is_published", true)
     .maybeSingle();
@@ -56,14 +57,26 @@ export default async function ReservarPage({
       .eq("tenant_id", barbershop.id),
   ]);
 
+  const theme = (barbershop.theme as { accent?: string } | null) ?? {};
+  const palette = accentPalette(theme.accent);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f7f6f2] px-4 py-10">
+    <div
+      className="flex min-h-screen items-center justify-center bg-[#f7f6f2] px-4 py-10"
+      style={
+        {
+          "--accent": palette.base,
+          "--accent-deep": palette.deep,
+          "--accent-light": palette.light,
+        } as React.CSSProperties
+      }
+    >
       <div className="w-full max-w-lg">
         <Link href={`/${slug}`} className="text-sm text-neutral-400 hover:text-neutral-600">
           ← {barbershop.name}
         </Link>
         <div className="mt-2 flex items-center gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#fff8e9] text-[#9d7837]">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-[var(--accent-deep)]" style={{ backgroundColor: palette.light }}>
             <IconCalendar />
           </span>
           <h1 className="text-2xl font-bold tracking-tight text-[#171717]">Reservar cita</h1>
@@ -78,6 +91,7 @@ export default async function ReservarPage({
             services={services ?? []}
             barbers={barbers ?? []}
             barberServices={barberServices ?? []}
+            bookingNote={barbershop.booking_note}
           />
         </div>
       </div>

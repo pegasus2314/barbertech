@@ -316,6 +316,7 @@ export type Database = {
       barbershops: {
         Row: {
           address: string | null
+          booking_note: string | null
           cover_url: string | null
           created_at: string
           currency: string
@@ -336,6 +337,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          booking_note?: string | null
           cover_url?: string | null
           created_at?: string
           currency?: string
@@ -356,6 +358,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          booking_note?: string | null
           cover_url?: string | null
           created_at?: string
           currency?: string

@@ -1,5 +1,6 @@
 import { getTenantContext } from "@/lib/tenant/get-tenant-context";
 import { ProfileForm } from "./profile-form";
+import { CustomizationForm } from "./customization-form";
 import { PublishToggle } from "./publish-toggle";
 import { GalleryUploader, LogoCoverUploader } from "./media-uploader";
 import { SubscriptionPaymentForm } from "./subscription-payment-form";
@@ -82,6 +83,18 @@ export default async function SettingsPage({
           phone: barbershop.phone ?? "",
           whatsapp: barbershop.whatsapp ?? "",
           address: barbershop.address ?? "",
+        }}
+      />
+
+      <CustomizationForm
+        tenant={tenant}
+        initial={{
+          accent: (barbershop.theme as { accent?: string } | null)?.accent ?? "",
+          overlay: (barbershop.theme as { overlay?: "light" | "medium" | "dark" } | null)?.overlay ?? "dark",
+          instagram: (barbershop.social_links as { instagram?: string } | null)?.instagram ?? "",
+          facebook: (barbershop.social_links as { facebook?: string } | null)?.facebook ?? "",
+          tiktok: (barbershop.social_links as { tiktok?: string } | null)?.tiktok ?? "",
+          bookingNote: barbershop.booking_note ?? "",
         }}
       />
 
