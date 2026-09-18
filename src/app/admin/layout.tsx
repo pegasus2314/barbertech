@@ -3,12 +3,14 @@ import Link from "next/link";
 import { requirePlatformAdmin } from "@/lib/auth/require-platform-admin";
 import { SignOutButton } from "@/app/dashboard/sign-out-button";
 import { AdminNav } from "./admin-nav";
+import { SupportBubble } from "@/components/support-bubble";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   await requirePlatformAdmin();
 
   return (
     <div className="min-h-screen bg-[#f7f6f2]">
+      <SupportBubble context="Super Admin" />
       <header className="border-b border-[#e7e3da] bg-[#171717] text-white">
         <div className="flex items-center justify-between px-4 py-3.5 sm:px-8">
           <Link href="/admin" className="flex items-center gap-2 text-sm font-semibold">

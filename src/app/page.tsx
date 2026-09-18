@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { waLink } from "@/lib/whatsapp";
+import { SupportBubble } from "@/components/support-bubble";
 
 function formatPrice(cents: number) {
   return (cents / 100).toLocaleString("es-DO", { style: "currency", currency: "DOP", maximumFractionDigits: 0 });
@@ -21,6 +22,7 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-[#f7f6f2] text-[#171717]">
+      <SupportBubble />
       <header className="sticky top-0 z-30 border-b border-black/10 bg-[#f7f6f2]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
           <Link href="/" className="group flex items-center gap-3">

@@ -1,7 +1,14 @@
 import { waLink } from "@/lib/whatsapp";
 
-export function SupportBubble({ barbershopName }: { barbershopName: string }) {
-  const link = waLink("18496510308", `Hola, necesito ayuda con BarberTech (${barbershopName}).`);
+// Floating WhatsApp support button to Albert's number, mounted on every
+// screen BarberTech's own users touch (dashboard, admin, auth, onboarding,
+// landing). Deliberately NOT on the public storefront/booking pages — those
+// are a barbershop's own customer-facing pages, and a client booking a
+// haircut doesn't need "BarberTech support", they need the barbershop's own
+// WhatsApp button, which already exists there.
+export function SupportBubble({ context }: { context?: string }) {
+  const message = context ? `Hola, necesito ayuda con BarberTech (${context}).` : "Hola, necesito ayuda con BarberTech.";
+  const link = waLink("18496510308", message);
   if (!link) return null;
 
   return (

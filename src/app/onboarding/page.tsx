@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { requireUser } from "@/lib/auth/require-user";
 import { OnboardingWizard } from "./wizard";
+import { SupportBubble } from "@/components/support-bubble";
 
 export default async function OnboardingPage() {
   const { supabase, user } = await requireUser();
@@ -24,6 +25,7 @@ export default async function OnboardingPage() {
 
   return (
     <div className="min-h-screen bg-[#f7f6f2] px-4 py-10">
+      <SupportBubble context="Onboarding" />
       <div className="mx-auto max-w-lg">
         <div className="mb-8 text-center">
           <Link
