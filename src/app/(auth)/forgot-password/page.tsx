@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { siteUrl } from "@/lib/site-url";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -18,7 +17,12 @@ export default function ForgotPasswordPage() {
 
     const supabase = createClient();
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${siteUrl()}/reset-password`,
+      // Built from window.location, not the siteUrl() helper — that one
+      // reads a server-only env var (VERCEL_PROJECT_PRODUCTION_URL) which
+      // doesn't exist in the browser bundle, so it was silently falling
+      // back to localhost:3000. Supabase then rejected that redirect_to
+      // (not in the allowlist) and fell back to the bare Site URL instead.
+      redirectTo: `${window.location.origin}/reset-password`,
     });
 
     setLoading(false);
