@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { OpenSupportLink, SupportBubble } from "@/components/support-bubble";
 
 export const metadata = {
   title: "Política de Privacidad — BarberTech",
@@ -7,6 +8,7 @@ export const metadata = {
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-[#f7f6f2] text-[#171717]">
+      <SupportBubble />
       <div className="mx-auto max-w-2xl px-5 py-14 sm:px-8">
         <Link href="/" className="mb-8 inline-flex items-center gap-1.5 text-sm font-medium text-black/50 hover:text-black">
           ← Volver al inicio
@@ -69,14 +71,9 @@ export default function PrivacyPage() {
             <p>
               Puedes pedirnos en cualquier momento que corrijamos o eliminemos tu información, o la de tu
               barbería, escribiéndonos por{" "}
-              <a
-                href="https://wa.me/18496510308"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-[#25D366] hover:underline"
-              >
-                WhatsApp
-              </a>
+              <OpenSupportLink className="font-semibold text-[#9d7837] hover:underline">
+                el chat de soporte
+              </OpenSupportLink>
               . Ten en cuenta que eliminar ciertos datos puede significar que ya no puedas usar el
               servicio.
             </p>
@@ -93,14 +90,9 @@ export default function PrivacyPage() {
           <Section title="8. Contacto">
             <p>
               ¿Preguntas sobre tu privacidad? Escríbenos por{" "}
-              <a
-                href="https://wa.me/18496510308"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-[#25D366] hover:underline"
-              >
-                WhatsApp
-              </a>
+              <OpenSupportLink className="font-semibold text-[#9d7837] hover:underline">
+                el chat de soporte
+              </OpenSupportLink>
               .
             </p>
           </Section>

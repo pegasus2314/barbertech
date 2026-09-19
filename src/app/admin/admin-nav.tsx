@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconStore, IconDollar, IconActivity } from "@/lib/icons";
+import { IconStore, IconDollar, IconActivity, IconInbox } from "@/lib/icons";
 
 const TABS = [
   { href: "/admin", label: "Resumen", Icon: IconStore },
   { href: "/admin/pagos", label: "Pagos", Icon: IconDollar },
+  { href: "/admin/soporte", label: "Soporte", Icon: IconInbox },
   { href: "/admin/actividad", label: "Actividad", Icon: IconActivity },
 ];
 

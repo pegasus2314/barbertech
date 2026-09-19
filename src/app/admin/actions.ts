@@ -113,6 +113,19 @@ export async function extendTrial(tenantId: string, days: number) {
   return { ok: true as const };
 }
 
+export async function resolveSupportMessage(id: string) {
+  const { supabase } = await requirePlatformAdmin();
+
+  const { error } = await supabase
+    .from("support_messages")
+    .update({ status: "resolved", resolved_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) return { ok: false as const, error: error.message };
+
+  revalidatePath("/admin/soporte");
+  return { ok: true as const };
+}
+
 export async function rejectSubscriptionPayment(paymentId: string, tenantId: string) {
   const { supabase, user } = await requirePlatformAdmin();
 

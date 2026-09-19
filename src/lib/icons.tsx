@@ -94,6 +94,14 @@ export function IconActivity({ className }: IconProps) {
     </svg>
   );
 }
+export function IconInbox({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" className={className} {...base}>
+      <path d="M3 13.5 5.6 5.8A1.5 1.5 0 0 1 7 4.8h10a1.5 1.5 0 0 1 1.4 1L21 13.5" />
+      <path d="M3 13.5V18a1.5 1.5 0 0 0 1.5 1.5h15A1.5 1.5 0 0 0 21 18v-4.5h-5l-1 2h-6l-1-2H3z" />
+    </svg>
+  );
+}
 export function IconSearch({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" width="18" height="18" className={className} {...base}>
