@@ -2,8 +2,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { waLink } from "@/lib/whatsapp";
-import { SupportBubble } from "@/components/support-bubble";
+import { OpenSupportLink, SupportBubble } from "@/components/support-bubble";
 
 function formatPrice(cents: number) {
   return (cents / 100).toLocaleString("es-DO", { style: "currency", currency: "DOP", maximumFractionDigits: 0 });
@@ -117,14 +116,9 @@ export default async function Home() {
             <p className="mt-8 text-center text-sm text-black/40">Precios en pesos dominicanos (DOP). Pago por transferencia o efectivo, sin comisiones ocultas.</p>
             <p className="mt-3 text-center text-sm text-black/50">
               ¿Prefieres hablar antes?{" "}
-              <a
-                href={waLink("18496510308", "Estoy interesado en comprar")!}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-[#25D366] hover:underline"
-              >
-                Escríbenos por WhatsApp
-              </a>
+              <OpenSupportLink className="font-semibold text-[#9d7837] hover:underline">
+                Escríbenos aquí
+              </OpenSupportLink>
             </p>
           </div>
         </section>
@@ -148,6 +142,7 @@ export default async function Home() {
             <span>© {new Date().getFullYear()} BarberTech. Hecho para barberías.</span>
             <Link href="/terminos" className="hover:text-black">Términos</Link>
             <Link href="/privacidad" className="hover:text-black">Privacidad</Link>
+            <Link href="/politicas" className="hover:text-black">Compra y devoluciones</Link>
           </div>
         </div>
         <div className="border-t border-[#e4dfd5]/70 px-5 py-4 text-center text-xs text-black/35 sm:px-8">

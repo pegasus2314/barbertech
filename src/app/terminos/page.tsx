@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { OpenSupportLink, SupportBubble } from "@/components/support-bubble";
 
 export const metadata = {
   title: "Términos de Servicio — BarberTech",
@@ -7,6 +8,7 @@ export const metadata = {
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-[#f7f6f2] text-[#171717]">
+      <SupportBubble />
       <div className="mx-auto max-w-2xl px-5 py-14 sm:px-8">
         <Link href="/" className="mb-8 inline-flex items-center gap-1.5 text-sm font-medium text-black/50 hover:text-black">
           ← Volver al inicio
@@ -101,15 +103,12 @@ export default function TermsPage() {
 
           <Section title="10. Contacto">
             <p>
+              Los detalles de pagos, activación, garantía y devoluciones están en la página de{" "}
+              <Link href="/politicas" className="font-semibold text-[#9d7837] hover:underline">Compra, garantía y devoluciones</Link>.{" "}
               ¿Preguntas sobre estos Términos? Escríbenos por{" "}
-              <a
-                href="https://wa.me/18496510308"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-[#25D366] hover:underline"
-              >
-                WhatsApp
-              </a>
+              <OpenSupportLink className="font-semibold text-[#9d7837] hover:underline">
+                el chat de soporte
+              </OpenSupportLink>
               .
             </p>
           </Section>
