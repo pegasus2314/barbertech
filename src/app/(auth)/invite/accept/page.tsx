@@ -19,23 +19,41 @@ export default function AcceptInvitePage() {
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!session) {
-        setStatus("invalid");
-        return;
-      }
-      try {
-        const result = await getPendingInvite();
-        if (!result.ok) {
+
+    // Invite and recovery emails sent by the server arrive as
+    // #access_token=…&refresh_token=… (implicit flow). The browser client is
+    // PKCE and refuses those URLs, so it never creates the session on its own
+    // — read the tokens here and set the session explicitly.
+    async function sessionFromUrl() {
+      const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+      const accessToken = params.get("access_token");
+      const refreshToken = params.get("refresh_token");
+      if (!accessToken || !refreshToken) return;
+      await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+      // Don't leave tokens sitting in the address bar / history.
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+
+    sessionFromUrl()
+      .catch(() => {})
+      .then(() => supabase.auth.getSession())
+      .then(async ({ data: { session } }) => {
+        if (!session) {
           setStatus("invalid");
           return;
         }
-        setInvite({ displayName: result.displayName, barbershopName: result.barbershopName });
-        setStatus("ready");
-      } catch {
-        setStatus("invalid");
-      }
-    });
+        try {
+          const result = await getPendingInvite();
+          if (!result.ok) {
+            setStatus("invalid");
+            return;
+          }
+          setInvite({ displayName: result.displayName, barbershopName: result.barbershopName });
+          setStatus("ready");
+        } catch {
+          setStatus("invalid");
+        }
+      });
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {

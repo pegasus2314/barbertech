@@ -2,6 +2,7 @@ import { getTenantContext } from "@/lib/tenant/get-tenant-context";
 import { BarberForm } from "./barber-form";
 import { InviteBarberForm } from "./invite-barber-form";
 import { BarberRow } from "./barber-row";
+import { PendingInvites } from "./pending-invites";
 import { EmptyState } from "../empty-state";
 import { IconBarber } from "@/lib/icons";
 
@@ -13,7 +14,7 @@ export default async function BarbersPage({
   const { tenant } = await params;
   const { supabase, barbershop, canManage } = await getTenantContext(tenant);
 
-  const [{ data: barbers }, { data: services }, { data: barberServices }] = await Promise.all([
+  const [{ data: barbers }, { data: services }, { data: barberServices }, { data: invites }] = await Promise.all([
     supabase
       .from("barbers")
       .select("*")
@@ -27,6 +28,14 @@ export default async function BarbersPage({
       .eq("is_active", true)
       .order("sort_order"),
     supabase.from("barber_services").select("barber_id, service_id").eq("tenant_id", barbershop.id),
+    canManage
+      ? supabase
+          .from("barber_invites")
+          .select("id, email, display_name, created_at")
+          .eq("tenant_id", barbershop.id)
+          .eq("status", "pending")
+          .order("created_at", { ascending: false })
+      : Promise.resolve({ data: [] as { id: string; email: string; display_name: string; created_at: string }[] }),
   ]);
 
   const servicesByBarber = new Map<string, string[]>();
@@ -57,6 +66,8 @@ export default async function BarbersPage({
           <InviteBarberForm tenant={tenant} services={services ?? []} />
         </div>
       )}
+
+      {canManage && <PendingInvites tenant={tenant} invites={invites ?? []} />}
 
       <div className="space-y-3">
         {barbers && barbers.length > 0 ? (

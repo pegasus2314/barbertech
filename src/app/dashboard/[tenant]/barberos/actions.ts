@@ -82,6 +82,66 @@ export async function inviteBarber(
   return { ok: true as const };
 }
 
+// Sends the invite email again. If the person already has an account (they
+// opened the first link, or registered on their own) a fresh "invite" is
+// rejected by Supabase, so fall back to a recovery email that lands on the
+// same /invite/accept page and lets them set a password and join.
+export async function resendInvite(tenant: string, inviteId: string) {
+  const { supabase, barbershop, canManage } = await getTenantContext(tenant);
+  if (!canManage) return { ok: false as const, error: "No tienes permiso para hacer esto." };
+
+  const { data: invite } = await supabase
+    .from("barber_invites")
+    .select("email, status")
+    .eq("id", inviteId)
+    .eq("tenant_id", barbershop.id)
+    .maybeSingle();
+  if (!invite || invite.status !== "pending") {
+    return { ok: false as const, error: "Esa invitación ya no está pendiente." };
+  }
+
+  const admin = createAdminClient();
+  const redirectTo = `${siteUrl()}/invite/accept`;
+
+  const { error: inviteError } = await admin.auth.admin.inviteUserByEmail(invite.email, {
+    redirectTo,
+    data: { invited_barbershop_name: barbershop.name },
+  });
+
+  if (inviteError) {
+    if (!/already.*regist/i.test(inviteError.message)) {
+      return { ok: false as const, error: friendlyEmailError(inviteError.message) };
+    }
+
+    const { error: recoverError } = await admin.auth.resetPasswordForEmail(invite.email, { redirectTo });
+    if (recoverError) return { ok: false as const, error: friendlyEmailError(recoverError.message) };
+  }
+
+  return { ok: true as const };
+}
+
+export async function cancelInvite(tenant: string, inviteId: string) {
+  const { supabase, barbershop, canManage } = await getTenantContext(tenant);
+  if (!canManage) return { ok: false as const, error: "No tienes permiso para hacer esto." };
+
+  const { error } = await supabase
+    .from("barber_invites")
+    .update({ status: "revoked" })
+    .eq("id", inviteId)
+    .eq("tenant_id", barbershop.id)
+    .eq("status", "pending");
+  if (error) return { ok: false as const, error: error.message };
+
+  revalidatePath(`/dashboard/${tenant}/barberos`);
+  return { ok: true as const };
+}
+
+function friendlyEmailError(message: string) {
+  return /rate limit|too many|security purposes/i.test(message)
+    ? "Se enviaron muchos correos seguidos. Espera unos minutos e intenta de nuevo."
+    : message;
+}
+
 export async function toggleBarberActive(tenant: string, barberId: string, isActive: boolean) {
   const { supabase, canManage } = await getTenantContext(tenant);
   if (!canManage) return { ok: false as const, error: "No tienes permiso para hacer esto." };
