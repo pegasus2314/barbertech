@@ -5,6 +5,8 @@ import { SignOutButton } from "@/app/dashboard/sign-out-button";
 import { AdminNav } from "./admin-nav";
 import { SupportBubble } from "@/components/support-bubble";
 
+export const metadata = { title: "Super Admin", robots: { index: false } };
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   await requirePlatformAdmin();
 

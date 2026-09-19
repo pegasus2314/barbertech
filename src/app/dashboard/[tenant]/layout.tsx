@@ -8,6 +8,8 @@ import { RegisterServiceWorker } from "./register-sw";
 import { SupportBubble } from "@/components/support-bubble";
 import { SubscriptionPaymentForm } from "./configuracion/subscription-payment-form";
 
+export const metadata = { title: "Panel", robots: { index: false } };
+
 export default async function TenantDashboardLayout({
   children,
   params,

@@ -5,13 +5,16 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { deleteGalleryImage } from "./actions";
 import { CARD } from "@/lib/ui";
+import { compressImage } from "@/lib/compress-image";
 
-const MAX_SIZE = 5 * 1024 * 1024;
+// Generous on purpose: photos are compressed in the browser before uploading.
+const MAX_SIZE = 15 * 1024 * 1024;
+const MAX_DIMENSION = { logo: 512, cover: 1920, gallery: 1600 } as const;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 function validate(file: File): string | null {
   if (!ALLOWED_TYPES.includes(file.type)) return "Formato no permitido (usa JPG, PNG, WEBP o GIF).";
-  if (file.size > MAX_SIZE) return "La imagen no puede pesar más de 5MB.";
+  if (file.size > MAX_SIZE) return "La imagen no puede pesar más de 15MB.";
   return null;
 }
 
@@ -42,11 +45,12 @@ export function LogoCoverUploader({
     setUploading(kind);
 
     const supabase = createClient();
-    const path = `${tenantId}/${kind}/${Date.now()}-${file.name}`;
+    const image = await compressImage(file, { maxSize: MAX_DIMENSION[kind] });
+    const path = `${tenantId}/${kind}/${Date.now()}.${image.extension}`;
 
     const { error: uploadError } = await supabase.storage
       .from("barbershop-media")
-      .upload(path, file, { upsert: true });
+      .upload(path, image.blob, { upsert: true, contentType: image.contentType });
 
     if (uploadError) {
       setError(uploadError.message);
@@ -201,11 +205,12 @@ export function GalleryUploader({
     setUploading(true);
 
     const supabase = createClient();
-    const path = `${tenantId}/gallery/${Date.now()}-${file.name}`;
+    const image = await compressImage(file, { maxSize: MAX_DIMENSION.gallery });
+    const path = `${tenantId}/gallery/${Date.now()}.${image.extension}`;
 
     const { error: uploadError } = await supabase.storage
       .from("barbershop-media")
-      .upload(path, file);
+      .upload(path, image.blob, { contentType: image.contentType });
 
     if (uploadError) {
       setError(uploadError.message);
@@ -260,7 +265,7 @@ export function GalleryUploader({
         {images.map((img) => (
           <div key={img.id} className="group relative aspect-square overflow-hidden rounded-xl bg-[#f7f6f2]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={img.url} alt="" className="h-full w-full object-cover" />
+            <img src={img.url} alt="Foto de la galería" className="h-full w-full object-cover" />
             <button
               onClick={() => handleDelete(img.id, img.storage_path)}
               disabled={pending}

@@ -115,7 +115,7 @@ export default async function StorefrontPage({ params }: { params: Promise<{ slu
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={barbershop.cover_url ?? "/barbershop-default-cover.jpg"}
-            alt=""
+            alt={`Portada de ${barbershop.name}`}
             className="h-full w-full object-cover opacity-55"
           />
           <div className={`absolute inset-0 bg-gradient-to-b ${overlayGradient}`} />
@@ -256,7 +256,7 @@ export default async function StorefrontPage({ params }: { params: Promise<{ slu
                   {gallery.map((img, index) => (
                     <div key={img.id} className={`overflow-hidden rounded-2xl bg-neutral-100 ${index === 0 ? "col-span-2 row-span-2 aspect-square" : "aspect-square"}`}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={img.url} alt="" className="h-full w-full object-cover transition duration-500 hover:scale-105" />
+                      <img src={img.url} alt={`Foto ${index + 1} de ${barbershop.name}`} className="h-full w-full object-cover transition duration-500 hover:scale-105" />
                     </div>
                   ))}
                 </div>

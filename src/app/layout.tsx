@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import { siteUrl } from "@/lib/site-url";
 
 const geistSans = Geist({
@@ -37,14 +38,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: "BarberTech",
     description: "Gestión y reservas en línea para barberías modernas.",
-    images: ["/icon.png"],
     siteName: "BarberTech",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "BarberTech",
     description: "Gestión y reservas en línea para barberías modernas.",
-    images: ["/icon.png"],
   },
 };
 
@@ -55,7 +54,11 @@ export const viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        {/* Privacy-friendly page-view analytics: no cookies, no personal data. */}
+        <Analytics />
+      </body>
     </html>
   );
 }

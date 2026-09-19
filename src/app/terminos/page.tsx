@@ -2,7 +2,7 @@ import Link from "next/link";
 import { OpenSupportLink, SupportBubble } from "@/components/support-bubble";
 
 export const metadata = {
-  title: "Términos de Servicio — BarberTech",
+  title: "Términos de Servicio",
 };
 
 export default function TermsPage() {

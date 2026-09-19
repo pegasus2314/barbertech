@@ -2,7 +2,7 @@ import Link from "next/link";
 import { OpenSupportLink, SupportBubble } from "@/components/support-bubble";
 
 export const metadata = {
-  title: "Política de Privacidad — BarberTech",
+  title: "Política de Privacidad",
 };
 
 export default function PrivacyPage() {
@@ -16,7 +16,7 @@ export default function PrivacyPage() {
 
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9d7837]">Legal</p>
         <h1 className="mt-2 text-3xl font-black tracking-tight">Política de Privacidad</h1>
-        <p className="mt-2 text-sm text-black/45">Última actualización: 18 de septiembre de 2026</p>
+        <p className="mt-2 text-sm text-black/45">Última actualización: 19 de septiembre de 2026</p>
 
         <div className="mt-8 space-y-8 text-[15px] leading-7 text-black/70">
           <p>
@@ -30,6 +30,7 @@ export default function PrivacyPage() {
               <li><strong className="text-black/85">De cuentas de usuario:</strong> correo y contraseña (gestionados de forma segura por nuestro proveedor de autenticación).</li>
               <li><strong className="text-black/85">De clientes de una barbería:</strong> nombre y teléfono, registrados por la barbería o por el propio cliente al reservar una cita.</li>
               <li><strong className="text-black/85">De pagos de suscripción:</strong> monto, método (efectivo o transferencia) y una referencia — nunca números de tarjeta ni datos bancarios de quien paga.</li>
+              <li><strong className="text-black/85">De uso del sitio:</strong> estadísticas de visitas anónimas y agregadas (páginas vistas, país, tipo de dispositivo). No usamos cookies de seguimiento ni guardamos datos que te identifiquen.</li>
               <li><strong className="text-black/85">Técnica:</strong> si activas las notificaciones, guardamos la suscripción de tu navegador para poder enviarte avisos del sistema operativo.</li>
             </ul>
           </Section>
@@ -62,7 +63,7 @@ export default function PrivacyPage() {
 
           <Section title="5. Cookies y almacenamiento local">
             <p>
-              Usamos únicamente cookies/almacenamiento técnico necesario para mantener tu sesión iniciada.
+              Usamos únicamente cookies/almacenamiento técnico necesario para mantener tu sesión iniciada. Nuestras estadísticas de visitas no usan cookies.
               No usamos cookies de publicidad ni de seguimiento entre sitios.
             </p>
           </Section>
@@ -82,7 +83,7 @@ export default function PrivacyPage() {
           <Section title="7. Cambios a esta política">
             <p>
               Si cambiamos cómo manejamos tus datos de forma significativa — por ejemplo, si en el futuro
-              agregamos analítica o funciones de inteligencia artificial — actualizaremos esta página y lo
+              agregamos funciones de inteligencia artificial o publicidad — actualizaremos esta página y lo
               indicaremos claramente.
             </p>
           </Section>
