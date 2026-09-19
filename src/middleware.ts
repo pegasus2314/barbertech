@@ -29,8 +29,15 @@ export async function middleware(request: NextRequest) {
       },
     });
 
-    // Refresh the auth session cookie on every request. Required by @supabase/ssr.
-    await supabase.auth.getUser();
+    // Visitors without a session (customers booking on a public page) have
+    // nothing to refresh — skip the auth work entirely for them.
+    const hasSession = request.cookies.getAll().some((c) => c.name.startsWith("sb-") && c.name.includes("-auth-token"));
+    if (!hasSession) return supabaseResponse;
+
+    // Refresh the auth session cookie. Required by @supabase/ssr. getClaims()
+    // verifies the JWT locally (asymmetric keys) and only calls Supabase when
+    // the token is actually expired and has to be refreshed.
+    await supabase.auth.getClaims();
   } catch {
     // Do not take down the entire site when Supabase is temporarily unavailable
     // or its deployment configuration is incomplete. Public pages can continue.

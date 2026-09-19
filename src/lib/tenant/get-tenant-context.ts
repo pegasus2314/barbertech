@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { redirect, notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/require-user";
 
@@ -6,7 +7,8 @@ const MANAGER_ROLES = ["owner", "manager"] as const;
 // Resolves a barbershop by slug and verifies the signed-in user is an active
 // member of it. RLS also enforces this at the database level; this check
 // exists to give a proper 404/redirect instead of an empty result set.
-export async function getTenantContext(slug: string) {
+// cache(): the layout and the page both call this — run the queries once per request.
+export const getTenantContext = cache(async (slug: string) => {
   const { supabase, user } = await requireUser();
 
   const { data: barbershop } = await supabase
@@ -38,4 +40,4 @@ export async function getTenantContext(slug: string) {
     role: membership.role as "owner" | "manager" | "barber" | "staff",
     canManage: MANAGER_ROLES.includes(membership.role as "owner" | "manager"),
   };
-}
+});

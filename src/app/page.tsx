@@ -11,9 +11,9 @@ function formatPrice(cents: number) {
 
 export default async function Home() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: claims } = await supabase.auth.getClaims();
 
-  if (user) redirect("/dashboard");
+  if (claims?.claims?.sub) redirect("/dashboard");
 
   const { data: plans } = await supabase
     .from("plans")
