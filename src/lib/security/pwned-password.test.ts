@@ -44,13 +44,22 @@ describe("isPasswordPwned", () => {
 
     // Pinning the exact URL proves nothing beyond the 5-char prefix was
     // sent — the full hash suffix (let alone the password) never appears.
-    expect(fetchMock).toHaveBeenCalledWith("https://api.pwnedpasswords.com/range/5BAA6");
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.pwnedpasswords.com/range/5BAA6",
+      expect.anything(),
+    );
     const calledUrl = fetchMock.mock.calls[0][0] as string;
     expect(calledUrl).not.toContain(SUFFIX);
   });
 
   it("fails open (returns false) if the API is unreachable", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, text: () => Promise.resolve("") }));
+
+    await expect(isPasswordPwned(PASSWORD)).resolves.toBe(false);
+  });
+
+  it("fails open when the request throws (blocked by CSP, offline, timeout)", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("Failed to fetch")));
 
     await expect(isPasswordPwned(PASSWORD)).resolves.toBe(false);
   });

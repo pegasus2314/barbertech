@@ -9,7 +9,8 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob: ${supabaseUrl}`,
   "font-src 'self' data:",
-  `connect-src 'self' ${supabaseUrl} ${supabaseWs}`,
+  // api.pwnedpasswords.com: the client-side leaked-password check (signup / reset / invite).
+  `connect-src 'self' ${supabaseUrl} ${supabaseWs} https://api.pwnedpasswords.com`,
   "worker-src 'self'",
   "frame-ancestors 'none'",
   "base-uri 'self'",

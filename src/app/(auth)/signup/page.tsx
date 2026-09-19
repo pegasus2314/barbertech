@@ -20,33 +20,36 @@ export default function SignupPage() {
     setError(null);
     setLoading(true);
 
-    if (await isPasswordPwned(password)) {
-      setError(
-        "Esta contraseña apareció en filtraciones de datos conocidas. Por tu seguridad, elige otra.",
-      );
+    try {
+      if (await isPasswordPwned(password)) {
+        setError(
+          "Esta contraseña apareció en filtraciones de datos conocidas. Por tu seguridad, elige otra.",
+        );
+        return;
+      }
+
+      const supabase = createClient();
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: fullName } },
+      });
+
+      if (signUpError) {
+        setError(signUpError.message);
+        return;
+      }
+
+      if (data.session) {
+        router.push("/onboarding");
+        router.refresh();
+      } else {
+        setCheckEmail(true);
+      }
+    } catch {
+      setError("No se pudo crear la cuenta. Revisa tu conexión e intenta de nuevo.");
+    } finally {
       setLoading(false);
-      return;
-    }
-
-    const supabase = createClient();
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { full_name: fullName } },
-    });
-
-    setLoading(false);
-
-    if (signUpError) {
-      setError(signUpError.message);
-      return;
-    }
-
-    if (data.session) {
-      router.push("/onboarding");
-      router.refresh();
-    } else {
-      setCheckEmail(true);
     }
   }
 

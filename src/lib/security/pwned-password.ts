@@ -18,12 +18,17 @@ export async function isPasswordPwned(password: string): Promise<boolean> {
   const prefix = hashHex.slice(0, 5);
   const suffix = hashHex.slice(5);
 
-  const response = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`);
-  if (!response.ok) {
-    // Fail open: an unreachable API shouldn't block account creation.
+  // Fail open on every failure mode (blocked by CSP, offline, slow, non-2xx):
+  // an unreachable API must never block or hang account creation.
+  try {
+    const response = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
+      signal: AbortSignal.timeout(3000),
+    });
+    if (!response.ok) return false;
+
+    const body = await response.text();
+    return body.split("\n").some((line) => line.split(":")[0].trim() === suffix);
+  } catch {
     return false;
   }
-
-  const body = await response.text();
-  return body.split("\n").some((line) => line.split(":")[0] === suffix);
 }
